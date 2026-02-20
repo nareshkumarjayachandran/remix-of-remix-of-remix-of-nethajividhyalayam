@@ -628,13 +628,13 @@ export default function WorksheetMaker() {
     const data = await res.json();
     if (res.status === 402) throw new Error("AI worksheet generation is temporarily unavailable (usage limit reached). Please try again later.");
     if (res.status === 429) {
-      if (attempt <= 3) {
-        // Exponential backoff: 3s, 6s, 12s
-        const waitMs = 3000 * attempt;
+      if (attempt <= 4) {
+        // Exponential backoff: 8s, 16s, 24s, 32s
+        const waitMs = 8000 * attempt;
         await new Promise((r) => setTimeout(r, waitMs));
         return generateOneSet(setNumber, attempt + 1);
       }
-      throw new Error("Rate limit hit after retries. Please wait a moment before generating more sets.");
+      throw new Error("Rate limit reached. Please wait 30 seconds and try generating fewer sets at once.");
     }
     if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
     return data.worksheet;
@@ -673,8 +673,8 @@ export default function WorksheetMaker() {
         const sets: Worksheet[] = [];
         for (let i = 1; i <= numSets; i++) {
           setLoadingSetIndex(i);
-          // Add a 2-second gap between requests (except before the first one)
-          if (i > 1) await new Promise((r) => setTimeout(r, 2000));
+          // Add a 6-second gap between requests to respect Groq rate limits
+          if (i > 1) await new Promise((r) => setTimeout(r, 6000));
           const ws = await generateOneSet(i);
           ws.title = ws.title.replace(/Set \d+ of \d+ — /g, "");
           ws.title = `Set ${i} of ${numSets} — ${ws.title}`;
