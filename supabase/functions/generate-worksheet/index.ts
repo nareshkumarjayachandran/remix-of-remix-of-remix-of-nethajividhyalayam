@@ -249,55 +249,77 @@ ${language === "Tamil"
 }
 ${curriculumRules}`;
 
-    // Retry up to 4 times on 429 with exponential backoff (inside edge function)
-    const groqBody = JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      stream: false,
-      temperature: setNumber > 1 ? 0.85 : 0.7,
-      max_tokens: 4096,
-    });
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+
+    const messagePayload = [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ];
+    const temperature = setNumber > 1 ? 0.85 : 0.7;
+
+    // Helper: call Groq with a given model
+    const callGroq = async (model: string): Promise<Response> => {
+      return await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model, messages: messagePayload, stream: false, temperature, max_tokens: 3000 }),
+      });
+    };
+
+    // Helper: call Lovable AI (OpenAI-compatible endpoint)
+    const callLovable = async (): Promise<Response> => {
+      return await fetch("https://api.lovable.app/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: messagePayload, stream: false, temperature, max_tokens: 3000 }),
+      });
+    };
 
     let response: Response | null = null;
-    for (let attempt = 1; attempt <= 4; attempt++) {
-      response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${GROQ_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: groqBody,
-      });
 
-      if (response.status === 429) {
-        if (attempt < 4) {
-          // Wait: 10s, 20s, 30s before retrying
-          const waitMs = attempt * 10000;
-          console.log(`Groq 429 on attempt ${attempt}, retrying in ${waitMs}ms...`);
-          await new Promise((r) => setTimeout(r, waitMs));
-          continue;
+    // Strategy:
+    // 1. Try llama-3.1-8b-instant (20,000 TPM — 3× more than 70b model)
+    // 2. On 429: retry with 8s / 16s backoff
+    // 3. Still 429: fall back to Lovable AI (no rate limits)
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      response = await callGroq("llama-3.1-8b-instant");
+
+      if (response.status !== 429) break;
+
+      if (attempt < 3) {
+        const waitMs = attempt * 8000; // 8s, 16s
+        console.log(`Groq 429 on attempt ${attempt}, retrying in ${waitMs}ms...`);
+        await new Promise((r) => setTimeout(r, waitMs));
+      } else {
+        // All Groq retries exhausted — fall back to Lovable AI
+        console.log("Groq rate limit exhausted, falling back to Lovable AI...");
+        if (LOVABLE_API_KEY) {
+          response = await callLovable();
+          if (!response.ok) {
+            const errText = await response.text();
+            console.error("Lovable AI fallback error:", response.status, errText);
+            return new Response(
+              JSON.stringify({ error: "AI generation failed after all retries. Please try again in a minute." }),
+              { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          break;
+        } else {
+          return new Response(
+            JSON.stringify({ error: "AI is busy. Please wait 30 seconds and try again." }),
+            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
         }
-        // All retries exhausted
-        return new Response(
-          JSON.stringify({ error: "Groq API is busy. Please wait 30 seconds and try again." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
       }
+    }
 
-      if (!response.ok) {
-        const errText = await response.text();
-        console.error("Groq API error:", response.status, errText);
-        return new Response(
-          JSON.stringify({ error: "AI generation failed. Please try again." }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      // Success — break out of retry loop
-      break;
+    if (!response!.ok) {
+      const errText = await response!.text();
+      console.error("AI API error:", response!.status, errText);
+      return new Response(
+        JSON.stringify({ error: "AI generation failed. Please try again." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const aiData = await response!.json();
