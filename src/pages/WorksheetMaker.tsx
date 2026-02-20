@@ -71,6 +71,7 @@ interface FormData_ {
   subject: string;
   topic: string;
   numQuestions: number;
+  numSets: number;
   language: string;
   difficulty: string;
   questionTypes: string[];
@@ -536,6 +537,7 @@ export default function WorksheetMaker() {
         subject: saved.subject || "Maths",
         topic: "",
         numQuestions: 10,
+        numSets: 1,
         language: saved.language || "English",
         difficulty: saved.difficulty || "Medium",
         questionTypes: saved.questionTypes || [],
@@ -548,6 +550,7 @@ export default function WorksheetMaker() {
         subject: "Maths",
         topic: "",
         numQuestions: 10,
+        numSets: 1,
         language: "English",
         difficulty: "Medium",
         questionTypes: [],
@@ -555,7 +558,10 @@ export default function WorksheetMaker() {
     }
   });
   const [worksheet, setWorksheet] = useState<Worksheet | null>(null);
+  const [worksheetSets, setWorksheetSets] = useState<Worksheet[]>([]);
+  const [activeSetIndex, setActiveSetIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [loadingSetIndex, setLoadingSetIndex] = useState<number | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [showAnswers, setShowAnswers] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -604,7 +610,25 @@ export default function WorksheetMaker() {
     setSuggestions(TOPIC_SUGGESTIONS_MAP[key] || []);
   }, [formData.curriculum, formData.term, formData.grade, formData.subject]);
 
-  // ─── Generate ──────────────────────────────────────────────────────────────
+  // ─── Generate one set ──────────────────────────────────────────────────────
+
+  const generateOneSet = async (setNumber: number): Promise<Worksheet> => {
+    const randomSeed = Math.random();
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-worksheet`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ ...formData, setNumber, randomSeed }),
+    });
+    const data = await res.json();
+    if (res.status === 402) throw new Error("AI worksheet generation is temporarily unavailable (usage limit reached). Please try again later.");
+    if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
+    return data.worksheet;
+  };
+
+  // ─── Generate (single or multi-set) ────────────────────────────────────────
 
   const generate = async () => {
     if (!formData.topic.trim()) {
@@ -616,35 +640,46 @@ export default function WorksheetMaker() {
       setShowSaved(true);
       return;
     }
+
+    const numSets = formData.numSets || 1;
     setLoading(true);
     setWorksheet(null);
+    setWorksheetSets([]);
+    setActiveSetIndex(0);
     setGenerateError(null);
     setShowAnswers(false);
+
     try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-worksheet`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({ ...formData }),
-      });
-      const data = await res.json();
-      if (res.status === 402) {
-        const errMsg = "AI worksheet generation is temporarily unavailable (usage limit reached). Please try again later.";
-        setGenerateError(errMsg);
-        toast({ title: "Service Unavailable", description: errMsg, variant: "destructive" });
-        return;
+      if (numSets === 1) {
+        // Single set — simple path
+        setLoadingSetIndex(1);
+        const ws = await generateOneSet(1);
+        setWorksheet(ws);
+        setWorksheetSets([ws]);
+        toast({ title: "Worksheet generated! ✨", description: "Scroll down to view your worksheet." });
+      } else {
+        // Multi-set: generate sequentially so each set knows the set number for uniqueness
+        const sets: Worksheet[] = [];
+        for (let i = 1; i <= numSets; i++) {
+          setLoadingSetIndex(i);
+          const ws = await generateOneSet(i);
+          // Tag the worksheet with set info
+          ws.title = ws.title.replace(/Set \d+ of \d+ — /g, "");
+          ws.title = `Set ${i} of ${numSets} — ${ws.title}`;
+          sets.push(ws);
+          setWorksheetSets([...sets]);
+        }
+        setWorksheet(sets[0]);
+        setActiveSetIndex(0);
+        toast({ title: `${numSets} unique sets generated! ✨`, description: "Switch between sets using the tabs above the worksheet." });
       }
-      if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
-      setWorksheet(data.worksheet);
-      toast({ title: "Worksheet generated! ✨", description: "Scroll down to view your worksheet." });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Failed to generate worksheet";
       setGenerateError(msg);
       toast({ title: "Generation failed", description: msg, variant: "destructive" });
     } finally {
       setLoading(false);
+      setLoadingSetIndex(null);
     }
   };
 
@@ -1182,6 +1217,40 @@ export default function WorksheetMaker() {
               <div className="flex justify-between text-xs text-gray-400 mt-1"><span>5</span><span>10</span><span>15</span><span>20</span></div>
             </div>
 
+            {/* Number of Sets */}
+            <div>
+              <Label className="text-sm font-bold text-gray-700 mb-1.5 block">
+                📋 Question Sets / தாள் வகைகள்:{" "}
+                <span className="text-emerald-600 font-extrabold">{formData.numSets}</span>
+                {formData.numSets > 1 && (
+                  <span className="ml-2 text-xs font-normal text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    {formData.numSets} unique sets, no repeated questions
+                  </span>
+                )}
+              </Label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, numSets: n })}
+                    className={`flex-1 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
+                      formData.numSets === n
+                        ? "border-emerald-500 bg-emerald-500 text-white shadow-sm"
+                        : "border-gray-200 bg-gray-50 text-gray-600 hover:border-emerald-300"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-1.5 italic">
+                {formData.numSets === 1
+                  ? "Single worksheet — click again to get a different set of questions"
+                  : `Generate ${formData.numSets} completely different worksheets on the same topic — perfect for exam practice!`}
+              </p>
+            </div>
+
             {/* Language */}
             <div>
               <Label className="text-sm font-bold text-gray-700 mb-1.5 block">Language / மொழி</Label>
@@ -1327,8 +1396,30 @@ export default function WorksheetMaker() {
                 <BookOpen className="absolute inset-0 m-auto h-7 w-7 text-sky-500" />
               </div>
               <div>
-                <p className="text-gray-700 font-bold text-lg">Creating your worksheet…</p>
-                <p className="text-gray-400 text-sm mt-1 tamil-font">தாள் உருவாக்கப்படுகிறது… AI Samacheer Kalvi பாடத்திட்டத்தை பின்பற்றுகிறது</p>
+                {formData.numSets > 1 ? (
+                  <>
+                    <p className="text-gray-700 font-bold text-lg">
+                      Generating Set {loadingSetIndex} of {formData.numSets}…
+                    </p>
+                    <div className="flex gap-1.5 mt-3 justify-center">
+                      {Array.from({ length: formData.numSets }).map((_, i) => (
+                        <div key={i} className={`w-3 h-3 rounded-full transition-all ${
+                          i < (loadingSetIndex || 0) - 1
+                            ? "bg-emerald-500"
+                            : i === (loadingSetIndex || 0) - 1
+                            ? "bg-sky-500 animate-pulse scale-125"
+                            : "bg-gray-200"
+                        }`} />
+                      ))}
+                    </div>
+                    <p className="text-gray-400 text-sm mt-2 tamil-font">ஒவ்வொரு தொகுப்பும் தனித்துவமான கேள்விகளுடன் உருவாக்கப்படுகிறது…</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-gray-700 font-bold text-lg">Creating your worksheet…</p>
+                    <p className="text-gray-400 text-sm mt-1 tamil-font">தாள் உருவாக்கப்படுகிறது… AI Samacheer Kalvi பாடத்திட்டத்தை பின்பற்றுகிறது</p>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -1341,6 +1432,29 @@ export default function WorksheetMaker() {
             <h3 className="text-lg font-bold text-red-700 mb-2">Worksheet Generation Failed</h3>
             <p className="text-sm text-red-600 mb-4">{generateError}</p>
             <p className="text-xs text-gray-500">Please try again in a few minutes. If the problem persists, contact the administrator.</p>
+          </div>
+        )}
+
+        {/* ── Worksheet Set Tabs (multi-set) ── */}
+        {worksheetSets.length > 1 && !loading && (
+          <div className="no-print mb-4 bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
+            <p className="text-xs font-bold text-emerald-700 mb-2 uppercase tracking-wide">📋 Question Sets — Switch between unique sets</p>
+            <div className="flex gap-2 flex-wrap">
+              {worksheetSets.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => { setActiveSetIndex(i); setWorksheet(worksheetSets[i]); setShowAnswers(false); setEditMode(false); }}
+                  className={`px-5 py-2 rounded-xl text-sm font-bold border-2 transition-all ${
+                    activeSetIndex === i
+                      ? "border-emerald-500 bg-emerald-500 text-white shadow-sm"
+                      : "border-gray-200 bg-gray-50 text-gray-600 hover:border-emerald-300 hover:bg-emerald-50"
+                  }`}
+                >
+                  Set {i + 1}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 mt-2 italic">Each set contains unique, non-repeated questions on the same topic</p>
           </div>
         )}
 

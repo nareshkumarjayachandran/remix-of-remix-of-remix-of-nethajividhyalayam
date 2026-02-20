@@ -32,7 +32,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { curriculum, term, grade, subject, topic, numQuestions, language, difficulty, questionTypes } = await req.json();
+    const { curriculum, term, grade, subject, topic, numQuestions, language, difficulty, questionTypes, setNumber = 1, randomSeed = Math.random() } = await req.json();
     const isMerryBirds = curriculum === "Oxford Merry Birds (Integrated Term Course)";
 
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
@@ -162,6 +162,19 @@ ${merryBirdsTypeGuide}`
 7. Answers must be factually correct per Samacheer Kalvi textbooks for the specified term
 8. Make it encouraging and fun for children`;
 
+    // Variation instructions to ensure unique questions across multiple sets
+    const variationSeed = Math.floor(randomSeed * 1000000);
+    const setVariationInstruction = setNumber > 1
+      ? `\n⚠️ CRITICAL — UNIQUE SET REQUIREMENT:
+This is Set ${setNumber} of a multi-set worksheet series. You MUST generate COMPLETELY DIFFERENT questions from Sets 1 through ${setNumber - 1}.
+- Use DIFFERENT sentences, examples, stories, and items for every question
+- Do NOT repeat any question stem, fill-in-blank sentence, MCQ question, or matching pair that would appear in earlier sets
+- Choose different vocabulary words, different story scenarios, different math problems
+- Rotate through different subtopics/aspects of "${topic}" that haven't been covered in previous sets
+- Variation seed: ${variationSeed} — use this to mentally randomize your question selection
+- Think of it as: a completely fresh worksheet about the same topic but covering different angles`
+      : `\n💡 VARIETY TIP: Choose a diverse range of questions covering different aspects of "${topic}". Variation seed: ${variationSeed}`;
+
     const userPrompt = `Create a complete, curriculum-aligned worksheet for ${isMerryBirds ? "Oxford Merry Birds Integrated Term Course" : "Tamil Nadu Samacheer Kalvi"} with these specifications:
 
 Grade: ${grade}
@@ -173,6 +186,7 @@ Language: ${language} — ${langInstruction}
 Difficulty: ${difficulty} — ${difficultyGuide}
 ${hasDiagram ? "⚠️ This topic requires a DRAW AND LABEL diagram section — include it!" : ""}
 ${isMerryBirds ? `⭐ Oxford Merry Birds style (${term || "Term 1"}): joyful, activity-based, phonics-rich, picture-friendly questions aligned with ${term || "Term 1"} content` : `Focus on ${term || "Term 1"} topics from the official Samacheer Kalvi ${grade} ${subject} textbook`}
+${setVariationInstruction}
 
 ${questionTypeInstruction}
 
@@ -248,7 +262,7 @@ ${curriculumRules}`;
           { role: "user", content: userPrompt },
         ],
         stream: false,
-        temperature: 0.4,
+        temperature: setNumber > 1 ? 0.85 : 0.7,
         max_tokens: 4096,
       }),
     });
