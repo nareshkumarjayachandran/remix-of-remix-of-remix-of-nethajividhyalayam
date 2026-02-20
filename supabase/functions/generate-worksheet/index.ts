@@ -249,40 +249,58 @@ ${language === "Tamil"
 }
 ${curriculumRules}`;
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${GROQ_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        stream: false,
-        temperature: setNumber > 1 ? 0.85 : 0.7,
-        max_tokens: 4096,
-      }),
+    // Retry up to 4 times on 429 with exponential backoff (inside edge function)
+    const groqBody = JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      stream: false,
+      temperature: setNumber > 1 ? 0.85 : 0.7,
+      max_tokens: 4096,
     });
 
-    if (!response.ok) {
+    let response: Response | null = null;
+    for (let attempt = 1; attempt <= 4; attempt++) {
+      response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${GROQ_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: groqBody,
+      });
+
       if (response.status === 429) {
+        if (attempt < 4) {
+          // Wait: 10s, 20s, 30s before retrying
+          const waitMs = attempt * 10000;
+          console.log(`Groq 429 on attempt ${attempt}, retrying in ${waitMs}ms...`);
+          await new Promise((r) => setTimeout(r, waitMs));
+          continue;
+        }
+        // All retries exhausted
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please wait a moment and try again." }),
+          JSON.stringify({ error: "Groq API is busy. Please wait 30 seconds and try again." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const errText = await response.text();
-      console.error("Groq API error:", response.status, errText);
-      return new Response(
-        JSON.stringify({ error: "AI generation failed. Please try again." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error("Groq API error:", response.status, errText);
+        return new Response(
+          JSON.stringify({ error: "AI generation failed. Please try again." }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Success — break out of retry loop
+      break;
     }
 
-    const aiData = await response.json();
+    const aiData = await response!.json();
     const content = aiData.choices?.[0]?.message?.content || "";
 
     let worksheet;
