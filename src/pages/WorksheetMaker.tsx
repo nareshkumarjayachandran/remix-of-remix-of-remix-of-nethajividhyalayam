@@ -560,6 +560,9 @@ export default function WorksheetMaker() {
   const [worksheet, setWorksheet] = useState<Worksheet | null>(null);
   const [worksheetSets, setWorksheetSets] = useState<Worksheet[]>([]);
   const [activeSetIndex, setActiveSetIndex] = useState(0);
+
+  // Always derive the displayed worksheet from worksheetSets when available
+  const displayedWorksheet = worksheetSets.length > 0 ? worksheetSets[activeSetIndex] ?? null : worksheet;
   const [loading, setLoading] = useState(false);
   const [loadingSetIndex, setLoadingSetIndex] = useState<number | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
@@ -684,12 +687,12 @@ export default function WorksheetMaker() {
   };
 
   const saveWorksheet = () => {
-    if (!worksheet) return;
+    if (!displayedWorksheet) return;
     const saved: SavedWorksheet = {
       id: Date.now().toString(),
-      title: worksheet.title,
+      title: displayedWorksheet.title,
       savedAt: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
-      worksheet,
+      worksheet: displayedWorksheet,
       formData,
     };
     const updated = [saved, ...savedList].slice(0, 50);
@@ -729,17 +732,17 @@ export default function WorksheetMaker() {
   };
 
   const handleShareWhatsApp = () => {
-    if (!worksheet) return;
+    if (!displayedWorksheet) return;
     const pageUrl = window.location.href;
-    const message = `📚 *NethajiVidhyalayam Worksheet Maker*\n\n✏️ *${worksheet.title}*\n🎓 Grade: ${worksheet.grade} | Subject: ${worksheet.subject} | ${formData.term}\n\nGenerate your own worksheets here:\n${pageUrl}`;
+    const message = `📚 *NethajiVidhyalayam Worksheet Maker*\n\n✏️ *${displayedWorksheet.title}*\n🎓 Grade: ${displayedWorksheet.grade} | Subject: ${displayedWorksheet.subject} | ${formData.term}\n\nGenerate your own worksheets here:\n${pageUrl}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
 
   const handleDownloadWord = () => {
-    if (!worksheet) return;
+    if (!displayedWorksheet) return;
     // Build a simple HTML string that Word can open as .doc
-    const sections = worksheet.sections?.map((section) => {
+    const sections = displayedWorksheet.sections?.map((section) => {
       const qs = section.questions.map((q) => {
         if (section.type === "fill_in_blanks") {
           return `<p style="margin:8px 0"><b>${q.id}.</b> ${(q.question || "").replace(/_{2,}|\[_+\]/g, "___________________________")}</p>`;
@@ -771,7 +774,7 @@ export default function WorksheetMaker() {
     const answerKey = showAnswers ? `
       <div style="page-break-before:always">
         <h2 style="color:#166534">Answer Key</h2>
-        ${worksheet.sections?.map(s => `
+        ${displayedWorksheet.sections?.map(s => `
           <p><b>${s.heading}</b></p>
           ${s.questions.filter(q=>q.answer).map(q =>
             s.type === "match_following"
@@ -783,7 +786,7 @@ export default function WorksheetMaker() {
 
     const html = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-      <head><meta charset="utf-8"><title>${worksheet.title}</title>
+      <head><meta charset="utf-8"><title>${displayedWorksheet.title}</title>
       <style>
         body { font-family: 'Noto Sans Tamil', Arial, sans-serif; font-size: 13px; color: #111; margin: 40px; }
         h1 { font-size: 18px; text-align: center; color: #1a3a5c; }
@@ -797,13 +800,13 @@ export default function WorksheetMaker() {
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px">
           <img src="${window.location.origin}/nethaji_logo_print.webp" alt="Logo" style="width:110px;height:110px;object-fit:contain" />
           <div style="flex:1;text-align:center">
-            <h1 style="margin:0">${worksheet.title}</h1>
+            <h1 style="margin:0">${displayedWorksheet.title}</h1>
             <p style="margin:4px 0;color:#555">${formData.curriculum} · ${formData.grade} · ${formData.subject} · ${formData.term}</p>
           </div>
         </div>
         <hr/>
         <p><b>Name:</b> _____________________________ &nbsp;&nbsp; <b>Date:</b> __________________ &nbsp;&nbsp; <b>Score:</b> ______ / ${formData.numQuestions}</p>
-        <p style="background:#fffde7;padding:8px;border-left:4px solid #f59e0b"><b>Instructions:</b> ${worksheet.instructions}</p>
+        <p style="background:#fffde7;padding:8px;border-left:4px solid #f59e0b"><b>Instructions:</b> ${displayedWorksheet.instructions}</p>
         ${sections}
         ${answerKey}
       </body></html>`;
@@ -812,7 +815,7 @@ export default function WorksheetMaker() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${worksheet.title.replace(/[^a-zA-Z0-9\u0B80-\u0BFF\s]/g, "")}.doc`;
+    a.download = `${displayedWorksheet.title.replace(/[^a-zA-Z0-9\u0B80-\u0BFF\s]/g, "")}.doc`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -823,14 +826,28 @@ export default function WorksheetMaker() {
   // ─── Edit helpers ──────────────────────────────────────────────────────────
 
   const updateQuestion = (sIdx: number, qIdx: number, field: string, value: string) => {
-    if (!worksheet) return;
-    const updated = { ...worksheet };
-    updated.sections = worksheet.sections.map((s, si) =>
-      si === sIdx
-        ? { ...s, questions: s.questions.map((q, qi) => qi === qIdx ? { ...q, [field]: value } : q) }
-        : s
-    );
-    setWorksheet(updated);
+    if (worksheetSets.length > 0) {
+      const currentWs = worksheetSets[activeSetIndex];
+      if (!currentWs) return;
+      const updated = { ...currentWs };
+      updated.sections = currentWs.sections.map((s, si) =>
+        si === sIdx
+          ? { ...s, questions: s.questions.map((q, qi) => qi === qIdx ? { ...q, [field]: value } : q) }
+          : s
+      );
+      const newSets = [...worksheetSets];
+      newSets[activeSetIndex] = updated;
+      setWorksheetSets(newSets);
+    } else {
+      if (!worksheet) return;
+      const updated = { ...worksheet };
+      updated.sections = worksheet.sections.map((s, si) =>
+        si === sIdx
+          ? { ...s, questions: s.questions.map((q, qi) => qi === qIdx ? { ...q, [field]: value } : q) }
+          : s
+      );
+      setWorksheet(updated);
+    }
   };
 
   // ─── Render section ────────────────────────────────────────────────────────
@@ -1443,7 +1460,7 @@ export default function WorksheetMaker() {
               {worksheetSets.map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => { setActiveSetIndex(i); setWorksheet(worksheetSets[i]); setShowAnswers(false); setEditMode(false); }}
+                  onClick={() => { setActiveSetIndex(i); setShowAnswers(false); setEditMode(false); }}
                   className={`px-5 py-2 rounded-xl text-sm font-bold border-2 transition-all ${
                     activeSetIndex === i
                       ? "border-emerald-500 bg-emerald-500 text-white shadow-sm"
@@ -1459,7 +1476,7 @@ export default function WorksheetMaker() {
         )}
 
         {/* ── Worksheet ── */}
-        {worksheet && !loading && (
+        {displayedWorksheet && !loading && (
           <>
             {/* Action bar */}
             <div className="no-print flex flex-wrap gap-2 mb-4">
@@ -1536,14 +1553,14 @@ export default function WorksheetMaker() {
                   </p>
                   <h2 className={`tamil-font text-base md:text-lg font-extrabold leading-tight print:text-black`}
                     style={{ fontFamily: "'Baloo 2', 'Noto Sans Tamil', serif" }}>
-                    {worksheet.title}
+                    {displayedWorksheet.title}
                   </h2>
                   <div className="flex flex-wrap justify-center gap-2 mt-2">
                     <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-3 py-0.5 text-xs font-semibold">{formData.grade}</span>
                     <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-3 py-0.5 text-xs font-semibold">{formData.subject}</span>
                     <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-3 py-0.5 text-xs font-semibold">{formData.difficulty}</span>
                     <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-3 py-0.5 text-xs font-semibold">{formData.language === "bilingual" ? "Bilingual" : formData.language === "tamil" ? "Tamil" : "English"}</span>
-                    {worksheet._hasDiagram && (
+                    {displayedWorksheet._hasDiagram && (
                       <span className="bg-amber-400/40 print:bg-transparent print:border print:border-amber-600 print:text-amber-800 text-white rounded-full px-3 py-0.5 text-xs font-semibold">
                         📐 Includes Diagram
                       </span>
@@ -1564,13 +1581,13 @@ export default function WorksheetMaker() {
               {/* Instructions */}
               <div className="px-8 py-4 bg-amber-50 print:bg-transparent border-b border-amber-100">
                 <p className={`tamil-font text-sm text-amber-800 print:text-gray-800 font-medium leading-relaxed`}>
-                  📋 <strong>Instructions / வழிமுறைகள்:</strong> {worksheet.instructions}
+                  📋 <strong>Instructions / வழிமுறைகள்:</strong> {displayedWorksheet.instructions}
                 </p>
               </div>
 
               {/* Sections */}
               <div className={`px-8 py-6 space-y-10 ${isTamil ? "tamil-font" : ""}`}>
-                {worksheet.sections?.map((section, sIdx) => (
+                {displayedWorksheet.sections?.map((section, sIdx) => (
                   <div key={sIdx}>
                     <h3 className="tamil-font font-bold text-gray-900 text-base border-b-2 border-sky-200 print:border-gray-500 pb-2 mb-5 flex items-center gap-2"
                       style={{ fontFamily: "'Baloo 2', 'Noto Sans Tamil', sans-serif" }}>
@@ -1594,7 +1611,7 @@ export default function WorksheetMaker() {
                     ✅ Answer Key / விடை திறவு
                   </h3>
                   <div className="space-y-4">
-                    {worksheet.sections?.map((section, sIdx) => (
+                    {displayedWorksheet.sections?.map((section, sIdx) => (
                       <div key={sIdx}>
                         <p className="text-xs font-bold text-green-700 print:text-green-900 uppercase tracking-wider mb-2 tamil-font">{section.heading}</p>
                         <div className="tamil-font grid grid-cols-1 md:grid-cols-2 gap-2">
