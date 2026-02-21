@@ -27,11 +27,11 @@ type VoiceKey = typeof VOICE_OPTIONS[number]["key"];
 // Grade → base speed for TTS
 const GRADE_SPEED: Record<string, number> = {
   LKG: 0.72, UKG: 0.75, "1st": 0.78, "2nd": 0.80,
-  "3rd": 0.83, "4th": 0.86, "5th": 0.88,
+  "3rd": 0.83, "4th": 0.86, "5th": 0.88, "IT Pro": 0.95,
 };
 
 // ── Curriculum ─────────────────────────────────────────────────────────────
-const GRADES = ["LKG", "UKG", "1st", "2nd", "3rd", "4th", "5th"];
+const GRADES = ["LKG", "UKG", "1st", "2nd", "3rd", "4th", "5th", "IT Pro"];
 
 interface TopicData {
   emoji: string;
@@ -189,6 +189,26 @@ const TOPICS: Record<string, TopicData> = {
       "What do you do after school?",
       "What is your favourite animal?",
       "How do you come to school?",
+    ],
+  },
+  "IT English": {
+    emoji: "💻", color: "from-slate-500 to-blue-600", curriculum: "IT Professionals • Technical English",
+    items: [
+      "We need to deploy the application to the production server.",
+      "Can you walk me through the API flow?",
+      "The frontend is built using React and the backend uses Node.js.",
+      "Let's sync on this during the stand-up meeting.",
+      "I found a bug in the authentication module and raised a ticket.",
+      "We need to refactor this legacy code before the next sprint.",
+      "The CI/CD pipeline failed because of a broken test case.",
+      "Please review my pull request and share your feedback.",
+      "The database query is taking too long, we need to optimize it.",
+      "This feature is blocked by a dependency on the backend team.",
+      "We are migrating our infrastructure to the cloud.",
+      "The user interface needs to be responsive for mobile devices.",
+      "Let's prioritize this bug fix for the current release.",
+      "I will update the documentation after merging the changes.",
+      "The microservices architecture improves scalability and performance.",
     ],
   },
 };
