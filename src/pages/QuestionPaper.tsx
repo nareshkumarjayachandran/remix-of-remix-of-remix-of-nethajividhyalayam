@@ -10,7 +10,7 @@ import {
   BookOpen, Download, RefreshCw, Eye, EyeOff, Printer,
   Sparkles, Loader2, GraduationCap, FileText,
   PenLine, ChevronDown, Share2, ArrowLeft, CheckSquare, Map,
-  Edit3, Check, X, Palette, ToggleLeft, ToggleRight,
+  Check, Palette,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -269,8 +269,7 @@ export default function QuestionPaper() {
   const [showAnswers, setShowAnswers] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [colorMode, setColorMode] = useState(true);
-  const [editingQuestion, setEditingQuestion] = useState<number | null>(null);
-  const [editText, setEditText] = useState("");
+  const [editMode, setEditMode] = useState(false);
 
   const [form, setForm] = useState({
     examType: "Quarterly",
@@ -364,31 +363,18 @@ export default function QuestionPaper() {
     setPaper(updated);
   }, [paper]);
 
-  const startEdit = useCallback((questionId: number, currentText: string) => {
-    setEditingQuestion(questionId);
-    setEditText(currentText);
-  }, []);
-
-  const saveEdit = useCallback(() => {
-    if (!paper || editingQuestion === null) return;
+  const updateQuestion = useCallback((sIdx: number, subIdx: number, qIdx: number, field: string, value: string) => {
+    if (!paper) return;
     const updated = { ...paper };
-    updated.sections = updated.sections.map(s => ({
+    updated.sections = updated.sections.map((s, si) => si === sIdx ? ({
       ...s,
-      subsections: s.subsections.map(sub => ({
+      subsections: s.subsections.map((sub, subi) => subi === subIdx ? ({
         ...sub,
-        questions: sub.questions.map(q => q.id === editingQuestion ? { ...q, question: editText } : q),
-      })),
-    }));
+        questions: sub.questions.map((q, qi) => qi === qIdx ? { ...q, [field]: value } : q),
+      }) : sub),
+    }) : s);
     setPaper(updated);
-    setEditingQuestion(null);
-    setEditText("");
-    toast({ title: "Question updated ✏️" });
-  }, [paper, editingQuestion, editText, toast]);
-
-  const cancelEdit = useCallback(() => {
-    setEditingQuestion(null);
-    setEditText("");
-  }, []);
+  }, [paper]);
 
   const selectAll = useCallback((select: boolean) => {
     if (!paper) return;
@@ -468,58 +454,34 @@ export default function QuestionPaper() {
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
-  // Render question with selection checkbox + edit button
-  const renderQuestionControls = (q: PaperQuestion) => (
-    <div className="no-print flex items-center gap-1.5 absolute right-1 top-1 bg-white/80 backdrop-blur-sm rounded-lg px-1.5 py-1 shadow-sm border border-gray-100">
-      <button
-        onClick={() => toggleQuestion(q.id)}
-        className={`p-1.5 rounded-md transition-colors ${q.selected !== false ? "text-green-500 hover:bg-green-50 hover:text-green-700" : "text-gray-300 hover:bg-gray-50 hover:text-gray-500"}`}
-        title={q.selected !== false ? "Deselect question" : "Select question"}
-      >
-        <CheckSquare className="h-4 w-4" />
-      </button>
-      <button
-        onClick={() => startEdit(q.id, q.question || "")}
-        className="p-1.5 rounded-md text-blue-400 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-        title="Edit question"
-      >
-        <Edit3 className="h-4 w-4" />
-      </button>
-    </div>
-  );
+  // No per-question controls needed — combined edit mode handles it
 
-  const renderEditableQuestion = (q: PaperQuestion, content: React.ReactNode) => {
-    if (editingQuestion === q.id) {
+  // Render subsection questions with proper serial numbering + combined edit mode
+  const renderSubsection = (sub: PaperSubsection, sIdx: number, subIdx: number) => {
+    const cm = colorMode;
+    const renderQ = (q: PaperQuestion, qi: number, questionContent: React.ReactNode) => {
+      const isDeselected = q.selected === false;
       return (
-        <div className="mb-5 p-4 bg-blue-50 border-2 border-blue-300 rounded-xl">
-          <p className="text-xs font-bold text-blue-600 mb-2 uppercase tracking-wide">✏️ Editing Question</p>
-          <textarea
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
-            className="w-full border-2 border-blue-300 rounded-lg p-3 text-base min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
-            autoFocus
-          />
-          <div className="flex gap-2 mt-3">
-            <button onClick={saveEdit} className="flex items-center gap-1.5 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm font-semibold"><Check className="h-4 w-4" /> Save</button>
-            <button onClick={cancelEdit} className="flex items-center gap-1.5 px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 text-sm font-semibold"><X className="h-4 w-4" /> Cancel</button>
-          </div>
+        <div key={q.id} className={`mb-6 ${isDeselected ? "opacity-30" : ""}`}>
+          {editMode ? (
+            <div className="mb-4">
+              <input
+                className="border-b-2 border-amber-400 outline-none w-full bg-transparent text-base font-medium py-1"
+                value={q.question || ""}
+                onChange={(e) => updateQuestion(sIdx, subIdx, qi, "question", e.target.value)}
+              />
+            </div>
+          ) : questionContent}
         </div>
       );
-    }
-    return content;
-  };
+    };
 
-  // Render subsection questions with proper serial numbering
-  const renderSubsection = (sub: PaperSubsection) => {
-    const cm = colorMode;
     switch (sub.type) {
       case "multiple_choice":
         return sub.questions.map((q, qi) => {
           const sn = qi + 1;
-          const isDeselected = q.selected === false;
-          return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-6 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
-              {renderQuestionControls(q)}
+          return renderQ(q, qi,
+            <>
               <p className={`font-medium text-base leading-relaxed ${cm ? "text-gray-800" : "text-gray-700"}`}>
                 <span className={`font-bold mr-2 ${cm ? "text-blue-600" : "text-gray-600"}`}>{sn}.</span>
                 {q.question}
@@ -537,42 +499,34 @@ export default function QuestionPaper() {
                   </label>
                 ))}
               </div>
-            </div>
+            </>
           );
         });
 
       case "fill_in_blanks":
         return sub.questions.map((q, qi) => {
           const sn = qi + 1;
-          const isDeselected = q.selected === false;
-          return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-5 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
-              {renderQuestionControls(q)}
-              <p className={`font-medium text-base leading-[2.4] ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-emerald-600" : "text-gray-600"}`}>{sn}.</span>
-                <span dangerouslySetInnerHTML={{
-                  __html: (q.question || "").replace(/_{2,}|\[_+\]/g, `<span class="inline-block border-b-2 ${cm ? "border-emerald-400" : "border-gray-500"} min-w-[140px] mx-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`)
-                }} />
-                <span className={`text-xs ml-2 ${cm ? "text-emerald-400" : "text-gray-400"}`}>[{q.marks || 1}M]</span>
-              </p>
-            </div>
+          return renderQ(q, qi,
+            <p className={`font-medium text-base leading-[2.4] ${cm ? "text-gray-800" : "text-gray-700"}`}>
+              <span className={`font-bold mr-2 ${cm ? "text-emerald-600" : "text-gray-600"}`}>{sn}.</span>
+              <span dangerouslySetInnerHTML={{
+                __html: (q.question || "").replace(/_{2,}|\[_+\]/g, `<span class="inline-block border-b-2 ${cm ? "border-emerald-400" : "border-gray-500"} min-w-[140px] mx-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`)
+              }} />
+              <span className={`text-xs ml-2 ${cm ? "text-emerald-400" : "text-gray-400"}`}>[{q.marks || 1}M]</span>
+            </p>
           );
         });
 
       case "true_false":
         return sub.questions.map((q, qi) => {
           const sn = qi + 1;
-          const isDeselected = q.selected === false;
-          return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-5 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
-              {renderQuestionControls(q)}
-              <p className={`font-medium text-base leading-relaxed ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-purple-600" : "text-gray-600"}`}>{sn}.</span>
-                {q.question}
-                <span className={`ml-3 font-semibold ${cm ? "text-purple-500" : "text-gray-500"}`}>( True / False )</span>
-                <span className={`text-xs ml-2 ${cm ? "text-purple-400" : "text-gray-400"}`}>[{q.marks || 1}M]</span>
-              </p>
-            </div>
+          return renderQ(q, qi,
+            <p className={`font-medium text-base leading-relaxed ${cm ? "text-gray-800" : "text-gray-700"}`}>
+              <span className={`font-bold mr-2 ${cm ? "text-purple-600" : "text-gray-600"}`}>{sn}.</span>
+              {q.question}
+              <span className={`ml-3 font-semibold ${cm ? "text-purple-500" : "text-gray-500"}`}>( True / False )</span>
+              <span className={`text-xs ml-2 ${cm ? "text-purple-400" : "text-gray-400"}`}>[{q.marks || 1}M]</span>
+            </p>
           );
         });
 
@@ -581,8 +535,7 @@ export default function QuestionPaper() {
           const sn = qi + 1;
           const isDeselected = q.selected === false;
           return (
-            <div key={q.id} className={`mb-7 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
-              {renderQuestionControls(q)}
+            <div key={q.id} className={`mb-7 ${isDeselected ? "opacity-30" : ""}`}>
               <p className={`text-sm font-semibold mb-2 ${cm ? "text-orange-500" : "text-gray-500"}`}>{sn}. Match the Following <span className="text-xs font-normal">[{q.marks || 3}M]</span></p>
               <div className={`w-full border-2 rounded-xl overflow-hidden ${cm ? "border-orange-300" : "border-gray-300"}`}>
                 <div className="grid grid-cols-2">
@@ -614,10 +567,8 @@ export default function QuestionPaper() {
       case "short_answer":
         return sub.questions.map((q, qi) => {
           const sn = qi + 1;
-          const isDeselected = q.selected === false;
-          return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-6 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
-              {renderQuestionControls(q)}
+          return renderQ(q, qi,
+            <>
               <p className={`font-medium text-base leading-relaxed ${cm ? "text-gray-800" : "text-gray-700"}`}>
                 <span className={`font-bold mr-2 ${cm ? "text-cyan-600" : "text-gray-600"}`}>{sn}.</span>
                 {q.question}
@@ -628,17 +579,15 @@ export default function QuestionPaper() {
                 <div className={`border-b ${cm ? "border-cyan-200" : "border-gray-300"}`} />
                 <div className={`border-b ${cm ? "border-cyan-200" : "border-gray-300"}`} />
               </div>
-            </div>
+            </>
           );
         });
 
       case "long_answer":
         return sub.questions.map((q, qi) => {
           const sn = qi + 1;
-          const isDeselected = q.selected === false;
-          return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-7 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
-              {renderQuestionControls(q)}
+          return renderQ(q, qi,
+            <>
               <p className={`font-medium text-base leading-relaxed ${cm ? "text-gray-800" : "text-gray-700"}`}>
                 <span className={`font-bold mr-2 ${cm ? "text-rose-600" : "text-gray-600"}`}>{sn}.</span>
                 {q.question}
@@ -649,7 +598,7 @@ export default function QuestionPaper() {
                   <div key={i} className={`border-b ${cm ? "border-rose-200" : "border-gray-300"}`} />
                 ))}
               </div>
-            </div>
+            </>
           );
         });
 
@@ -658,13 +607,20 @@ export default function QuestionPaper() {
           const sn = qi + 1;
           const isDeselected = q.selected === false;
           return (
-            <div key={q.id} className={`mb-7 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
-              {renderQuestionControls(q)}
-              <p className={`font-medium text-base leading-relaxed mb-3 ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-amber-600" : "text-gray-600"}`}>{sn}.</span>
-                {q.question}
-                <span className={`text-xs ml-2 ${cm ? "text-amber-400" : "text-gray-400"}`}>[{q.marks || 5}M]</span>
-              </p>
+            <div key={q.id} className={`mb-7 ${isDeselected ? "opacity-30" : ""}`}>
+              {editMode ? (
+                <input
+                  className="border-b-2 border-amber-400 outline-none w-full bg-transparent text-base font-medium py-1 mb-3"
+                  value={q.question || ""}
+                  onChange={(e) => updateQuestion(sIdx, subIdx, qi, "question", e.target.value)}
+                />
+              ) : (
+                <p className={`font-medium text-base leading-relaxed mb-3 ${cm ? "text-gray-800" : "text-gray-700"}`}>
+                  <span className={`font-bold mr-2 ${cm ? "text-amber-600" : "text-gray-600"}`}>{sn}.</span>
+                  {q.question}
+                  <span className={`text-xs ml-2 ${cm ? "text-amber-400" : "text-gray-400"}`}>[{q.marks || 5}M]</span>
+                </p>
+              )}
               <div className="ml-5">
                 <DiagramSVG type={q.diagramType} labels={q.diagramLabels} colorMode={colorMode} />
               </div>
@@ -675,16 +631,12 @@ export default function QuestionPaper() {
       default:
         return sub.questions.map((q, qi) => {
           const sn = qi + 1;
-          const isDeselected = q.selected === false;
-          return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-6 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
-              {renderQuestionControls(q)}
-              <p className={`font-medium text-base ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-indigo-600" : "text-gray-600"}`}>{sn}.</span>
-                {q.question}
-                <span className={`text-xs ml-2 ${cm ? "text-indigo-400" : "text-gray-400"}`}>[{q.marks || 2}M]</span>
-              </p>
-            </div>
+          return renderQ(q, qi,
+            <p className={`font-medium text-base ${cm ? "text-gray-800" : "text-gray-700"}`}>
+              <span className={`font-bold mr-2 ${cm ? "text-indigo-600" : "text-gray-600"}`}>{sn}.</span>
+              {q.question}
+              <span className={`text-xs ml-2 ${cm ? "text-indigo-400" : "text-gray-400"}`}>[{q.marks || 2}M]</span>
+            </p>
           );
         });
     }
@@ -930,20 +882,28 @@ export default function QuestionPaper() {
           <>
             {/* Action bar */}
             <div className="no-print flex flex-wrap gap-2 mb-4">
-              <Button onClick={handlePrint} variant="outline" className="gap-2"><Printer className="h-4 w-4" /> Print / PDF</Button>
-              <Button onClick={() => setShowAnswers(!showAnswers)} variant="outline" className="gap-2">
+              <Button onClick={handlePrint} variant="outline" className="gap-2 border-gray-300">
+                <Printer className="h-4 w-4" /> Print
+              </Button>
+              <Button onClick={() => setShowAnswers(!showAnswers)} variant="outline" className="gap-2 border-gray-300">
                 {showAnswers ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                {showAnswers ? "Hide Answer Key" : "Show Answer Key"}
+                {showAnswers ? "Hide Answers" : "Answer Key"}
               </Button>
-              <Button onClick={() => setColorMode(!colorMode)} variant="outline" className="gap-2">
+              <Button onClick={() => setEditMode(!editMode)} variant="outline"
+                className={`gap-2 ${editMode ? "border-amber-400 bg-amber-50 text-amber-700" : "border-gray-300"}`}>
+                <FileText className="h-4 w-4" />
+                {editMode ? "Done Editing" : "Edit"}
+              </Button>
+              <Button onClick={() => setColorMode(!colorMode)} variant="outline" className="gap-2 border-gray-300">
                 {colorMode ? <Palette className="h-4 w-4 text-pink-500" /> : <Palette className="h-4 w-4" />}
-                {colorMode ? "Color Mode" : "B&W Mode"}
+                {colorMode ? "Color" : "B&W"}
               </Button>
-              <Button onClick={() => selectAll(true)} variant="outline" className="gap-2 text-xs"><CheckSquare className="h-3.5 w-3.5" /> All</Button>
-              <Button onClick={() => selectAll(false)} variant="outline" className="gap-2 text-xs"><X className="h-3.5 w-3.5" /> None</Button>
-              <Button onClick={generate} variant="outline" className="gap-2"><RefreshCw className="h-4 w-4" /> Regenerate</Button>
+              <Button onClick={generate} variant="outline" className="gap-2 border-gray-300">
+                <RefreshCw className="h-4 w-4" /> Regenerate
+              </Button>
               <Button onClick={handleShareWhatsApp} className="gap-2 bg-green-500 hover:bg-green-600 text-white">
-                <Share2 className="h-4 w-4" /> WhatsApp
+                <Share2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Share on</span> WhatsApp
               </Button>
               <div className="relative group ml-auto">
                 <Button className={`gap-2 bg-gradient-to-r ${headerGradient} text-white`}>
@@ -1028,7 +988,7 @@ export default function QuestionPaper() {
                             {(sub.type === "map_india" || sub.type === "map_world") && colorMode && <Map className="h-3.5 w-3.5 text-blue-500" />}
                             {sub.heading}
                           </h4>
-                          {renderSubsection(sub)}
+                          {renderSubsection(sub, sIdx, subIdx)}
                         </div>
                       ))}
                     </div>
