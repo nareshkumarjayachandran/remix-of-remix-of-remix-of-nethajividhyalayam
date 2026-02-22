@@ -330,12 +330,28 @@ export default function QuestionPaper() {
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
-      // Mark all questions as selected by default
+      // Mark all questions as selected and fix diagram types
       const paperData = data.paper;
       paperData.sections?.forEach((section: PaperSection) => {
         section.subsections?.forEach((sub: PaperSubsection) => {
           sub.questions?.forEach((q: PaperQuestion) => {
             q.selected = true;
+            // Auto-detect diagramType from question text if missing or invalid
+            if (sub.type === "diagram" && q.question) {
+              const qt = (q.question + " " + (q.diagramType || "")).toLowerCase();
+              if (!q.diagramType || q.diagramType.includes("|")) {
+                if (qt.includes("plant") || qt.includes("flower") || qt.includes("leaf")) q.diagramType = "plant";
+                else if (qt.includes("body") || qt.includes("human") || qt.includes("organ")) q.diagramType = "body";
+                else if (qt.includes("solar") || qt.includes("planet") || qt.includes("sun")) q.diagramType = "solar";
+                else if (qt.includes("water cycle") || qt.includes("evaporation") || qt.includes("condensation")) q.diagramType = "water_cycle";
+                else if (qt.includes("india") || qt.includes("state") || qt.includes("river")) q.diagramType = "map_india";
+                else if (qt.includes("world") || qt.includes("continent") || qt.includes("ocean")) q.diagramType = "map_world";
+                else q.diagramType = "custom";
+              }
+              if (!q.diagramLabels || q.diagramLabels.length === 0) {
+                q.diagramLabels = ["Part 1", "Part 2", "Part 3", "Part 4"];
+              }
+            }
           });
         });
       });
