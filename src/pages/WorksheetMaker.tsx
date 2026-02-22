@@ -77,6 +77,7 @@ interface FormData_ {
   difficulty: string;
   questionTypes: string[];
   hindiSyllabus: string;
+  bilingualPair: string;
 }
 
 // ─── Question Type Options ────────────────────────────────────────────────────
@@ -114,6 +115,11 @@ const HINDI_SYLLABUS_OPTIONS = [
 ];
 
 const LANGUAGES = ["English", "Tamil", "Hindi", "Bilingual"];
+const BILINGUAL_PAIRS = [
+  { id: "English+Tamil", label: "English & Tamil", labelTamil: "ஆங்கிலம் & தமிழ்" },
+  { id: "Tamil+Hindi", label: "Tamil & Hindi", labelTamil: "தமிழ் & हिंदी" },
+  { id: "English+Hindi", label: "English & Hindi", labelTamil: "ஆங்கிலம் & हिंदी" },
+];
 const DIFFICULTIES = ["Easy", "Medium", "Hard"];
 const STORAGE_KEY = "samacheer_worksheets_v2";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -587,6 +593,7 @@ export default function WorksheetMaker() {
         difficulty: saved.difficulty || "Medium",
         questionTypes: saved.questionTypes || [],
         hindiSyllabus: saved.hindiSyllabus || "none",
+        bilingualPair: saved.bilingualPair || "English+Tamil",
       };
     } catch {
       return {
@@ -601,6 +608,7 @@ export default function WorksheetMaker() {
         difficulty: "Medium",
         questionTypes: [],
         hindiSyllabus: "none",
+        bilingualPair: "English+Tamil",
       };
     }
   });
@@ -1385,6 +1393,19 @@ export default function WorksheetMaker() {
                   </button>
                 ))}
               </div>
+              {formData.language === "Bilingual" && (
+                <div className="mt-2">
+                  <Label className="text-xs font-semibold text-gray-500 mb-1 block">Select Language Pair / மொழி ஜோடி</Label>
+                  <div className="flex gap-2">
+                    {BILINGUAL_PAIRS.map((bp) => (
+                      <button key={bp.id} onClick={() => setFormData({ ...formData, bilingualPair: bp.id })}
+                        className={`flex-1 py-2 rounded-lg text-xs font-semibold border-2 transition-all tamil-font ${formData.bilingualPair === bp.id ? "border-sky-500 bg-sky-100 text-sky-700 shadow-sm" : "border-gray-200 bg-gray-50 text-gray-600 hover:border-sky-300"}`}>
+                        {bp.labelTamil}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Difficulty */}
