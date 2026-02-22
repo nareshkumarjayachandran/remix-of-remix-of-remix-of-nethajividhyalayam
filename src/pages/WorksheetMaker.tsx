@@ -1063,34 +1063,34 @@ export default function WorksheetMaker() {
       />
       {/* Print styles */}
       <style>{`
-        @media print {
-          /* Hide everything except worksheet */
-          .no-print, header, footer, nav, .no-print *, [class*="PWA"], [class*="Offline"] { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
+         @media print {
+          /* HIDE EVERYTHING first, then show only worksheet */
+          body * { visibility: hidden !important; }
+          .worksheet-card, .worksheet-card * { visibility: visible !important; }
+          .worksheet-card { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
+          /* Aggressively hide all non-content elements */
+          .no-print, header, footer, nav, [class*="PWA"], [class*="Offline"],
+          [class*="ChatWidget"], [class*="SocialSidebar"], [class*="fixed"],
+          .no-print *, header *, footer *, nav * {
+            display: none !important; visibility: hidden !important; height: 0 !important;
+            overflow: hidden !important; margin: 0 !important; padding: 0 !important;
+            position: absolute !important; left: -9999px !important;
+          }
           html, body { background: white !important; font-family: 'Noto Sans Tamil', 'Noto Serif Tamil', Arial, sans-serif !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           * { box-shadow: none !important; }
           .min-h-screen { min-height: auto !important; background: white !important; padding: 0 !important; }
           .max-w-4xl { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
           .worksheet-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
           @page { margin: 1.2cm 1.5cm; size: A4 portrait; }
-          /* Logo */
           img { max-height: 70px !important; max-width: 70px !important; }
-          /* Force black readable text everywhere */
           .worksheet-card, .worksheet-card * { color: #111 !important; }
           .worksheet-card h2, .worksheet-card h3 { color: #000 !important; }
-          /* Header bar — white bg with dark text for print */
           .bg-gradient-to-r { background: white !important; border-bottom: 3px solid #1a3a5c !important; }
           .bg-gradient-to-r * { color: #1a3a5c !important; }
-          .bg-gradient-to-r .text-sky-200, .bg-gradient-to-r .text-sky-100 { color: #555 !important; }
-          /* Badges */
-          .bg-white\\/20, [class*="bg-white/20"] { background: transparent !important; border: 1px solid #1a3a5c !important; color: #1a3a5c !important; }
-          /* Backgrounds for strips */
           .bg-sky-50, .bg-amber-50, .bg-green-50, .bg-gray-50 { background: white !important; }
-          /* Section icons hide */
-          .worksheet-card svg { display: none !important; }
-          /* Prevent page breaks inside questions */
+          .worksheet-card svg { display: none !important; visibility: hidden !important; }
           .space-y-10 > div { page-break-inside: avoid; }
           .worksheet-card .px-8 { padding-left: 16px !important; padding-right: 16px !important; }
-          /* Footer inside card — keep but style minimal */
           .worksheet-card .border-t { border-top: 1px solid #ccc !important; padding: 8px 16px !important; }
         }
         .tamil-font, .tamil-font * { font-family: 'Noto Sans Tamil', 'Noto Serif Tamil', 'Baloo 2', sans-serif !important; }
