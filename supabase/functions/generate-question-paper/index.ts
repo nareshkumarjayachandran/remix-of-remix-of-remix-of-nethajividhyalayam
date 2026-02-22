@@ -34,7 +34,7 @@ serve(async (req) => {
         : language === "Hindi"
         ? "Write ALL content ONLY in Hindi script (हिंदी). ZERO English words allowed."
         : language === "Bilingual"
-        ? `FULLY BILINGUAL (${biLang1} + ${biLang2}): Every "question" field MUST contain BOTH languages. Format: "${biLang1}: full question\\n${biLangLabel2}: full translated question". Every "answer" field MUST also have BOTH languages. Every MCQ option MUST have both: "a) ${biLang1} text / ${biLangLabel2} text". NO content in only one language.`
+        ? `FULLY BILINGUAL (${biLang1} + ${biLang2}): Write EVERY question, answer, option in BOTH languages. DO NOT use labels like "${biLang1}:" or "${biLangLabel2}:" — just write the ${biLang1} text first, then newline, then the ${biLang2} translation directly. Example: "The cat is a pet animal.\\nபூனை ஒரு வளர்ப்பு விலங்கு." For MCQ options: "a) option / translated option". Both languages for ALL content, no labels.`
         : "Write ALL content ONLY in clear English. No Tamil script.";
 
     const marksConfig: Record<string, { partA: number; partB: number; partC: number; partD: number }> = {
@@ -293,7 +293,7 @@ CRITICAL RULES:
 6. For diagram questions: ALWAYS include "diagramType" with exactly ONE of these values: "plant", "body", "solar", "water_cycle", "map_india", "map_world", "geometry", "custom". Also include "diagramLabels" array with 4-6 string labels.
 7. For map questions: use diagramType "map_india" or "map_world" with place/feature names as diagramLabels
 8. Questions should progress from easy to challenging
-9. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Hindi" ? "EVERY word must be Hindi script only" : language === "Bilingual" ? `FULLY BILINGUAL: Every question AND answer MUST have BOTH ${biLang1} and ${biLang2}. Format: "${biLang1}: text\\n${biLangLabel2}: translated text". NO single-language content.` : "Pure English only"}
+9. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Hindi" ? "EVERY word must be Hindi script only" : language === "Bilingual" ? `FULLY BILINGUAL: Every question AND answer MUST have BOTH ${biLang1} and ${biLang2} separated by newline. NO language labels like "English:" or "தமிழ்:" — just the text directly in both languages.` : "Pure English only"}
 10. Distribute marks proportionally among the included parts
 11. The diagramType MUST be a single value like "plant" or "body", NEVER pipe-separated like "plant|body|solar"`;
 
