@@ -456,17 +456,17 @@ export default function QuestionPaper() {
 
   // Render question with selection checkbox + edit button
   const renderQuestionControls = (q: PaperQuestion) => (
-    <div className="no-print flex items-center gap-1 absolute right-0 top-0">
+    <div className="no-print flex items-center gap-1.5 absolute right-1 top-1 bg-white/80 backdrop-blur-sm rounded-lg px-1.5 py-1 shadow-sm border border-gray-100">
       <button
         onClick={() => toggleQuestion(q.id)}
-        className={`p-1 rounded ${q.selected !== false ? "text-green-500 hover:text-green-700" : "text-gray-300 hover:text-gray-500"}`}
+        className={`p-1.5 rounded-md transition-colors ${q.selected !== false ? "text-green-500 hover:bg-green-50 hover:text-green-700" : "text-gray-300 hover:bg-gray-50 hover:text-gray-500"}`}
         title={q.selected !== false ? "Deselect question" : "Select question"}
       >
         <CheckSquare className="h-4 w-4" />
       </button>
       <button
         onClick={() => startEdit(q.id, q.question || "")}
-        className="p-1 rounded text-blue-400 hover:text-blue-600"
+        className="p-1.5 rounded-md text-blue-400 hover:bg-blue-50 hover:text-blue-600 transition-colors"
         title="Edit question"
       >
         <Edit3 className="h-4 w-4" />
@@ -477,45 +477,49 @@ export default function QuestionPaper() {
   const renderEditableQuestion = (q: PaperQuestion, content: React.ReactNode) => {
     if (editingQuestion === q.id) {
       return (
-        <div className="flex items-start gap-2 mb-4">
+        <div className="mb-5 p-4 bg-blue-50 border-2 border-blue-300 rounded-xl">
+          <p className="text-xs font-bold text-blue-600 mb-2 uppercase tracking-wide">✏️ Editing Question</p>
           <textarea
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
-            className="flex-1 border-2 border-blue-400 rounded-lg p-2 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border-2 border-blue-300 rounded-lg p-3 text-base min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
             autoFocus
           />
-          <button onClick={saveEdit} className="p-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600"><Check className="h-4 w-4" /></button>
-          <button onClick={cancelEdit} className="p-1.5 bg-gray-400 text-white rounded-lg hover:bg-gray-500"><X className="h-4 w-4" /></button>
+          <div className="flex gap-2 mt-3">
+            <button onClick={saveEdit} className="flex items-center gap-1.5 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm font-semibold"><Check className="h-4 w-4" /> Save</button>
+            <button onClick={cancelEdit} className="flex items-center gap-1.5 px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 text-sm font-semibold"><X className="h-4 w-4" /> Cancel</button>
+          </div>
         </div>
       );
     }
     return content;
   };
 
-  // Render subsection questions
+  // Render subsection questions with proper serial numbering
   const renderSubsection = (sub: PaperSubsection) => {
     const cm = colorMode;
     switch (sub.type) {
       case "multiple_choice":
-        return sub.questions.map((q) => {
+        return sub.questions.map((q, qi) => {
+          const sn = qi + 1;
           const isDeselected = q.selected === false;
           return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-5 relative ${isDeselected ? "opacity-30" : ""}`}>
+            <div key={q.id} className={`mb-6 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
               {renderQuestionControls(q)}
-              <p className={`font-medium text-sm leading-relaxed pr-16 ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-blue-600" : "text-gray-600"}`}>{q.id}.</span>
+              <p className={`font-medium text-base leading-relaxed ${cm ? "text-gray-800" : "text-gray-700"}`}>
+                <span className={`font-bold mr-2 ${cm ? "text-blue-600" : "text-gray-600"}`}>{sn}.</span>
                 {q.question}
                 <span className={`text-xs ml-2 ${cm ? "text-blue-400" : "text-gray-400"}`}>[{q.marks || 1}M]</span>
               </p>
-              <div className="grid grid-cols-2 gap-2 ml-6 mt-2">
+              <div className="grid grid-cols-2 gap-3 ml-7 mt-3">
                 {q.options?.map((opt, oi) => (
                   <label key={oi} className="flex items-start gap-2">
-                    <div className={`w-5 h-5 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center text-xs font-bold ${
+                    <div className={`w-6 h-6 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center text-xs font-bold ${
                       cm ? ["border-red-400 bg-red-50 text-red-600", "border-blue-400 bg-blue-50 text-blue-600", "border-green-400 bg-green-50 text-green-600", "border-purple-400 bg-purple-50 text-purple-600"][oi] || "border-gray-400" : "border-gray-400"
                     }`}>
                       {String.fromCharCode(65 + oi)}
                     </div>
-                    <span className="text-sm text-gray-700">{opt.replace(/^[a-d]\)\s*/, "")}</span>
+                    <span className="text-base text-gray-700">{opt.replace(/^[a-d]\)\s*/, "")}</span>
                   </label>
                 ))}
               </div>
@@ -524,15 +528,16 @@ export default function QuestionPaper() {
         });
 
       case "fill_in_blanks":
-        return sub.questions.map((q) => {
+        return sub.questions.map((q, qi) => {
+          const sn = qi + 1;
           const isDeselected = q.selected === false;
           return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-4 relative ${isDeselected ? "opacity-30" : ""}`}>
+            <div key={q.id} className={`mb-5 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
               {renderQuestionControls(q)}
-              <p className={`font-medium text-sm leading-[2.4] pr-16 ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-emerald-600" : "text-gray-600"}`}>{q.id}.</span>
+              <p className={`font-medium text-base leading-[2.4] ${cm ? "text-gray-800" : "text-gray-700"}`}>
+                <span className={`font-bold mr-2 ${cm ? "text-emerald-600" : "text-gray-600"}`}>{sn}.</span>
                 <span dangerouslySetInnerHTML={{
-                  __html: (q.question || "").replace(/_{2,}|\[_+\]/g, `<span class="inline-block border-b-2 ${cm ? "border-emerald-400" : "border-gray-500"} min-w-[120px] mx-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`)
+                  __html: (q.question || "").replace(/_{2,}|\[_+\]/g, `<span class="inline-block border-b-2 ${cm ? "border-emerald-400" : "border-gray-500"} min-w-[140px] mx-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`)
                 }} />
                 <span className={`text-xs ml-2 ${cm ? "text-emerald-400" : "text-gray-400"}`}>[{q.marks || 1}M]</span>
               </p>
@@ -541,13 +546,14 @@ export default function QuestionPaper() {
         });
 
       case "true_false":
-        return sub.questions.map((q) => {
+        return sub.questions.map((q, qi) => {
+          const sn = qi + 1;
           const isDeselected = q.selected === false;
           return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-4 relative ${isDeselected ? "opacity-30" : ""}`}>
+            <div key={q.id} className={`mb-5 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
               {renderQuestionControls(q)}
-              <p className={`font-medium text-sm leading-relaxed pr-16 ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-purple-600" : "text-gray-600"}`}>{q.id}.</span>
+              <p className={`font-medium text-base leading-relaxed ${cm ? "text-gray-800" : "text-gray-700"}`}>
+                <span className={`font-bold mr-2 ${cm ? "text-purple-600" : "text-gray-600"}`}>{sn}.</span>
                 {q.question}
                 <span className={`ml-3 font-semibold ${cm ? "text-purple-500" : "text-gray-500"}`}>( True / False )</span>
                 <span className={`text-xs ml-2 ${cm ? "text-purple-400" : "text-gray-400"}`}>[{q.marks || 1}M]</span>
@@ -557,31 +563,32 @@ export default function QuestionPaper() {
         });
 
       case "match_following":
-        return sub.questions.map((q) => {
+        return sub.questions.map((q, qi) => {
+          const sn = qi + 1;
           const isDeselected = q.selected === false;
           return (
-            <div key={q.id} className={`mb-6 relative ${isDeselected ? "opacity-30" : ""}`}>
+            <div key={q.id} className={`mb-7 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
               {renderQuestionControls(q)}
-              <p className={`text-xs mb-2 ${cm ? "text-orange-400" : "text-gray-400"}`}>[{q.marks || 3}M]</p>
+              <p className={`text-sm font-semibold mb-2 ${cm ? "text-orange-500" : "text-gray-500"}`}>{sn}. Match the Following <span className="text-xs font-normal">[{q.marks || 3}M]</span></p>
               <div className={`w-full border-2 rounded-xl overflow-hidden ${cm ? "border-orange-300" : "border-gray-300"}`}>
                 <div className="grid grid-cols-2">
-                  <div className={`border-r-2 px-4 py-2 ${cm ? "bg-orange-100 border-orange-300" : "bg-gray-100 border-gray-300"}`}>
-                    <p className={`font-bold text-xs uppercase tracking-widest text-center ${cm ? "text-orange-700" : "text-gray-700"}`}>Column A</p>
+                  <div className={`border-r-2 px-4 py-2.5 ${cm ? "bg-orange-100 border-orange-300" : "bg-gray-100 border-gray-300"}`}>
+                    <p className={`font-bold text-sm uppercase tracking-widest text-center ${cm ? "text-orange-700" : "text-gray-700"}`}>Column A</p>
                   </div>
-                  <div className={`px-4 py-2 ${cm ? "bg-teal-100" : "bg-gray-100"}`}>
-                    <p className={`font-bold text-xs uppercase tracking-widest text-center ${cm ? "text-teal-700" : "text-gray-700"}`}>Column B</p>
+                  <div className={`px-4 py-2.5 ${cm ? "bg-teal-100" : "bg-gray-100"}`}>
+                    <p className={`font-bold text-sm uppercase tracking-widest text-center ${cm ? "text-teal-700" : "text-gray-700"}`}>Column B</p>
                   </div>
                 </div>
                 {(q.left || []).map((item, i) => (
                   <div key={i} className={`grid grid-cols-2 border-t-2 ${cm ? "border-orange-200" : "border-gray-200"} ${i % 2 === 0 ? "bg-white" : cm ? "bg-orange-50/30" : "bg-gray-50"}`}>
-                    <div className={`flex items-center gap-2 border-r-2 px-4 py-2.5 ${cm ? "border-orange-300" : "border-gray-300"}`}>
-                      <span className={`font-bold w-5 shrink-0 text-sm ${cm ? "text-orange-600" : "text-gray-600"}`}>{i + 1}.</span>
-                      <span className="text-sm text-gray-800">{item}</span>
-                      <div className={`ml-auto w-8 h-5 border-b-2 border-dashed ${cm ? "border-orange-400" : "border-gray-400"}`} />
+                    <div className={`flex items-center gap-2 border-r-2 px-4 py-3 ${cm ? "border-orange-300" : "border-gray-300"}`}>
+                      <span className={`font-bold w-5 shrink-0 text-base ${cm ? "text-orange-600" : "text-gray-600"}`}>{i + 1}.</span>
+                      <span className="text-base text-gray-800">{item}</span>
+                      <div className={`ml-auto w-10 h-5 border-b-2 border-dashed ${cm ? "border-orange-400" : "border-gray-400"}`} />
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2.5">
-                      <span className={`font-bold w-5 shrink-0 text-sm ${cm ? "text-teal-600" : "text-gray-600"}`}>{String.fromCharCode(97 + i)}.</span>
-                      <span className="text-sm text-gray-800">{q.right?.[i]}</span>
+                    <div className="flex items-center gap-2 px-4 py-3">
+                      <span className={`font-bold w-5 shrink-0 text-base ${cm ? "text-teal-600" : "text-gray-600"}`}>{String.fromCharCode(97 + i)}.</span>
+                      <span className="text-base text-gray-800">{q.right?.[i]}</span>
                     </div>
                   </div>
                 ))}
@@ -591,17 +598,19 @@ export default function QuestionPaper() {
         });
 
       case "short_answer":
-        return sub.questions.map((q) => {
+        return sub.questions.map((q, qi) => {
+          const sn = qi + 1;
           const isDeselected = q.selected === false;
           return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-5 relative ${isDeselected ? "opacity-30" : ""}`}>
+            <div key={q.id} className={`mb-6 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
               {renderQuestionControls(q)}
-              <p className={`font-medium text-sm leading-relaxed pr-16 ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-cyan-600" : "text-gray-600"}`}>{q.id}.</span>
+              <p className={`font-medium text-base leading-relaxed ${cm ? "text-gray-800" : "text-gray-700"}`}>
+                <span className={`font-bold mr-2 ${cm ? "text-cyan-600" : "text-gray-600"}`}>{sn}.</span>
                 {q.question}
                 <span className={`text-xs ml-2 ${cm ? "text-cyan-400" : "text-gray-400"}`}>[{q.marks || 2}M]</span>
               </p>
-              <div className="ml-6 mt-2 space-y-3">
+              <div className="ml-7 mt-3 space-y-4">
+                <div className={`border-b ${cm ? "border-cyan-200" : "border-gray-300"}`} />
                 <div className={`border-b ${cm ? "border-cyan-200" : "border-gray-300"}`} />
                 <div className={`border-b ${cm ? "border-cyan-200" : "border-gray-300"}`} />
               </div>
@@ -610,18 +619,19 @@ export default function QuestionPaper() {
         });
 
       case "long_answer":
-        return sub.questions.map((q) => {
+        return sub.questions.map((q, qi) => {
+          const sn = qi + 1;
           const isDeselected = q.selected === false;
           return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-6 relative ${isDeselected ? "opacity-30" : ""}`}>
+            <div key={q.id} className={`mb-7 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
               {renderQuestionControls(q)}
-              <p className={`font-medium text-sm leading-relaxed pr-16 ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-rose-600" : "text-gray-600"}`}>{q.id}.</span>
+              <p className={`font-medium text-base leading-relaxed ${cm ? "text-gray-800" : "text-gray-700"}`}>
+                <span className={`font-bold mr-2 ${cm ? "text-rose-600" : "text-gray-600"}`}>{sn}.</span>
                 {q.question}
                 <span className={`text-xs ml-2 ${cm ? "text-rose-400" : "text-gray-400"}`}>[{q.marks || 5}M]</span>
               </p>
-              <div className="ml-6 mt-2 space-y-3">
-                {[...Array(5)].map((_, i) => (
+              <div className="ml-7 mt-3 space-y-4">
+                {[...Array(6)].map((_, i) => (
                   <div key={i} className={`border-b ${cm ? "border-rose-200" : "border-gray-300"}`} />
                 ))}
               </div>
@@ -630,17 +640,18 @@ export default function QuestionPaper() {
         });
 
       case "diagram":
-        return sub.questions.map((q) => {
+        return sub.questions.map((q, qi) => {
+          const sn = qi + 1;
           const isDeselected = q.selected === false;
           return (
-            <div key={q.id} className={`mb-6 relative ${isDeselected ? "opacity-30" : ""}`}>
+            <div key={q.id} className={`mb-7 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
               {renderQuestionControls(q)}
-              <p className={`font-medium text-sm leading-relaxed mb-3 pr-16 ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-amber-600" : "text-gray-600"}`}>{q.id}.</span>
+              <p className={`font-medium text-base leading-relaxed mb-3 ${cm ? "text-gray-800" : "text-gray-700"}`}>
+                <span className={`font-bold mr-2 ${cm ? "text-amber-600" : "text-gray-600"}`}>{sn}.</span>
                 {q.question}
                 <span className={`text-xs ml-2 ${cm ? "text-amber-400" : "text-gray-400"}`}>[{q.marks || 5}M]</span>
               </p>
-              <div className="ml-4">
+              <div className="ml-5">
                 <DiagramSVG type={q.diagramType} labels={q.diagramLabels} colorMode={colorMode} />
               </div>
             </div>
@@ -648,13 +659,14 @@ export default function QuestionPaper() {
         });
 
       default:
-        return sub.questions.map((q) => {
+        return sub.questions.map((q, qi) => {
+          const sn = qi + 1;
           const isDeselected = q.selected === false;
           return renderEditableQuestion(q,
-            <div key={q.id} className={`mb-5 relative ${isDeselected ? "opacity-30" : ""}`}>
+            <div key={q.id} className={`mb-6 relative pr-20 ${isDeselected ? "opacity-30" : ""}`}>
               {renderQuestionControls(q)}
-              <p className={`font-medium text-sm pr-16 ${cm ? "text-gray-800" : "text-gray-700"}`}>
-                <span className={`font-bold mr-2 ${cm ? "text-indigo-600" : "text-gray-600"}`}>{q.id}.</span>
+              <p className={`font-medium text-base ${cm ? "text-gray-800" : "text-gray-700"}`}>
+                <span className={`font-bold mr-2 ${cm ? "text-indigo-600" : "text-gray-600"}`}>{sn}.</span>
                 {q.question}
                 <span className={`text-xs ml-2 ${cm ? "text-indigo-400" : "text-gray-400"}`}>[{q.marks || 2}M]</span>
               </p>
@@ -964,15 +976,15 @@ export default function QuestionPaper() {
                     : "border-gray-400";
                   return (
                     <div key={sIdx} className={`border-l-4 ${sectionColors} pl-4`}>
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-extrabold text-gray-900 text-base" style={{ fontFamily: "'Baloo 2', sans-serif" }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-extrabold text-gray-900 text-lg" style={{ fontFamily: "'Baloo 2', sans-serif" }}>
                           {section.heading}
                         </h3>
-                        <span className={`text-xs font-bold px-2 py-1 rounded ${colorMode ? (isMerryBirds ? "text-pink-600 bg-pink-50" : "text-indigo-600 bg-indigo-50") : "text-gray-600 bg-gray-100"}`}>
+                        <span className={`text-xs font-bold px-3 py-1.5 rounded-lg ${colorMode ? (isMerryBirds ? "text-pink-600 bg-pink-50" : "text-indigo-600 bg-indigo-50") : "text-gray-600 bg-gray-100"}`}>
                           {section.totalMarks} Marks
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500 mb-4 italic">{section.instructions}</p>
+                      <p className="text-sm text-gray-500 mb-5 italic">{section.instructions}</p>
 
                       {section.subsections?.map((sub, subIdx) => (
                         <div key={subIdx} className="mb-6">
