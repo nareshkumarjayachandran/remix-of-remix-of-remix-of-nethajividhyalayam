@@ -711,9 +711,19 @@ export default function QuestionPaper() {
       <OfflineBanner isOnline={isOnline} appName="Question Paper Creator" offlineCapabilities="Generation needs internet" />
 
       <style>{`
-        @media print {
-          /* Hide everything except paper */
-          .no-print, header, footer, nav, .no-print *, [class*="PWA"], [class*="Offline"] { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
+         @media print {
+          /* HIDE EVERYTHING first, then show only paper */
+          body * { visibility: hidden !important; }
+          .paper-card, .paper-card * { visibility: visible !important; }
+          .paper-card { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
+          /* Aggressively hide all non-content elements */
+          .no-print, header, footer, nav, [class*="PWA"], [class*="Offline"],
+          [class*="ChatWidget"], [class*="SocialSidebar"], [class*="fixed"],
+          .no-print *, header *, footer *, nav * {
+            display: none !important; visibility: hidden !important; height: 0 !important;
+            overflow: hidden !important; margin: 0 !important; padding: 0 !important;
+            position: absolute !important; left: -9999px !important;
+          }
           html, body { background: white !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           * { box-shadow: none !important; }
           .min-h-screen { min-height: auto !important; background: white !important; padding: 0 !important; }
@@ -721,23 +731,15 @@ export default function QuestionPaper() {
           .paper-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
           @page { margin: 1.2cm 1.5cm; size: A4 portrait; }
           img { max-height: 70px !important; max-width: 70px !important; }
-          /* Force black readable text */
           .paper-card, .paper-card * { color: #111 !important; }
           .paper-card h2, .paper-card h3 { color: #000 !important; }
-          /* Header bar — white bg with dark text */
           .bg-gradient-to-r { background: white !important; border-bottom: 3px solid #1a3a5c !important; }
           .bg-gradient-to-r * { color: #1a3a5c !important; }
-          /* Badges */
-          .bg-white\\/20, [class*="bg-white/20"] { background: transparent !important; border: 1px solid #1a3a5c !important; color: #1a3a5c !important; }
-          /* Strip backgrounds */
           .bg-sky-50, .bg-amber-50, .bg-green-50, .bg-gray-50, .bg-indigo-50, .bg-purple-50 { background: white !important; }
-          /* Section icons hide */
-          .paper-card svg { display: none !important; }
+          .paper-card svg { display: none !important; visibility: hidden !important; }
           .paper-card .px-8 { padding-left: 16px !important; padding-right: 16px !important; }
-          /* Prevent breaks inside questions */
           .mb-6, .mb-7 { page-break-inside: avoid; }
           .border-l-4 { page-break-inside: avoid; }
-          .paper-card > div:last-child { page-break-after: avoid; }
           .paper-card .border-t { border-top: 1px solid #ccc !important; padding: 8px 16px !important; }
         }
         .tamil-font, .tamil-font * { font-family: 'Noto Sans Tamil', 'Noto Serif Tamil', 'Baloo 2', sans-serif !important; }
