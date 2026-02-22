@@ -224,15 +224,15 @@ CRITICAL RULES:
       return await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model, messages: messagePayload, stream: false, temperature, max_tokens: 4000 }),
+        body: JSON.stringify({ model, messages: messagePayload, stream: false, temperature, max_tokens: 8000 }),
       });
     };
 
     const callLovable = async (): Promise<Response> => {
-      return await fetch("https://api.lovable.app/v1/chat/completions", {
+      return await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: messagePayload, stream: false, temperature, max_tokens: 4000 }),
+        body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: messagePayload, stream: false, temperature, max_tokens: 8000 }),
       });
     };
 
