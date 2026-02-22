@@ -812,7 +812,7 @@ export default function WorksheetMaker() {
           return `<p style="margin:8px 0"><b>${q.id}.</b> ${(q.question || "").replace(/_{2,}|\[_+\]/g, "___________________________")}</p>`;
         }
         if (section.type === "multiple_choice") {
-          const opts = (q.options || []).map((o, i) => `&nbsp;&nbsp;${String.fromCharCode(65+i)}) ${o}`).join("<br/>");
+          const opts = (q.options || []).map((o, i) => `&nbsp;&nbsp;${String.fromCharCode(65+i)}) ${o.replace(/^[a-dA-D]\)\s*/, "")}`).join("<br/>");
           return `<p style="margin:8px 0"><b>${q.id}.</b> ${q.question}</p><p style="margin-left:20px">${opts}</p>`;
         }
         if (section.type === "match_following") {
@@ -948,7 +948,7 @@ export default function WorksheetMaker() {
               {q.options?.map((opt, oi) => (
                 <label key={oi} className="flex items-start gap-2.5">
                   <div className="w-5 h-5 border-2 border-gray-400 rounded-sm shrink-0 mt-0.5 print:border-black" />
-                  <span className={`${gradeFontSize} text-gray-700 print:text-black tamil-font`}>{String.fromCharCode(65 + oi)}) {opt}</span>
+                  <span className={`${gradeFontSize} text-gray-700 print:text-black tamil-font`}>{String.fromCharCode(65 + oi)}) {opt.replace(/^[a-dA-D]\)\s*/, "")}</span>
                 </label>
               ))}
             </div>
