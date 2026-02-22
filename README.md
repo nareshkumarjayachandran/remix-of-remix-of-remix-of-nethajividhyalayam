@@ -34,7 +34,23 @@ npm i
 
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
+
+# Step 5: Build for production (generates the dist/ folder with all assets).
+npm run build
+
+# Step 6: Preview the production build locally.
+npm run preview
 ```
+
+### Deploying to Hostinger / Any Static Host
+
+After running `npm run build`, upload the entire contents of the **`dist/`** folder to your hosting provider's `public_html` directory. The build includes:
+
+- ✅ Minified JS/CSS bundles
+- ✅ PWA service worker & manifest
+- ✅ All static assets (images, fonts, videos)
+- ✅ Pre-configured `.htaccess` for SPA routing
+- ✅ Offline fallback page
 
 **Edit a file directly in GitHub**
 
