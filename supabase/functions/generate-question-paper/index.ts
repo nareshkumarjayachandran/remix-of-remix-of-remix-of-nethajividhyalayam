@@ -34,7 +34,7 @@ serve(async (req) => {
         : language === "Hindi"
         ? "Write ALL content ONLY in Hindi script (हिंदी). ZERO English words allowed."
         : language === "Bilingual"
-        ? `FULLY BILINGUAL (${biLang1} + ${biLang2}): Write EVERY question, answer, option in BOTH languages separated by " / ". DO NOT use language labels like "English:", "தமிழ்:", "हिंदी:" anywhere. Use a forward slash / as the separator. Example: "The cat is a pet animal. / பூனை ஒரு வளர்ப்பு விலங்கு." For MCQ options: "a) option / translated option". TRANSLATION QUALITY: Produce elegant, natural, literary-quality translations — NOT robotic word-by-word. Use proper grammar, idioms, and culturally appropriate phrasing. The translation should read as if originally written by a native ${biLang2} speaker — beautiful, stylish, and grammatically perfect.`
+        ? `FULLY BILINGUAL (${biLang1} + ${biLang2}): STRUCTURE: Write the COMPLETE ${biLang1} text FIRST, then " / ", then the COMPLETE ${biLang2} translation. LEFT of "/" is ALWAYS ${biLang1}. RIGHT of "/" is ALWAYS ${biLang2}. CORRECT: "The sun rises in the east. / சூரியன் கிழக்கில் உதிக்கிறது." WRONG: "நண்பன் / நண்பன் வந்தான்" — both sides are ${biLang2}! LEFT must be ${biLang1}. For MCQ options: "a) option / translated option". TRANSLATION QUALITY: Elegant, literary-quality ${biLang2} as a native speaker — beautiful grammar, culturally rich, NOT robotic. No labels like "English:" or "தமிழ்:".`
         : "Write ALL content ONLY in clear English. No Tamil script.";
 
     const marksConfig: Record<string, { partA: number; partB: number; partC: number; partD: number }> = {
