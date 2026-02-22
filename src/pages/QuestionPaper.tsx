@@ -98,6 +98,15 @@ const QUESTION_PATTERNS = [
   { id: "custom", label: "Custom", emoji: "⚙️", desc: "Your own pattern" },
 ];
 
+const HINDI_SYLLABUS_OPTIONS = [
+  { id: "none", label: "Regular Hindi", emoji: "📖", desc: "Standard school Hindi" },
+  { id: "parichay", label: "Parichay (परिचय)", emoji: "🔤", desc: "Hindi Prachar Sabha - Beginner" },
+  { id: "prathama", label: "Prathama (प्रथमा)", emoji: "📗", desc: "Hindi Prachar Sabha - Elementary" },
+  { id: "madhyama", label: "Madhyama (मध्यमा)", emoji: "📘", desc: "Hindi Prachar Sabha - Intermediate" },
+  { id: "rashtrabhasha", label: "Rashtrabhasha (राष्ट्रभाषा)", emoji: "📕", desc: "Hindi Prachar Sabha - Advanced" },
+  { id: "praveshika", label: "Praveshika (प्रवेशिका)", emoji: "📙", desc: "Hindi Prachar Sabha - Pre-degree" },
+];
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 // ─── Diagram SVG Components ──────────────────────────────────────────────
@@ -291,6 +300,7 @@ export default function QuestionPaper() {
     curriculum: "Samacheer Kalvi",
     questionPattern: "state_board",
     questionTypes: ["multiple_choice", "fill_in_blanks", "true_false", "match_following", "short_answer", "long_answer", "diagram"],
+    hindiSyllabus: "none",
   });
 
   // Auto-set default pattern when curriculum changes
@@ -965,6 +975,27 @@ export default function QuestionPaper() {
                 ))}
               </div>
             </div>
+
+            {/* Hindi Prachar Sabha Syllabus - only when Hindi is selected */}
+            {form.subject === "Hindi" && (
+            <div className="md:col-span-2">
+              <Label className="text-sm font-bold text-gray-700 mb-2 block">🇮🇳 Hindi Syllabus <span className="text-gray-400 font-normal">(Hindi Prachar Sabha)</span></Label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {HINDI_SYLLABUS_OPTIONS.map((hs) => (
+                  <button key={hs.id} onClick={() => setForm({ ...form, hindiSyllabus: hs.id })}
+                    className={`flex flex-col items-center gap-1 px-3 py-3 rounded-xl border-2 transition-all ${
+                      form.hindiSyllabus === hs.id
+                        ? isMerryBirds ? "border-pink-500 bg-pink-50 shadow-sm" : "border-orange-500 bg-orange-50 shadow-sm"
+                        : "border-gray-200 bg-gray-50 hover:border-gray-300"
+                    }`}>
+                    <span className="text-xl">{hs.emoji}</span>
+                    <span className={`text-sm font-bold ${form.hindiSyllabus === hs.id ? (isMerryBirds ? "text-pink-700" : "text-orange-700") : "text-gray-600"}`}>{hs.label}</span>
+                    <span className="text-xs text-gray-400">{hs.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            )}
 
             {/* Topics */}
             <div className="md:col-span-2">

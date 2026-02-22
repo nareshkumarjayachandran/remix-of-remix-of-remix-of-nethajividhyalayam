@@ -16,6 +16,7 @@ serve(async (req) => {
       curriculum = "Samacheer Kalvi",
       questionPattern = "state_board",
       questionTypes = ["multiple_choice", "fill_in_blanks", "true_false", "match_following", "short_answer", "long_answer", "diagram"],
+      hindiSyllabus = "none",
     } = await req.json();
 
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
@@ -130,6 +131,7 @@ ${isMerryBirds ? `- For Oxford Merry Birds: phonics-based questions, picture ide
 - For Science: concepts, experiments, diagrams (plant, body, solar system, water cycle)
 - For Social Studies: maps (India/world), timelines, civics, geography
 - For Hindi: basic vocabulary, simple sentences, matching
+${subject.toLowerCase() === "hindi" && hindiSyllabus !== "none" ? `- IMPORTANT: Follow Hindi Prachar Sabha "${hindiSyllabus}" level syllabus strictly. Include questions from Hindi Prachar Sabha textbooks for ${hindiSyllabus} level - grammar (व्याकरण), comprehension (गद्यांश), letter writing (पत्र लेखन), essay (निबंध), translation (अनुवाद), and vocabulary as per the ${hindiSyllabus} curriculum.` : ""}
 - For GK: current affairs, national symbols, famous personalities, sports`}
 
 Your papers are print-ready, professionally formatted, and include complete answer keys with all options explained.`;
@@ -148,6 +150,7 @@ Total Marks: ${total}
 Time: ${examType === "Midterm" ? "1½ Hours" : examType === "Quarterly" ? "2 Hours" : "2½ Hours"}
 Language: ${language} — ${langInstruction}
 Topics to cover: ${topics || "All topics from " + term}
+${subject.toLowerCase() === "hindi" && hindiSyllabus !== "none" ? `Hindi Syllabus: Hindi Prachar Sabha - ${hindiSyllabus} level` : ""}
 Variation seed: ${variationSeed}
 
 ${selectedTypesInstruction}
