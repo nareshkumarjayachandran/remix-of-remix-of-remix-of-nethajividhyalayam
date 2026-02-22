@@ -17,17 +17,24 @@ serve(async (req) => {
       questionPattern = "state_board",
       questionTypes = ["multiple_choice", "fill_in_blanks", "true_false", "match_following", "short_answer", "long_answer", "diagram"],
       hindiSyllabus = "none",
+      bilingualPair = "English+Tamil",
     } = await req.json();
 
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
     if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY is not configured");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
+    // Parse bilingual pair languages
+    const [biLang1, biLang2] = (bilingualPair || "English+Tamil").split("+");
+    const biLangLabel2 = biLang2 === "Tamil" ? "தமிழ்" : biLang2 === "Hindi" ? "हिंदी" : "English";
+
     const langInstruction =
       language === "Tamil"
         ? "Write ALL content ONLY in Tamil script (தமிழ் மட்டுமே). ZERO English words allowed."
+        : language === "Hindi"
+        ? "Write ALL content ONLY in Hindi script (हिंदी). ZERO English words allowed."
         : language === "Bilingual"
-        ? "Write every question in English first, then Tamil translation in parentheses."
+        ? `Write every question in ${biLang1} first, then ${biLang2} translation in parentheses.`
         : "Write ALL content ONLY in clear English. No Tamil script.";
 
     const marksConfig: Record<string, { partA: number; partB: number; partC: number; partD: number }> = {

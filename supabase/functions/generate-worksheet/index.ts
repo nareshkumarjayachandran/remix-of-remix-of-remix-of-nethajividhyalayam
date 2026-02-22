@@ -32,7 +32,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { curriculum, term, grade, subject, topic, numQuestions, language, difficulty, questionTypes, setNumber = 1, randomSeed = Math.random(), hindiSyllabus = "none" } = await req.json();
+    const { curriculum, term, grade, subject, topic, numQuestions, language, difficulty, questionTypes, setNumber = 1, randomSeed = Math.random(), hindiSyllabus = "none", bilingualPair = "English+Tamil" } = await req.json();
     const isMerryBirds = curriculum === "Oxford Merry Birds (Integrated Term Course)";
 
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
@@ -40,11 +40,18 @@ serve(async (req) => {
 
     const hasDiagram = needsDiagram(topic);
 
+    // Parse bilingual pair languages
+    const [biLang1, biLang2] = (bilingualPair || "English+Tamil").split("+");
+    const biLangLabel1 = biLang1 === "Tamil" ? "தமிழ்" : biLang1 === "Hindi" ? "हिंदी" : "English";
+    const biLangLabel2 = biLang2 === "Tamil" ? "தமிழ்" : biLang2 === "Hindi" ? "हिंदी" : "English";
+
     const langInstruction =
       language === "Tamil"
         ? "STRICTLY write ALL content — every question, every answer, every option, every heading, every instruction — ONLY in Tamil script (தமிழ் மட்டுமே). ZERO English words allowed anywhere. Not even a single English letter. Every single word must be in pure Tamil script."
+        : language === "Hindi"
+        ? "STRICTLY write ALL content — every question, every answer, every option, every heading, every instruction — ONLY in Hindi script (हिंदी). ZERO English words allowed anywhere."
         : language === "Bilingual"
-        ? "Write EVERY question in English first, then its Tamil translation immediately after in parentheses. Format: 'English question (தமிழ் மொழிபெயர்ப்பு)'. ALL section headings must be bilingual: 'English Heading (தமிழ் தலைப்பு)'. Both languages must always appear together for every piece of content."
+        ? `Write EVERY question in ${biLang1} first, then its ${biLang2} translation immediately after in parentheses. Format: '${biLang1} question (${biLangLabel2} translation)'. ALL section headings must be bilingual: '${biLang1} Heading (${biLangLabel2} Heading)'. Both languages must always appear together for every piece of content.`
         : "Write ALL content ONLY in clear, simple English appropriate for the grade level. Do NOT include any Tamil script or Tamil words anywhere. Pure English only.";
 
     const difficultyGuide =
