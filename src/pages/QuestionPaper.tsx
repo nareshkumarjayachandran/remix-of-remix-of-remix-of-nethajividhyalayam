@@ -712,14 +712,19 @@ export default function QuestionPaper() {
 
       <style>{`
         @media print {
-          .no-print { display: none !important; }
-          body { background: white !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .paper-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; }
-          .min-h-screen { min-height: auto !important; background: white !important; }
-          .max-w-4xl { max-width: 100% !important; padding: 0 !important; }
+          .no-print, header, footer, nav, .no-print * { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; }
+          html, body { background: white !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          * { box-shadow: none !important; }
+          .min-h-screen { min-height: auto !important; background: white !important; padding: 0 !important; }
+          .max-w-4xl { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+          .paper-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; margin: 0 !important; }
           @page { margin: 1.2cm 1.5cm; size: A4 portrait; }
-          img { max-height: 80px !important; max-width: 80px !important; }
+          img { max-height: 70px !important; max-width: 70px !important; }
           .bg-gradient-to-r { background: #1a3a5c !important; -webkit-print-color-adjust: exact; }
+          .paper-card .px-8 { padding-left: 16px !important; padding-right: 16px !important; }
+          .mb-6, .mb-7 { page-break-inside: avoid; }
+          .border-l-4 { page-break-inside: avoid; }
+          .paper-card > div:last-child { page-break-after: avoid; }
         }
         .tamil-font, .tamil-font * { font-family: 'Noto Sans Tamil', 'Noto Serif Tamil', 'Baloo 2', sans-serif !important; }
       `}</style>
