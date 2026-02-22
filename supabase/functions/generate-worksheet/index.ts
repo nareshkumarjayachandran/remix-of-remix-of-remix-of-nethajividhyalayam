@@ -218,14 +218,14 @@ Return ONLY valid JSON (no markdown, no code blocks, no explanations — just ra
       "type": "multiple_choice",
       "heading": "${language === "Tamil" ? "பிரிவு B: சரியான விடையைத் தேர்க" : language === "Bilingual" ? "Section B: Choose the Correct Answer (சரியான விடையைத் தேர்க)" : "Section B: Choose the Correct Answer"}",
       "questions": [
-        { "id": 5, "question": "question text", "options": ["a) option1", "b) option2", "c) option3", "d) option4"], "answer": "a) option1" }
+        { "id": 5, "question": "${language === "Bilingual" ? "What gives us light? / நமக்கு ஒளி தருவது எது?" : "question text"}", "options": ["${language === "Bilingual" ? "Sun / சூரியன்" : "option1"}", "${language === "Bilingual" ? "Moon / நிலா" : "option2"}", "${language === "Bilingual" ? "Star / நட்சத்திரம்" : "option3"}", "${language === "Bilingual" ? "Cloud / மேகம்" : "option4"}"], "answer": "${language === "Bilingual" ? "Sun / சூரியன்" : "option1"}" }
       ]
     },
     {
       "type": "match_following",
       "heading": "${language === "Tamil" ? "பிரிவு C: பொருத்துக" : language === "Bilingual" ? "Section C: Match the Following (பொருத்துக)" : "Section C: Match the Following"}",
       "questions": [
-        { "id": 8, "left": ["item1", "item2", "item3", "item4"], "right": ["match_a", "match_b", "match_c", "match_d"], "answers": ["match_b", "match_d", "match_a", "match_c"] }
+        { "id": 8, "left": ["${language === "Bilingual" ? "Cat / பூனை" : "item1"}", "${language === "Bilingual" ? "Dog / நாய்" : "item2"}", "${language === "Bilingual" ? "Fish / மீன்" : "item3"}", "${language === "Bilingual" ? "Bird / பறவை" : "item4"}"], "right": ["${language === "Bilingual" ? "Swims / நீந்துகிறது" : "match_a"}", "${language === "Bilingual" ? "Flies / பறக்கிறது" : "match_b"}", "${language === "Bilingual" ? "Barks / குரைக்கிறது" : "match_c"}", "${language === "Bilingual" ? "Purrs / சத்தமிடுகிறது" : "match_d"}"], "answers": ["${language === "Bilingual" ? "Purrs / சத்தமிடுகிறது" : "match_b"}", "${language === "Bilingual" ? "Barks / குரைக்கிறது" : "match_d"}", "${language === "Bilingual" ? "Swims / நீந்துகிறது" : "match_a"}", "${language === "Bilingual" ? "Flies / பறக்கிறது" : "match_c"}"] }
       ]
     },
     {
@@ -255,10 +255,12 @@ ${language === "Tamil"
    ? `   ⚠️ FULLY BILINGUAL — ABSOLUTE RULES:
 1. Every "question" field: "${biLang1} complete sentence / ${biLang2} complete translation". The LEFT side of " / " is ALWAYS ${biLang1}. The RIGHT side is ALWAYS ${biLang2}. NEVER put ${biLang2} on BOTH sides.
 2. Every "answer" field: "${biLang1} answer / ${biLang2} answer".
-3. Every MCQ option: "a) ${biLang1} text / ${biLang2} text".
-4. NO language labels. NO mixing languages within one side.
-5. WRONG: "நண்பன் / நண்பன் வந்தான்" — both sides are Tamil! Must be "My friend came / நண்பன் வந்தான்".
-6. TRANSLATION QUALITY: Elegant, literary-quality ${biLang2} written as a native speaker would — beautiful, grammatically perfect, culturally rich.`
+3. Every MCQ option: "${biLang1} text / ${biLang2} text" — DO NOT include a) b) c) d) prefixes, the system adds them automatically.
+4. Match items: each left and right item must be "${biLang1} word / ${biLang2} word".
+5. NO language labels. NO mixing languages within one side.
+6. WRONG: "நண்பன் / நண்பன் வந்தான்" — both sides are Tamil! Must be "My friend came / நண்பன் வந்தான்".
+7. WRONG: "a) /a/ sound / ஏ எழுத்து எப்படி ஒலிக்கும்?" — option must NOT start with "a)". Just write "/a/ sound / 'அ' ஒலி".
+8. TRANSLATION: Google Translate-level accuracy. Natural ${biLang2} grammar, NOT word-by-word.`
    : language === "Hindi"
    ? "   ⛔ HINDI ONLY: Every word must be in Hindi script. NO English anywhere."
    : "   ⛔ ENGLISH ONLY: Every single word must be in English. NO Tamil script anywhere in the output."
