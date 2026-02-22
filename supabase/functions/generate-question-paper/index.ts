@@ -256,7 +256,7 @@ Return ONLY valid JSON (no markdown, no code blocks):
           "type": "diagram",
           "heading": "VII. Draw and Label",
           "questions": [
-            { "id": 21, "question": "Draw a neat diagram of ... and label its parts", "answer": "Labels: ...", "diagramLabels": ["Part 1", "Part 2", "Part 3", "Part 4"], "diagramType": "plant|body|solar|water_cycle|map_india|map_world|geometry|custom", "marks": 5 }
+            { "id": 21, "question": "Draw a neat diagram of a plant and label its parts", "answer": "Labels: Flower, Leaf, Stem, Root", "diagramLabels": ["Flower", "Leaf", "Stem", "Root"], "diagramType": "plant", "marks": 5 }
           ]
         }
       ]
@@ -280,11 +280,12 @@ CRITICAL RULES:
 3. If a part has no selected types, OMIT it entirely from sections array
 4. ALL questions must be from ${subject} ${grade} ${term} ${curriculum} syllabus
 5. The answerKey must contain detailed answers for EVERY question with brief explanations
-6. For diagram questions: always include "diagramType" field and "diagramLabels" array
-7. For map questions: use diagramType "map_india" or "map_world" and include location descriptions
+6. For diagram questions: ALWAYS include "diagramType" with exactly ONE of these values: "plant", "body", "solar", "water_cycle", "map_india", "map_world", "geometry", "custom". Also include "diagramLabels" array with 4-6 string labels.
+7. For map questions: use diagramType "map_india" or "map_world" with place/feature names as diagramLabels
 8. Questions should progress from easy to challenging
 9. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Bilingual" ? "Both English and Tamil for every question" : "Pure English only"}
-10. Distribute marks proportionally among the included parts`;
+10. Distribute marks proportionally among the included parts
+11. The diagramType MUST be a single value like "plant" or "body", NEVER pipe-separated like "plant|body|solar"`;
 
     const messagePayload = [
       { role: "system", content: systemPrompt },
