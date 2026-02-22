@@ -211,7 +211,7 @@ Return ONLY valid JSON (no markdown, no code blocks, no explanations — just ra
       "type": "fill_in_blanks",
       "heading": "${language === "Tamil" ? "பிரிவு A: காலி இடங்களை நிரப்புக" : language === "Bilingual" ? "Section A: Fill in the Blanks (காலி இடங்களை நிரப்புக)" : "Section A: Fill in the Blanks"}",
       "questions": [
-        { "id": 1, "question": "sentence with _______ for the blank", "answer": "exact answer word" }
+        { "id": 1, "question": "${language === "Bilingual" ? `${biLang1}: sentence with _______ blank\\n${biLangLabel2}: translated sentence with _______ blank` : "sentence with _______ for the blank"}", "answer": "${language === "Bilingual" ? `${biLang1}: answer\\n${biLangLabel2}: translated answer` : "exact answer word"}" }
       ]
     },
     {
@@ -232,7 +232,7 @@ Return ONLY valid JSON (no markdown, no code blocks, no explanations — just ra
       "type": "short_answer",
       "heading": "${language === "Tamil" ? "பிரிவு D: சுருக்கமாக விடை எழுதுக" : language === "Bilingual" ? "Section D: Short Answer (சுருக்கமாக விடை எழுதுக)" : "Section D: Answer in One or Two Sentences"}",
       "questions": [
-        { "id": 10, "question": "question text", "answer": "model answer 1-2 sentences" }
+        { "id": 10, "question": "${language === "Bilingual" ? `${biLang1}: question text\\n${biLangLabel2}: translated question` : "question text"}", "answer": "${language === "Bilingual" ? `${biLang1}: model answer\\n${biLangLabel2}: translated answer` : "model answer 1-2 sentences"}" }
       ]
     },
     ${diagramSection}
@@ -240,7 +240,7 @@ Return ONLY valid JSON (no markdown, no code blocks, no explanations — just ra
       "type": "true_false",
       "heading": "${language === "Tamil" ? "பிரிவு: சரியா? தவறா?" : language === "Bilingual" ? "Section: True or False (சரியா? தவறா?)" : "Section: True or False"}",
       "questions": [
-        { "id": 12, "question": "statement to evaluate", "answer": "True" }
+        { "id": 12, "question": "${language === "Bilingual" ? `${biLang1}: statement\\n${biLangLabel2}: translated statement` : "statement to evaluate"}", "answer": "True" }
       ]
     }
   ]
@@ -252,8 +252,14 @@ CRITICAL RULES:
 ${language === "Tamil"
   ? "   ⛔ TAMIL ONLY: Every single word in the ENTIRE JSON output — questions, answers, options, headings, instructions — must be in Tamil script. NO English letters, NO English words, NO romanized Tamil. If you write even one English word, the worksheet is WRONG."
   : language === "Bilingual"
-  ? `   ⚠️ FULLY BILINGUAL: Every question AND every answer MUST be written completely in BOTH ${biLang1} and ${biLang2}. Full translation of questions, answers, options, instructions — not just a word or parenthetical hint. Both languages in full for ALL content.`
-  : "   ⛔ ENGLISH ONLY: Every single word must be in English. NO Tamil script anywhere in the output."
+   ? `   ⚠️ FULLY BILINGUAL — CRITICAL:
+Every "question" field MUST contain BOTH ${biLang1} AND ${biLang2} separated by newline. Format: "${biLang1}: full text\\n${biLangLabel2}: full translated text".
+Every "answer" field MUST also have BOTH languages in the same format.
+Every MCQ option MUST have both languages: "a) ${biLang1} text / ${biLangLabel2} text".
+NO question or answer should be in only ONE language.`
+   : language === "Hindi"
+   ? "   ⛔ HINDI ONLY: Every word must be in Hindi script. NO English anywhere."
+   : "   ⛔ ENGLISH ONLY: Every single word must be in English. NO Tamil script anywhere in the output."
 }
 ${curriculumRules}`;
 
