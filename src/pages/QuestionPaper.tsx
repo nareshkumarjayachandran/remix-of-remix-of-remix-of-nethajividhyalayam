@@ -474,16 +474,17 @@ export default function QuestionPaper() {
     const answerHtml = showAnswers && paper.answerKey ? `<div style="page-break-before:always"><h2 style="color:#166534">✅ Answer Key with Explanations</h2>${paper.answerKey.sections.map(s => `<h3>${s.partLabel}</h3>${s.answers.map(a => `<p><b>${a.id}.</b> ${a.answer}${a.explanation ? ` — <i>${a.explanation}</i>` : ""}</p>`).join("")}`).join("")}</div>` : "";
 
     const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>${paper.title}</title>
-    <style>body{font-family:'Noto Sans Tamil',Arial,sans-serif;font-size:13px;color:#111;margin:40px}h1{font-size:18px;text-align:center}h2{font-size:15px}table{border-collapse:collapse;width:100%}</style></head>
+    <xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml>
+    <style>@page{size:A4 portrait;margin:1.5cm 2cm}body{font-family:'Noto Sans Tamil',Arial,sans-serif;font-size:13px;color:#111;margin:0;padding:0}h1{font-size:18px;text-align:center}h2{font-size:15px}table{border-collapse:collapse;width:100%}</style></head>
     <body>
-    <div style="text-align:center">
-      <img src="${window.location.origin}/nethaji_logo_print.webp" alt="Logo" style="width:100px;height:100px" />
-      <h1>${paper.title}</h1>
-      <p style="font-size:14px;font-weight:bold">${paper.subtitle}</p>
-      <p>Term: ${paper.term} | Total Marks: ${paper.totalMarks} | Duration: ${paper.duration}</p>
+    <div style="text-align:center;margin-bottom:12px">
+      <img src="${window.location.origin}/nethaji_logo_print.webp" alt="Logo" style="width:70px;height:70px;object-fit:contain" />
+      <h1 style="margin:4px 0">${paper.title}</h1>
+      <p style="font-size:14px;font-weight:bold;margin:2px 0">${paper.subtitle}</p>
+      <p style="font-size:12px;margin:2px 0">Term: ${paper.term} | Total Marks: ${paper.totalMarks} | Duration: ${paper.duration}</p>
     </div>
-    <hr/>
-    <p><b>Name:</b> _____________________________ &nbsp; <b>Adm.No:</b> ______________ &nbsp; <b>Date:</b> ________________</p>
+    <hr style="border:1px solid #1a3a5c"/>
+    <p style="font-size:12px"><b>Name:</b> _____________________________ &nbsp; <b>Adm.No:</b> ______________ &nbsp; <b>Date:</b> ________________</p>
     ${sectionsHtml}
     ${answerHtml}
     </body></html>`;
@@ -712,9 +713,13 @@ export default function QuestionPaper() {
       <style>{`
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; }
-          .paper-card { box-shadow: none !important; border: 1px solid #aaa !important; }
-          @page { margin: 1.5cm; size: A4 portrait; }
+          body { background: white !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .paper-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; }
+          .min-h-screen { min-height: auto !important; background: white !important; }
+          .max-w-4xl { max-width: 100% !important; padding: 0 !important; }
+          @page { margin: 1.2cm 1.5cm; size: A4 portrait; }
+          img { max-height: 80px !important; max-width: 80px !important; }
+          .bg-gradient-to-r { background: #1a3a5c !important; -webkit-print-color-adjust: exact; }
         }
         .tamil-font, .tamil-font * { font-family: 'Noto Sans Tamil', 'Noto Serif Tamil', 'Baloo 2', sans-serif !important; }
       `}</style>
@@ -1010,19 +1015,12 @@ export default function QuestionPaper() {
                 <Share2 className="h-4 w-4" />
                 <span className="hidden sm:inline">Share on</span> WhatsApp
               </Button>
-              <div className="relative group ml-auto">
-                <Button className={`gap-2 bg-gradient-to-r ${headerGradient} text-white`}>
-                  <Download className="h-4 w-4" /> Download <ChevronDown className="h-3 w-3 ml-1" />
-                </Button>
-                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden group-hover:block min-w-[180px]">
-                  <button onClick={handlePrint} className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 border-b border-gray-100">
-                    <Printer className="h-4 w-4 text-indigo-500" /> Save as PDF
-                  </button>
-                  <button onClick={handleDownloadWord} className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-blue-50">
-                    <FileText className="h-4 w-4 text-blue-500" /> Save as Word
-                  </button>
-                </div>
-              </div>
+              <Button onClick={handlePrint} className={`gap-2 bg-gradient-to-r ${headerGradient} text-white`}>
+                <Download className="h-4 w-4" /> Save as PDF
+              </Button>
+              <Button onClick={handleDownloadWord} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+                <FileText className="h-4 w-4" /> Save as Word
+              </Button>
             </div>
 
             {/* Paper Document */}
@@ -1030,7 +1028,7 @@ export default function QuestionPaper() {
               {/* Header */}
               <div className={`${colorMode ? `bg-gradient-to-r ${paperHeaderGradient} text-white` : "bg-gray-100 text-gray-900 border-b-4 border-gray-400"} px-6 py-5 relative`}>
                 <img src="/nethaji_logo_print.webp" alt="Nethaji Vidhyalayam"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 h-24 w-24 object-contain"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-20 w-20 object-contain print:h-16 print:w-16"
                   style={{ filter: colorMode ? "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" : "grayscale(100%)" }} />
                 <div className="text-center px-28">
                   <p className={`text-xs font-semibold uppercase tracking-wider mb-1 ${colorMode ? "text-white/70" : "text-gray-500"}`}>Nethaji Vidhyalayam, Chennai</p>
