@@ -76,6 +76,7 @@ interface FormData_ {
   language: string;
   difficulty: string;
   questionTypes: string[];
+  hindiSyllabus: string;
 }
 
 // ─── Question Type Options ────────────────────────────────────────────────────
@@ -100,8 +101,17 @@ const TERMS = ["Term 1", "Term 2", "Term 3"];
 const GRADES = ["Pre-KG", "LKG", "UKG", "1st", "2nd", "3rd", "4th", "5th"];
 
 // Subjects per curriculum
-const SAMACHEER_SUBJECTS = ["Tamil", "English", "Maths", "EVS/Science", "Social Studies"];
-const MERRY_BIRDS_SUBJECTS = ["English", "Maths", "EVS/Science", "Social Studies", "General Knowledge"];
+const SAMACHEER_SUBJECTS = ["Tamil", "English", "Maths", "EVS/Science", "Social Studies", "Hindi"];
+const MERRY_BIRDS_SUBJECTS = ["English", "Maths", "EVS/Science", "Social Studies", "General Knowledge", "Hindi"];
+
+const HINDI_SYLLABUS_OPTIONS = [
+  { id: "none", label: "Regular Hindi", emoji: "📖", desc: "Standard school Hindi" },
+  { id: "parichay", label: "Parichay (परिचय)", emoji: "🔤", desc: "Hindi Prachar Sabha - Beginner" },
+  { id: "prathama", label: "Prathama (प्रथमा)", emoji: "📗", desc: "Hindi Prachar Sabha - Elementary" },
+  { id: "madhyama", label: "Madhyama (मध्यमा)", emoji: "📘", desc: "Hindi Prachar Sabha - Intermediate" },
+  { id: "rashtrabhasha", label: "Rashtrabhasha (राष्ट्रभाषा)", emoji: "📕", desc: "Hindi Prachar Sabha - Advanced" },
+  { id: "praveshika", label: "Praveshika (प्रवेशिका)", emoji: "📙", desc: "Hindi Prachar Sabha - Pre-degree" },
+];
 
 const LANGUAGES = ["English", "Tamil", "Bilingual"];
 const DIFFICULTIES = ["Easy", "Medium", "Hard"];
@@ -542,6 +552,7 @@ export default function WorksheetMaker() {
         language: saved.language || "English",
         difficulty: saved.difficulty || "Medium",
         questionTypes: saved.questionTypes || [],
+        hindiSyllabus: saved.hindiSyllabus || "none",
       };
     } catch {
       return {
@@ -555,6 +566,7 @@ export default function WorksheetMaker() {
         language: "English",
         difficulty: "Medium",
         questionTypes: [],
+        hindiSyllabus: "none",
       };
     }
   });
@@ -1229,7 +1241,26 @@ export default function WorksheetMaker() {
               </select>
             </div>
 
-            {/* Topic */}
+            {/* Hindi Prachar Sabha Syllabus - only when Hindi is selected */}
+            {formData.subject === "Hindi" && (
+            <div className="md:col-span-2">
+              <Label className="text-sm font-bold text-gray-700 mb-2 block">🇮🇳 Hindi Syllabus <span className="text-gray-400 font-normal">(Hindi Prachar Sabha)</span></Label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {HINDI_SYLLABUS_OPTIONS.map((hs) => (
+                  <button key={hs.id} onClick={() => setFormData({ ...formData, hindiSyllabus: hs.id })}
+                    className={`flex flex-col items-center gap-1 px-3 py-3 rounded-xl border-2 transition-all ${
+                      formData.hindiSyllabus === hs.id
+                        ? "border-orange-500 bg-orange-50 shadow-sm"
+                        : "border-gray-200 bg-gray-50 hover:border-gray-300"
+                    }`}>
+                    <span className="text-xl">{hs.emoji}</span>
+                    <span className={`text-sm font-bold ${formData.hindiSyllabus === hs.id ? "text-orange-700" : "text-gray-600"}`}>{hs.label}</span>
+                    <span className="text-xs text-gray-400">{hs.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            )}
             <div className="md:col-span-2">
               <Label className="text-sm font-bold text-gray-700 mb-1.5 block">
                 Topic / Chapter — <span className="tamil-font text-sky-600">தலைப்பு / பாடம்</span>

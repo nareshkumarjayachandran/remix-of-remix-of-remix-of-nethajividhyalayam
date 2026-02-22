@@ -32,7 +32,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { curriculum, term, grade, subject, topic, numQuestions, language, difficulty, questionTypes, setNumber = 1, randomSeed = Math.random() } = await req.json();
+    const { curriculum, term, grade, subject, topic, numQuestions, language, difficulty, questionTypes, setNumber = 1, randomSeed = Math.random(), hindiSyllabus = "none" } = await req.json();
     const isMerryBirds = curriculum === "Oxford Merry Birds (Integrated Term Course)";
 
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
@@ -186,6 +186,7 @@ Language: ${language} — ${langInstruction}
 Difficulty: ${difficulty} — ${difficultyGuide}
 ${hasDiagram ? "⚠️ This topic requires a DRAW AND LABEL diagram section — include it!" : ""}
 ${isMerryBirds ? `⭐ Oxford Merry Birds style (${term || "Term 1"}): joyful, activity-based, phonics-rich, picture-friendly questions aligned with ${term || "Term 1"} content` : `Focus on ${term || "Term 1"} topics from the official Samacheer Kalvi ${grade} ${subject} textbook`}
+${subject.toLowerCase() === "hindi" && hindiSyllabus !== "none" ? `🇮🇳 Hindi Syllabus: Hindi Prachar Sabha "${hindiSyllabus}" level. Generate questions strictly aligned with Hindi Prachar Sabha ${hindiSyllabus} textbooks — include grammar (व्याकरण), comprehension (गद्यांश), letter writing (पत्र लेखन), essay (निबंध), translation (अनुवाद), and vocabulary as per the ${hindiSyllabus} curriculum.` : ""}
 ${setVariationInstruction}
 
 ${questionTypeInstruction}
