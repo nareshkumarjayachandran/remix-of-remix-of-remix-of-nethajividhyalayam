@@ -1,6 +1,6 @@
 // IndexedDB-based offline storage for FeeDesk + all standalone apps
 const DB_NAME = "nethaji_offline";
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 interface PendingMutation {
   id: string;
@@ -27,6 +27,8 @@ function openDB(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains("worksheets")) db.createObjectStore("worksheets", { keyPath: "id" });
       // Spoken English session history store
       if (!db.objectStoreNames.contains("spoken_sessions")) db.createObjectStore("spoken_sessions", { keyPath: "id" });
+      // Question Paper history store
+      if (!db.objectStoreNames.contains("question_papers")) db.createObjectStore("question_papers", { keyPath: "id" });
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
@@ -124,6 +126,12 @@ export const offlineDb = {
   getAllSpokenSessions: () => getAll<any>("spoken_sessions"),
   deleteSpokenSession: (id: string) => deleteItem("spoken_sessions", id),
   clearSpokenSessions: () => clearStore("spoken_sessions"),
+
+  // ── Question Papers ────────────────────────────────────
+  saveQuestionPaper: (paper: any) => putAll("question_papers", [paper]),
+  getAllQuestionPapers: () => getAll<any>("question_papers"),
+  deleteQuestionPaper: (id: string) => deleteItem("question_papers", id),
+  clearQuestionPapers: () => clearStore("question_papers"),
 
   // ── Pending mutations (FeeDesk sync queue) ─────────────
   addPendingMutation: async (mutation: Omit<PendingMutation, "id" | "timestamp">) => {

@@ -1,16 +1,17 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { offlineDb } from "@/lib/offlineDb";
 import OfflineBanner from "@/components/ui/OfflineBanner";
 import PWAInstallBanner from "@/components/ui/PWAInstallBanner";
 import {
   BookOpen, Download, RefreshCw, Eye, EyeOff, Printer,
   Sparkles, Loader2, GraduationCap, FileText,
   PenLine, ChevronDown, Share2, ArrowLeft, CheckSquare, Map,
-  Check, Palette,
+  Check, Palette, History, Trash2, Clock,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -270,6 +271,15 @@ export default function QuestionPaper() {
   const [error, setError] = useState<string | null>(null);
   const [colorMode, setColorMode] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [savedPapers, setSavedPapers] = useState<{ id: string; title: string; subject: string; grade: string; term: string; examType: string; savedAt: number; paper: QuestionPaper }[]>([]);
+
+  // Load saved papers on mount
+  useEffect(() => {
+    offlineDb.getAllQuestionPapers().then((papers) => {
+      setSavedPapers(papers.sort((a: any, b: any) => b.savedAt - a.savedAt));
+    });
+  }, []);
 
   const [form, setForm] = useState({
     examType: "Quarterly",
@@ -356,7 +366,20 @@ export default function QuestionPaper() {
         });
       });
       setPaper(paperData);
-      toast({ title: "Question Paper generated! 📄", description: "Scroll down to view your paper." });
+      // Save to IndexedDB history
+      const savedEntry = {
+        id: `qp_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        title: paperData.title,
+        subject: form.subject,
+        grade: form.grade,
+        term: form.term,
+        examType: form.examType,
+        savedAt: Date.now(),
+        paper: paperData,
+      };
+      await offlineDb.saveQuestionPaper(savedEntry);
+      setSavedPapers(prev => [savedEntry, ...prev]);
+      toast({ title: "Question Paper generated & saved! 📄", description: "Paper saved to history for offline access." });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Failed to generate";
       setError(msg);
@@ -407,6 +430,19 @@ export default function QuestionPaper() {
 
   const handlePrint = () => window.print();
 
+  const loadFromHistory = (entry: typeof savedPapers[0]) => {
+    setPaper(entry.paper);
+    setShowHistory(false);
+    setShowAnswers(false);
+    setEditMode(false);
+    toast({ title: `Loaded: ${entry.title}`, description: "Paper loaded from history." });
+  };
+
+  const deleteFromHistory = async (id: string) => {
+    await offlineDb.deleteQuestionPaper(id);
+    setSavedPapers(prev => prev.filter(p => p.id !== id));
+    toast({ title: "Paper deleted from history 🗑️" });
+  };
   const handleDownloadWord = () => {
     if (!paper) return;
     const sectionsHtml = paper.sections.map((section) => {
@@ -711,6 +747,59 @@ export default function QuestionPaper() {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
 
+        {/* History Toggle */}
+        <div className="no-print flex justify-end mb-4">
+          <Button onClick={() => setShowHistory(!showHistory)} variant="outline"
+            className={`gap-2 ${showHistory ? "border-amber-400 bg-amber-50 text-amber-700" : "border-gray-300"}`}>
+            <History className="h-4 w-4" />
+            Saved Papers ({savedPapers.length})
+          </Button>
+        </div>
+
+        {/* History Panel */}
+        {showHistory && (
+          <div className="no-print bg-white rounded-2xl shadow-lg border border-amber-200 p-5 mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <History className="h-5 w-5 text-amber-600" />
+              <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: "'Baloo 2', sans-serif" }}>
+                Saved Question Papers
+              </h3>
+              <span className="text-sm text-gray-400 ml-auto">Stored locally on this device</span>
+            </div>
+            {savedPapers.length === 0 ? (
+              <p className="text-gray-400 text-sm text-center py-8">No papers saved yet. Generate a paper and it will be auto-saved here.</p>
+            ) : (
+              <div className="space-y-2 max-h-80 overflow-y-auto">
+                {savedPapers.map((entry) => (
+                  <div key={entry.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-amber-200 hover:bg-amber-50/50 transition-all group">
+                    <div className="text-2xl">📝</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm text-gray-800 truncate">{entry.title}</p>
+                      <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
+                        <span>{entry.subject}</span>
+                        <span>•</span>
+                        <span>Class {entry.grade}</span>
+                        <span>•</span>
+                        <span>{entry.term}</span>
+                        <span>•</span>
+                        <Clock className="h-3 w-3" />
+                        <span>{new Date(entry.savedAt).toLocaleDateString()} {new Date(entry.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={() => loadFromHistory(entry)}
+                      className="text-amber-600 hover:text-amber-700 hover:bg-amber-100 font-semibold text-xs">
+                      Load
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => deleteFromHistory(entry.id)}
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         {/* Form */}
         <div className={`no-print bg-white rounded-2xl shadow-lg border p-6 mb-8 ${isMerryBirds ? "border-pink-100" : "border-indigo-100"}`}>
           <div className="flex items-center gap-2 mb-6">
