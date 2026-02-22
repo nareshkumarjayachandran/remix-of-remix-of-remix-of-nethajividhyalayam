@@ -262,7 +262,7 @@ ${curriculumRules}`;
       return await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model, messages: messagePayload, stream: false, temperature, max_tokens: 3000 }),
+        body: JSON.stringify({ model, messages: messagePayload, stream: false, temperature, max_tokens: 4096 }),
       });
     };
 
@@ -271,7 +271,7 @@ ${curriculumRules}`;
       return await fetch("https://api.lovable.app/v1/chat/completions", {
         method: "POST",
         headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: messagePayload, stream: false, temperature, max_tokens: 3000 }),
+        body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: messagePayload, stream: false, temperature, max_tokens: 4096 }),
       });
     };
 
@@ -324,6 +324,35 @@ ${curriculumRules}`;
 
     const aiData = await response!.json();
     const content = aiData.choices?.[0]?.message?.content || "";
+
+    // Check if the response was truncated (finish_reason !== "stop")
+    const finishReason = aiData.choices?.[0]?.finish_reason;
+    if (finishReason === "length") {
+      console.warn("AI response truncated (finish_reason=length). Retrying with Lovable AI...");
+      // Fallback to Lovable AI with higher token limit
+      if (LOVABLE_API_KEY) {
+        const retryResp = await fetch("https://api.lovable.app/v1/chat/completions", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: messagePayload, stream: false, temperature, max_tokens: 8192 }),
+        });
+        if (retryResp.ok) {
+          const retryData = await retryResp.json();
+          const retryContent = retryData.choices?.[0]?.message?.content || "";
+          const retryCleaned = retryContent.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+          try {
+            const worksheet = JSON.parse(retryCleaned);
+            worksheet._hasDiagram = hasDiagram;
+            return new Response(JSON.stringify({ worksheet }), {
+              status: 200,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          } catch {
+            console.error("Lovable AI retry also failed to parse:", retryCleaned.substring(0, 500));
+          }
+        }
+      }
+    }
 
     let worksheet;
     try {
