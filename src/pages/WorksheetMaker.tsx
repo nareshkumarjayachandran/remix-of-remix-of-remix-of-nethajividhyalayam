@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import PWAInstallBanner from "@/components/ui/PWAInstallBanner";
 import OfflineBanner from "@/components/ui/OfflineBanner";
 import { Button } from "@/components/ui/button";
@@ -1095,6 +1096,9 @@ export default function WorksheetMaker() {
               ? "Joyful · Activity-based · Phonics & Stories"
               : "தமிழ்நாடு சமச்சீர் பாடத்திட்டம் · AI தொழில்நுட்பம்"}
           </p>
+          <Link to="/question-paper" className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-semibold transition-all">
+            📝 Question Paper Creator — Midterm, Quarterly, Half-Yearly & Annual
+          </Link>
         </div>
       </div>
 
