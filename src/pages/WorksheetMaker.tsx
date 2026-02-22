@@ -113,7 +113,7 @@ const HINDI_SYLLABUS_OPTIONS = [
   { id: "praveshika", label: "Praveshika (प्रवेशिका)", emoji: "📙", desc: "Hindi Prachar Sabha - Pre-degree" },
 ];
 
-const LANGUAGES = ["English", "Tamil", "Bilingual"];
+const LANGUAGES = ["English", "Tamil", "Hindi", "Bilingual"];
 const DIFFICULTIES = ["Easy", "Medium", "Hard"];
 const STORAGE_KEY = "samacheer_worksheets_v2";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -408,6 +408,40 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   "SK-Term 1-Pre-KG-EVS/Science": ["My Senses", "My Body", "My Family"],
   "SK-Term 2-Pre-KG-EVS/Science": ["Animals Around Me", "Plants", "Food I Eat"],
   "SK-Term 3-Pre-KG-EVS/Science": ["Water", "Air", "Clean Habits"],
+
+  // ══════════════════════════════════════════════════════
+  // HINDI TOPICS (Samacheer & Merry Birds)
+  // ══════════════════════════════════════════════════════
+  "SK-Term 1-1st-Hindi":    ["स्वर (अ, आ, इ, ई)", "व्यंजन (क-ङ)", "मेरा परिवार"],
+  "SK-Term 2-1st-Hindi":    ["व्यंजन (च-ञ)", "फल और सब्जियाँ", "जानवर"],
+  "SK-Term 3-1st-Hindi":    ["व्यंजन (ट-न)", "रंग", "मेरा विद्यालय"],
+  "SK-Term 1-2nd-Hindi":    ["मात्राएँ (आ, इ, ई)", "सरल वाक्य", "गिनती 1-20"],
+  "SK-Term 2-2nd-Hindi":    ["मात्राएँ (उ, ऊ, ए)", "विलोम शब्द", "शरीर के अंग"],
+  "SK-Term 3-2nd-Hindi":    ["मात्राएँ (ऐ, ओ, औ)", "पर्यायवाची शब्द", "त्योहार"],
+  "SK-Term 1-3rd-Hindi":    ["संज्ञा", "सर्वनाम", "कहानी - चतुर लोमड़ी"],
+  "SK-Term 2-3rd-Hindi":    ["विशेषण", "क्रिया", "पत्र लेखन"],
+  "SK-Term 3-3rd-Hindi":    ["वचन", "लिंग", "निबंध - मेरा देश"],
+  "SK-Term 1-4th-Hindi":    ["काल (भूत, वर्तमान, भविष्य)", "मुहावरे", "अनुच्छेद लेखन"],
+  "SK-Term 2-4th-Hindi":    ["समास", "उपसर्ग और प्रत्यय", "कविता - प्रकृति"],
+  "SK-Term 3-4th-Hindi":    ["संधि", "अलंकार", "कहानी लेखन"],
+  "SK-Term 1-5th-Hindi":    ["क्रिया विशेषण", "समुच्चय बोधक", "औपचारिक पत्र"],
+  "SK-Term 2-5th-Hindi":    ["रस", "छंद", "संवाद लेखन"],
+  "SK-Term 3-5th-Hindi":    ["अपठित गद्यांश", "व्याकरण समीक्षा", "निबंध - विज्ञान"],
+  "MB-Term 1-1st-Hindi":    ["स्वर (अ-औ)", "व्यंजन (क-ङ)", "मेरा नाम"],
+  "MB-Term 2-1st-Hindi":    ["व्यंजन (च-न)", "सरल शब्द", "जानवर"],
+  "MB-Term 3-1st-Hindi":    ["व्यंजन (प-ह)", "फल और सब्जियाँ", "रंग"],
+  "MB-Term 1-2nd-Hindi":    ["मात्राएँ (आ, इ, ई)", "सरल वाक्य", "मेरा परिवार"],
+  "MB-Term 2-2nd-Hindi":    ["मात्राएँ (उ, ऊ, ए)", "विलोम शब्द", "त्योहार"],
+  "MB-Term 3-2nd-Hindi":    ["मात्राएँ (ऐ, ओ, औ)", "पर्यायवाची शब्द", "मेरा विद्यालय"],
+  "MB-Term 1-3rd-Hindi":    ["संज्ञा और सर्वनाम", "कहानी पढ़ो", "गिनती 1-50"],
+  "MB-Term 2-3rd-Hindi":    ["विशेषण और क्रिया", "पत्र लेखन", "शरीर के अंग"],
+  "MB-Term 3-3rd-Hindi":    ["वचन और लिंग", "निबंध", "प्रकृति"],
+  "MB-Term 1-4th-Hindi":    ["काल", "मुहावरे", "कविता"],
+  "MB-Term 2-4th-Hindi":    ["समास", "उपसर्ग-प्रत्यय", "कहानी लेखन"],
+  "MB-Term 3-4th-Hindi":    ["संधि", "अलंकार", "अनुच्छेद लेखन"],
+  "MB-Term 1-5th-Hindi":    ["क्रिया विशेषण", "औपचारिक पत्र", "अपठित गद्यांश"],
+  "MB-Term 2-5th-Hindi":    ["रस और छंद", "संवाद लेखन", "व्याकरण"],
+  "MB-Term 3-5th-Hindi":    ["समीक्षा", "निबंध - विज्ञान और प्रकृति", "कहानी"],
 };
 
 // ─── Diagram SVG Component ─────────────────────────────────────────────────
@@ -1236,7 +1270,11 @@ export default function WorksheetMaker() {
             {/* Subject */}
             <div>
               <Label className="text-sm font-bold text-gray-700 mb-1.5 block">Subject / பாடம்</Label>
-              <select className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-400 transition tamil-font" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })}>
+              <select className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-400 transition tamil-font" value={formData.subject} onChange={(e) => {
+                  const newSubject = e.target.value;
+                  const autoLang = newSubject === "Hindi" ? "Hindi" : newSubject === "Tamil" ? "Tamil" : "English";
+                  setFormData({ ...formData, subject: newSubject, language: autoLang });
+                }}>
                 {(formData.curriculum === "Oxford Merry Birds (Integrated Term Course)" ? MERRY_BIRDS_SUBJECTS : SAMACHEER_SUBJECTS).map((s) => <option key={s}>{s}</option>)}
               </select>
             </div>
@@ -1343,7 +1381,7 @@ export default function WorksheetMaker() {
                 {LANGUAGES.map((l) => (
                   <button key={l} onClick={() => setFormData({ ...formData, language: l })}
                     className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border-2 transition-all tamil-font ${formData.language === l ? "border-sky-500 bg-sky-500 text-white shadow-sm" : "border-gray-200 bg-gray-50 text-gray-600 hover:border-sky-300"}`}>
-                    {l === "Tamil" ? "தமிழ்" : l === "Bilingual" ? "இரு மொழி" : l}
+                    {l === "Tamil" ? "தமிழ்" : l === "Hindi" ? "हिंदी" : l === "Bilingual" ? "இரு மொழி" : l}
                   </button>
                 ))}
               </div>

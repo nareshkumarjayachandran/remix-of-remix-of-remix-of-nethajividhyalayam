@@ -75,7 +75,7 @@ const EXAM_TYPES = [
 const GRADES = ["1st", "2nd", "3rd", "4th", "5th"];
 const SUBJECTS = ["Tamil", "English", "Maths", "EVS/Science", "Social Studies", "Hindi", "General Knowledge"];
 const TERMS = ["Term 1", "Term 2", "Term 3"];
-const LANGUAGES = ["English", "Tamil", "Bilingual"];
+const LANGUAGES = ["English", "Tamil", "Hindi", "Bilingual"];
 const CURRICULA = [
   { id: "Samacheer Kalvi", label: "Samacheer Kalvi", emoji: "📚", desc: "Tamil Nadu State Board" },
   { id: "Oxford Merry Birds", label: "Oxford Merry Birds", emoji: "🐦", desc: "Activity-based learning" },
@@ -956,7 +956,11 @@ export default function QuestionPaper() {
             <div>
               <Label className="text-sm font-bold text-gray-700 mb-1.5 block">Subject</Label>
               <select className={`w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${isMerryBirds ? "bg-pink-50 focus:ring-pink-400" : "bg-indigo-50 focus:ring-indigo-400"}`}
-                value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })}>
+                value={form.subject} onChange={(e) => {
+                  const newSubject = e.target.value;
+                  const autoLang = newSubject === "Hindi" ? "Hindi" : newSubject === "Tamil" ? "Tamil" : "English";
+                  setForm({ ...form, subject: newSubject, language: autoLang });
+                }}>
                 {SUBJECTS.map((s) => <option key={s}>{s}</option>)}
               </select>
             </div>
@@ -971,7 +975,7 @@ export default function QuestionPaper() {
                       form.language === l
                         ? isMerryBirds ? "border-pink-500 bg-pink-500 text-white" : "border-indigo-500 bg-indigo-500 text-white"
                         : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300"
-                    }`}>{l === "Tamil" ? "தமிழ்" : l === "Bilingual" ? "இரு மொழி" : l}</button>
+                    }`}>{l === "Tamil" ? "தமிழ்" : l === "Hindi" ? "हिंदी" : l === "Bilingual" ? "இரு மொழி" : l}</button>
                 ))}
               </div>
             </div>
