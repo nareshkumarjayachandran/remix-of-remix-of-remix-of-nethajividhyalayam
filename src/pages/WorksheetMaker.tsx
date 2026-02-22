@@ -816,7 +816,7 @@ export default function WorksheetMaker() {
         </div>
         <hr style="border:1px solid #1a3a5c"/>
         <p style="font-size:12px"><b>Name:</b> _____________________________ &nbsp;&nbsp; <b>Date:</b> __________________ &nbsp;&nbsp; <b>Score:</b> ______ / ${formData.numQuestions}</p>
-        <p style="background:#fffde7;padding:6px 8px;border-left:4px solid #f59e0b;font-size:12px"><b>Instructions:</b> ${displayedWorksheet.instructions}</p>
+        
         ${sections}
         ${answerKey}
       </body></html>`;
@@ -1597,12 +1597,6 @@ export default function WorksheetMaker() {
                 </div>
               </div>
 
-              {/* Instructions */}
-              <div className="px-8 py-4 bg-amber-50 print:bg-transparent border-b border-amber-100">
-                <p className={`tamil-font text-sm text-amber-800 print:text-gray-800 font-medium leading-relaxed`}>
-                  📋 <strong>Instructions / வழிமுறைகள்:</strong> {displayedWorksheet.instructions}
-                </p>
-              </div>
 
               {/* Sections */}
               <div className={`px-8 py-6 space-y-10 ${isTamil ? "tamil-font" : ""}`}>

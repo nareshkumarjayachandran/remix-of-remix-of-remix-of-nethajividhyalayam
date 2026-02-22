@@ -1075,15 +1075,6 @@ export default function QuestionPaper() {
                 </div>
               </div>
 
-              {/* General Instructions */}
-              <div className={`px-8 py-4 border-b ${colorMode ? "bg-amber-50 border-amber-100" : "bg-gray-50 border-gray-200"}`}>
-                <p className={`font-bold text-sm mb-2 ${colorMode ? "text-amber-800" : "text-gray-700"}`}>📋 General Instructions:</p>
-                <ul className={`list-disc list-inside text-sm space-y-1 ${colorMode ? "text-amber-700" : "text-gray-600"}`}>
-                  {paper.generalInstructions?.map((inst, i) => (
-                    <li key={i}>{inst}</li>
-                  ))}
-                </ul>
-              </div>
 
               {/* Sections */}
               <div className="px-8 py-6 space-y-8">
