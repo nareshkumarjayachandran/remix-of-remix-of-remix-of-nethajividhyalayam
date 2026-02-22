@@ -56,6 +56,13 @@ export default defineConfig(({ mode }) => ({
             url: "/feedesk",
             icons: [{ src: "/pwa-192x192.png", sizes: "192x192" }],
           },
+          {
+            name: "Question Paper Creator",
+            short_name: "Q.Paper",
+            description: "AI-powered question paper generator",
+            url: "/question-paper",
+            icons: [{ src: "/pwa-192x192.png", sizes: "192x192" }],
+          },
         ],
       },
       workbox: {
@@ -72,6 +79,7 @@ export default defineConfig(({ mode }) => ({
           { url: "/worksheet-maker", revision: null },
           { url: "/spoken-english", revision: null },
           { url: "/feedesk", revision: null },
+          { url: "/question-paper", revision: null },
         ],
 
         runtimeCaching: [
@@ -95,8 +103,8 @@ export default defineConfig(({ mode }) => ({
             },
           },
           {
-            // Worksheet + Spoken English feedback edge functions – NetworkFirst
-            urlPattern: /\/functions\/v1\/(generate-worksheet|spoken-english-feedback)/i,
+            // Worksheet + Spoken English + Question Paper feedback edge functions – NetworkFirst
+            urlPattern: /\/functions\/v1\/(generate-worksheet|spoken-english-feedback|generate-question-paper)/i,
             handler: "NetworkFirst",
             options: {
               cacheName: "edge-functions-cache",
