@@ -10,7 +10,12 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { grade, subject, examType, term, language, totalMarks, includeAnswerKey, topics, randomSeed = Math.random() } = await req.json();
+    const {
+      grade, subject, examType, term, language, totalMarks,
+      includeAnswerKey, topics, randomSeed = Math.random(),
+      curriculum = "Samacheer Kalvi",
+      questionTypes = ["multiple_choice", "fill_in_blanks", "true_false", "match_following", "short_answer", "long_answer", "diagram"],
+    } = await req.json();
 
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
     if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY is not configured");
@@ -23,7 +28,6 @@ serve(async (req) => {
         ? "Write every question in English first, then Tamil translation in parentheses."
         : "Write ALL content ONLY in clear English. No Tamil script.";
 
-    // Marks distribution based on exam type
     const marksConfig: Record<string, { partA: number; partB: number; partC: number; partD: number }> = {
       Midterm:      { partA: 10, partB: 10, partC: 15, partD: 15 },
       Quarterly:    { partA: 15, partB: 15, partC: 20, partD: 25 },
@@ -33,34 +37,68 @@ serve(async (req) => {
     const marks = marksConfig[examType] || marksConfig["Quarterly"];
     const total = totalMarks || (marks.partA + marks.partB + marks.partC + marks.partD);
 
-    // Subject-specific diagram/map instructions
+    const isMerryBirds = curriculum === "Oxford Merry Birds";
+
+    const curriculumInstruction = isMerryBirds
+      ? `Follow Oxford Merry Birds curriculum strictly. Use activity-based pedagogy focusing on phonics, rhymes, simple stories, picture-based questions, and pattern recognition. Questions should be fun, colorful, and age-appropriate with emphasis on visual learning, tracing, coloring references, and hands-on activities. Use simpler vocabulary and shorter sentences suitable for young learners.`
+      : `Follow Tamil Nadu Samacheer Kalvi curriculum strictly. Align all questions with the official Samacheer Kalvi textbooks for the specified grade, subject, and term.`;
+
     const diagramInstructions = (() => {
       const sub = subject.toLowerCase();
+      if (!questionTypes.includes("diagram")) return "Do NOT include diagram or map questions.";
       if (sub.includes("science") || sub === "evs/science") {
         return `Include 1-2 DIAGRAM questions in Part D. Topics like: parts of plant, human body systems, water cycle, solar system, food chain, electric circuit. Provide SVG-compatible label descriptions. Each diagram question should list 4-6 labels to identify.`;
       }
       if (sub.includes("social") || sub === "social studies") {
-        return `Include 1 MAP-BASED question in Part D. For India maps: mark states, rivers, mountains, or cities. For world maps: mark continents, oceans, or countries. Provide clear location descriptions for each point to mark. Also include 1 timeline/chart question if relevant.`;
+        return `Include 1 MAP-BASED question in Part D. For India maps: mark states, rivers, mountains, or cities. For world maps: mark continents, oceans, or countries.`;
       }
       if (sub === "maths") {
-        return `Include geometry/shape-based questions where students draw or identify shapes, angles, or graphs. Include word problems that could benefit from diagrams.`;
+        return `Include geometry/shape-based questions where students draw or identify shapes, angles, or graphs.`;
       }
       return `Include visual/diagram-based questions where appropriate for the subject.`;
     })();
 
-    const systemPrompt = `You are an expert question paper creator for Nethaji Vidhyalayam school following Tamil Nadu Samacheer Kalvi curriculum (1st to 5th Standard). You create professional, exam-ready question papers with:
+    // Build part instructions based on selected question types
+    const partATypes: string[] = [];
+    if (questionTypes.includes("multiple_choice")) partATypes.push("Multiple Choice Questions (MCQ)");
+    if (questionTypes.includes("fill_in_blanks")) partATypes.push("Fill in the Blanks");
+    if (questionTypes.includes("true_false")) partATypes.push("True or False");
 
-- Perfect alignment with Samacheer Kalvi textbooks for the specified grade, subject, and term
+    const partBTypes: string[] = [];
+    if (questionTypes.includes("match_following")) partBTypes.push("Match the Following");
+    if (questionTypes.includes("short_answer")) partBTypes.push("Short Answer Questions");
+
+    const partCTypes: string[] = [];
+    if (questionTypes.includes("long_answer")) partCTypes.push("Long Answer / Descriptive Questions");
+
+    const partDTypes: string[] = [];
+    if (questionTypes.includes("diagram")) partDTypes.push("Diagram / Map / Creative Questions");
+
+    const selectedTypesInstruction = `
+SELECTED QUESTION TYPES (ONLY include these types):
+- Part A: ${partATypes.length > 0 ? partATypes.join(", ") : "SKIP this part entirely"}
+- Part B: ${partBTypes.length > 0 ? partBTypes.join(", ") : "SKIP this part entirely"}
+- Part C: ${partCTypes.length > 0 ? partCTypes.join(", ") : "SKIP this part entirely"}
+- Part D: ${partDTypes.length > 0 ? partDTypes.join(", ") : "SKIP this part entirely"}
+If a part should be skipped, do NOT include it in the sections array. Distribute marks proportionally among included parts to total ${total} marks.`;
+
+    const systemPrompt = `You are an expert question paper creator for Nethaji Vidhyalayam school. You create professional, exam-ready question papers.
+
+${curriculumInstruction}
+
+Key requirements:
 - Age-appropriate difficulty progression across paper sections
 - Proper marks allocation and time management
-- Rich variety: MCQ, fill-in-blanks, true/false, match-the-following, short answers, long answers, diagrams, maps
-- For Tamil: proper இலக்கணம், செய்யுள், உரைநடை questions
+- Rich variety of question types as specified
+${isMerryBirds ? `- For Oxford Merry Birds: phonics-based questions, picture identification, rhyme completion, pattern matching, simple fill-ups, trace & write, look-and-say word exercises
+- Use child-friendly language with short, simple instructions
+- Include picture-based and activity-based questions wherever possible` : `- For Tamil: proper இலக்கணம், செய்யுள், உரைநடை questions
 - For English: grammar, comprehension, vocabulary, letter/essay writing
 - For Maths: computation, word problems, geometry, data handling
 - For Science: concepts, experiments, diagrams (plant, body, solar system, water cycle)
 - For Social Studies: maps (India/world), timelines, civics, geography
 - For Hindi: basic vocabulary, simple sentences, matching
-- For GK: current affairs, national symbols, famous personalities, sports
+- For GK: current affairs, national symbols, famous personalities, sports`}
 
 Your papers are print-ready, professionally formatted, and include complete answer keys with all options explained.`;
 
@@ -69,6 +107,7 @@ Your papers are print-ready, professionally formatted, and include complete answ
     const userPrompt = `Create a complete ${examType} Examination Question Paper for:
 
 School: Nethaji Vidhyalayam, Chennai
+Curriculum: ${curriculum}
 Grade: ${grade}
 Subject: ${subject}
 Term: ${term}
@@ -78,19 +117,22 @@ Language: ${language} — ${langInstruction}
 Topics to cover: ${topics || "All topics from " + term}
 Variation seed: ${variationSeed}
 
+${selectedTypesInstruction}
+
 ${diagramInstructions}
 
 Return ONLY valid JSON (no markdown, no code blocks):
 
 {
   "title": "Nethaji Vidhyalayam - ${examType} Examination ${new Date().getFullYear()}-${new Date().getFullYear() + 1}",
-  "subtitle": "${subject} - Class ${grade}",
+  "subtitle": "${subject} - Class ${grade} (${curriculum})",
   "examType": "${examType}",
   "totalMarks": ${total},
   "duration": "${examType === "Midterm" ? "1½ Hours" : examType === "Quarterly" ? "2 Hours" : "2½ Hours"}",
   "term": "${term}",
   "grade": "${grade}",
   "subject": "${subject}",
+  "curriculum": "${curriculum}",
   "generalInstructions": [
     "Answer all questions.",
     "Write neatly and legibly.",
@@ -100,28 +142,28 @@ Return ONLY valid JSON (no markdown, no code blocks):
     {
       "partLabel": "Part A",
       "type": "objective",
-      "heading": "${language === "Tamil" ? "பிரிவு A: புறவயமான கேள்விகள்" : "Part A: Objective Type Questions"}",
+      "heading": "Part A: Objective Type Questions",
       "marksPerQuestion": 1,
-      "totalMarks": ${marks.partA},
-      "instructions": "${language === "Tamil" ? "சரியான விடையைத் தேர்ந்தெடுக்கவும் / காலி இடங்களை நிரப்புக / சரியா தவறா எழுதுக" : "Choose the correct answer / Fill in the blanks / Write True or False"}",
+      "totalMarks": <calculated>,
+      "instructions": "Choose the correct answer / Fill in the blanks / Write True or False",
       "subsections": [
         {
           "type": "multiple_choice",
-          "heading": "${language === "Tamil" ? "I. சரியான விடையைத் தேர்க" : "I. Choose the correct answer"}",
+          "heading": "I. Choose the correct answer",
           "questions": [
             { "id": 1, "question": "...", "options": ["a) ...", "b) ...", "c) ...", "d) ..."], "answer": "a) ...", "marks": 1 }
           ]
         },
         {
           "type": "fill_in_blanks",
-          "heading": "${language === "Tamil" ? "II. காலி இடங்களை நிரப்புக" : "II. Fill in the blanks"}",
+          "heading": "II. Fill in the blanks",
           "questions": [
             { "id": 6, "question": "... _______ ...", "answer": "...", "marks": 1 }
           ]
         },
         {
           "type": "true_false",
-          "heading": "${language === "Tamil" ? "III. சரியா? தவறா?" : "III. Write True or False"}",
+          "heading": "III. Write True or False",
           "questions": [
             { "id": 9, "question": "...", "answer": "True", "marks": 1 }
           ]
@@ -131,21 +173,21 @@ Return ONLY valid JSON (no markdown, no code blocks):
     {
       "partLabel": "Part B",
       "type": "short",
-      "heading": "${language === "Tamil" ? "பிரிவு B: குறுகிய விடை" : "Part B: Short Answer Questions"}",
+      "heading": "Part B: Short Answer Questions",
       "marksPerQuestion": 2,
-      "totalMarks": ${marks.partB},
-      "instructions": "${language === "Tamil" ? "ஒரு அல்லது இரு வாக்கியங்களில் விடையளிக்கவும்" : "Answer in one or two sentences"}",
+      "totalMarks": <calculated>,
+      "instructions": "Answer in one or two sentences",
       "subsections": [
         {
           "type": "match_following",
-          "heading": "${language === "Tamil" ? "IV. பொருத்துக" : "IV. Match the following"}",
+          "heading": "IV. Match the following",
           "questions": [
             { "id": 12, "left": ["...", "...", "..."], "right": ["...", "...", "..."], "answers": ["...", "...", "..."], "marks": 3 }
           ]
         },
         {
           "type": "short_answer",
-          "heading": "${language === "Tamil" ? "V. குறுகிய விடையளிக்கவும்" : "V. Answer briefly"}",
+          "heading": "V. Answer briefly",
           "questions": [
             { "id": 13, "question": "...", "answer": "...", "marks": 2 }
           ]
@@ -155,14 +197,14 @@ Return ONLY valid JSON (no markdown, no code blocks):
     {
       "partLabel": "Part C",
       "type": "descriptive",
-      "heading": "${language === "Tamil" ? "பிரிவு C: விரிவான விடை" : "Part C: Descriptive Questions"}",
+      "heading": "Part C: Descriptive Questions",
       "marksPerQuestion": 5,
-      "totalMarks": ${marks.partC},
-      "instructions": "${language === "Tamil" ? "விரிவாக விடையளிக்கவும்" : "Answer in detail (4-5 sentences)"}",
+      "totalMarks": <calculated>,
+      "instructions": "Answer in detail (4-5 sentences)",
       "subsections": [
         {
           "type": "long_answer",
-          "heading": "${language === "Tamil" ? "VI. விரிவாக விடையளிக்கவும்" : "VI. Answer in detail"}",
+          "heading": "VI. Answer in detail",
           "questions": [
             { "id": 18, "question": "...", "answer": "...", "marks": 5 }
           ]
@@ -172,14 +214,14 @@ Return ONLY valid JSON (no markdown, no code blocks):
     {
       "partLabel": "Part D",
       "type": "creative",
-      "heading": "${language === "Tamil" ? "பிரிவு D: படம் / வரைபடம் / உருவாக்கம்" : "Part D: Diagram / Map / Creative"}",
+      "heading": "Part D: Diagram / Map / Creative",
       "marksPerQuestion": 5,
-      "totalMarks": ${marks.partD},
-      "instructions": "${language === "Tamil" ? "படம் வரைந்து பெயரிடுக / வரைபடத்தில் குறிக்கவும்" : "Draw and label / Mark on the map / Creative writing"}",
+      "totalMarks": <calculated>,
+      "instructions": "Draw and label / Mark on the map / Creative writing",
       "subsections": [
         {
           "type": "diagram",
-          "heading": "${language === "Tamil" ? "VII. படம் வரைந்து பெயரிடுக" : "VII. Draw and Label"}",
+          "heading": "VII. Draw and Label",
           "questions": [
             { "id": 21, "question": "Draw a neat diagram of ... and label its parts", "answer": "Labels: ...", "diagramLabels": ["Part 1", "Part 2", "Part 3", "Part 4"], "diagramType": "plant|body|solar|water_cycle|map_india|map_world|geometry|custom", "marks": 5 }
           ]
@@ -200,19 +242,16 @@ Return ONLY valid JSON (no markdown, no code blocks):
 }
 
 CRITICAL RULES:
-1. Total marks across ALL parts MUST equal exactly ${total}
-2. Include ${Math.max(3, Math.floor(marks.partA / 1))} MCQ questions (1 mark each) in Part A
-3. Include ${Math.max(2, Math.floor(marks.partA / 3))} fill-in-blanks (1 mark each) in Part A
-4. Include ${Math.max(2, Math.floor(marks.partA / 4))} true/false (1 mark each) in Part A
-5. Part B: Include 1 match-the-following (${Math.min(5, Math.floor(marks.partB / 2))} items) + short answers (2 marks each)
-6. Part C: Include ${Math.max(2, Math.floor(marks.partC / 5))} long answer questions (5 marks each)
-7. Part D: Include diagram/map/creative questions totaling ${marks.partD} marks
-8. ALL questions must be from ${subject} ${grade} ${term} Samacheer Kalvi syllabus
-9. The answerKey must contain detailed answers for EVERY question with brief explanations
-10. For diagram questions: always include "diagramType" field and "diagramLabels" array
-11. For map questions: use diagramType "map_india" or "map_world" and include location descriptions
-12. Questions should progress from easy (Part A) to challenging (Part D)
-13. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Bilingual" ? "Both English and Tamil for every question" : "Pure English only"}`;
+1. Total marks across ALL included parts MUST equal exactly ${total}
+2. ONLY include the question types specified in SELECTED QUESTION TYPES above
+3. If a part has no selected types, OMIT it entirely from sections array
+4. ALL questions must be from ${subject} ${grade} ${term} ${curriculum} syllabus
+5. The answerKey must contain detailed answers for EVERY question with brief explanations
+6. For diagram questions: always include "diagramType" field and "diagramLabels" array
+7. For map questions: use diagramType "map_india" or "map_world" and include location descriptions
+8. Questions should progress from easy to challenging
+9. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Bilingual" ? "Both English and Tamil for every question" : "Pure English only"}
+10. Distribute marks proportionally among the included parts`;
 
     const messagePayload = [
       { role: "system", content: systemPrompt },
