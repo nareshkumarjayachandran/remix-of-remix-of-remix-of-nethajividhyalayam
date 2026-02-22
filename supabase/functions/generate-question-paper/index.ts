@@ -14,6 +14,7 @@ serve(async (req) => {
       grade, subject, examType, term, language, totalMarks,
       includeAnswerKey, topics, randomSeed = Math.random(),
       curriculum = "Samacheer Kalvi",
+      questionPattern = "state_board",
       questionTypes = ["multiple_choice", "fill_in_blanks", "true_false", "match_following", "short_answer", "long_answer", "diagram"],
     } = await req.json();
 
@@ -42,6 +43,35 @@ serve(async (req) => {
     const curriculumInstruction = isMerryBirds
       ? `Follow Oxford Merry Birds curriculum strictly. Use activity-based pedagogy focusing on phonics, rhymes, simple stories, picture-based questions, and pattern recognition. Questions should be fun, colorful, and age-appropriate with emphasis on visual learning, tracing, coloring references, and hands-on activities. Use simpler vocabulary and shorter sentences suitable for young learners.`
       : `Follow Tamil Nadu Samacheer Kalvi curriculum strictly. Align all questions with the official Samacheer Kalvi textbooks for the specified grade, subject, and term.`;
+
+    const patternInstruction = (() => {
+      switch (questionPattern) {
+        case "state_board":
+          return `Follow Tamil Nadu State Board examination pattern strictly:
+- Part A: Objective (1 mark each) — MCQ, Fill blanks, True/False
+- Part B: Short Answer (2 marks each) — Match the following, Brief answers
+- Part C: Descriptive (5 marks each) — Detailed answers, Explain in detail
+- Part D: Creative/Diagram (5-10 marks each) — Draw & label, Map work, Essay
+Use Roman numeral sub-headings (I, II, III...). Include "Choose the correct answer", "Fill in the blanks", "Answer briefly", "Answer in detail" style headings.`;
+        case "cbse":
+          return `Follow CBSE examination pattern strictly:
+- Section A: Objective Type (1 mark each) — MCQ with 4 options, Fill blanks, True/False, Very Short Answer
+- Section B: Short Answer Type I (2 marks each) — Answer in 30-50 words
+- Section C: Short Answer Type II (3 marks each) — Answer in 50-80 words
+- Section D: Long Answer (5 marks each) — Answer in 100-150 words, Diagram/Map based
+Use "Section A/B/C/D" headings. Include internal choice in Section C and D ("OR" questions). Follow NCERT-aligned question framing.`;
+        case "icse":
+          return `Follow ICSE examination pattern strictly:
+- Question 1: Compulsory (MCQ/Fill blanks/True-False, 1 mark each)
+- Question 2-6: Attempt any 4 out of 6 questions with internal choice
+- Short answer (3 marks), Long answer (5 marks)
+Use "Question 1, Question 2..." format. Include "Attempt any four" instructions. ICSE style detailed, application-based questions.`;
+        case "custom":
+          return `Use a flexible examination pattern. Organize into logical sections with clear marks allocation. Include a mix of objective, short answer, and descriptive questions.`;
+        default:
+          return `Follow standard examination pattern with Parts A, B, C, D.`;
+      }
+    })();
 
     const diagramInstructions = (() => {
       const sub = subject.toLowerCase();
@@ -86,6 +116,8 @@ If a part should be skipped, do NOT include it in the sections array. Distribute
 
 ${curriculumInstruction}
 
+${patternInstruction}
+
 Key requirements:
 - Age-appropriate difficulty progression across paper sections
 - Proper marks allocation and time management
@@ -108,6 +140,7 @@ Your papers are print-ready, professionally formatted, and include complete answ
 
 School: Nethaji Vidhyalayam, Chennai
 Curriculum: ${curriculum}
+Question Pattern: ${questionPattern === "state_board" ? "Tamil Nadu State Board" : questionPattern === "cbse" ? "CBSE" : questionPattern === "icse" ? "ICSE" : "Custom"}
 Grade: ${grade}
 Subject: ${subject}
 Term: ${term}

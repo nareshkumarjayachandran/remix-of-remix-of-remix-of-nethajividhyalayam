@@ -90,6 +90,13 @@ const QUESTION_TYPES = [
   { id: "diagram", label: "Diagram/Map", emoji: "📐", color: "bg-amber-100 text-amber-700 border-amber-300" },
 ];
 
+const QUESTION_PATTERNS = [
+  { id: "state_board", label: "State Board", emoji: "🏛️", desc: "TN State Board exam pattern" },
+  { id: "cbse", label: "CBSE", emoji: "📘", desc: "CBSE exam pattern" },
+  { id: "icse", label: "ICSE", emoji: "📗", desc: "ICSE exam pattern" },
+  { id: "custom", label: "Custom", emoji: "⚙️", desc: "Your own pattern" },
+];
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 // ─── Diagram SVG Components ──────────────────────────────────────────────
@@ -273,8 +280,15 @@ export default function QuestionPaper() {
     language: "English",
     topics: "",
     curriculum: "Samacheer Kalvi",
+    questionPattern: "state_board",
     questionTypes: ["multiple_choice", "fill_in_blanks", "true_false", "match_following", "short_answer", "long_answer", "diagram"],
   });
+
+  // Auto-set default pattern when curriculum changes
+  const handleCurriculumChange = (curriculumId: string) => {
+    const defaultPattern = curriculumId === "Oxford Merry Birds" ? "cbse" : "state_board";
+    setForm(prev => ({ ...prev, curriculum: curriculumId, questionPattern: defaultPattern }));
+  };
 
   const selectedExam = EXAM_TYPES.find((e) => e.id === form.examType)!;
 
@@ -745,7 +759,7 @@ export default function QuestionPaper() {
               <Label className="text-sm font-bold text-gray-700 mb-2 block">📚 Curriculum</Label>
               <div className="grid grid-cols-2 gap-3">
                 {CURRICULA.map((c) => (
-                  <button key={c.id} onClick={() => setForm({ ...form, curriculum: c.id })}
+                  <button key={c.id} onClick={() => handleCurriculumChange(c.id)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all ${
                       form.curriculum === c.id
                         ? c.id === "Oxford Merry Birds" ? "border-pink-500 bg-pink-50 shadow-sm" : "border-indigo-500 bg-indigo-50 shadow-sm"
@@ -756,6 +770,25 @@ export default function QuestionPaper() {
                       <span className={`text-sm font-bold block ${form.curriculum === c.id ? (c.id === "Oxford Merry Birds" ? "text-pink-700" : "text-indigo-700") : "text-gray-600"}`}>{c.label}</span>
                       <span className="text-xs text-gray-400">{c.desc}</span>
                     </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Question Pattern */}
+            <div className="md:col-span-2">
+              <Label className="text-sm font-bold text-gray-700 mb-2 block">🏛️ Question Pattern <span className="text-gray-400 font-normal">(auto-set based on curriculum)</span></Label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {QUESTION_PATTERNS.map((p) => (
+                  <button key={p.id} onClick={() => setForm({ ...form, questionPattern: p.id })}
+                    className={`flex flex-col items-center gap-1 px-3 py-3 rounded-xl border-2 transition-all ${
+                      form.questionPattern === p.id
+                        ? isMerryBirds ? "border-pink-500 bg-pink-50 shadow-sm" : "border-indigo-500 bg-indigo-50 shadow-sm"
+                        : "border-gray-200 bg-gray-50 hover:border-gray-300"
+                    }`}>
+                    <span className="text-xl">{p.emoji}</span>
+                    <span className={`text-sm font-bold ${form.questionPattern === p.id ? (isMerryBirds ? "text-pink-700" : "text-indigo-700") : "text-gray-600"}`}>{p.label}</span>
+                    <span className="text-xs text-gray-400">{p.desc}</span>
                   </button>
                 ))}
               </div>
