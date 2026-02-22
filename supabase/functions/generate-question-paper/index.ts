@@ -34,7 +34,18 @@ serve(async (req) => {
         : language === "Hindi"
         ? "Write ALL content ONLY in Hindi script (हिंदी). ZERO English words allowed."
         : language === "Bilingual"
-        ? `FULLY BILINGUAL (${biLang1} + ${biLang2}): STRUCTURE: Write the COMPLETE ${biLang1} text FIRST, then " / ", then the COMPLETE ${biLang2} translation. LEFT of "/" is ALWAYS ${biLang1}. RIGHT of "/" is ALWAYS ${biLang2}. CORRECT: "The sun rises in the east. / சூரியன் கிழக்கில் உதிக்கிறது." WRONG: "நண்பன் / நண்பன் வந்தான்" — both sides are ${biLang2}! LEFT must be ${biLang1}. For MCQ options: "a) option / translated option". TRANSLATION QUALITY — CRITICAL: You MUST translate with Google Translate-level accuracy or better. Use the most natural, grammatically perfect ${biLang2} that a native speaker would instantly recognize as correct. For Tamil: use proper சொற்கள், correct விகுதிகள், and natural sentence structure — NOT literal word-by-word translation. Example: "Fill in the blanks" = "கோடிட்ட இடங்களை நிரப்புக", "Choose the correct answer" = "சரியான விடையைத் தேர்ந்தெடுக்கவும்". Every word must be dictionary-accurate and contextually appropriate. No labels like "English:" or "தமிழ்:".`
+        ? `FULLY BILINGUAL (${biLang1} + ${biLang2}): 
+STRUCTURE: Write the COMPLETE ${biLang1} text FIRST, then " / ", then the COMPLETE ${biLang2} translation. 
+LEFT of "/" is ALWAYS ${biLang1}. RIGHT of "/" is ALWAYS ${biLang2}.
+APPLY THIS TO EVERYTHING: questions, answers, options, headings, instructions, match items.
+CORRECT: "The sun rises in the east. / சூரியன் கிழக்கில் உதிக்கிறது."
+CORRECT MCQ: options array WITHOUT a) b) prefix — just "Sun / சூரியன்", "Moon / நிலா"
+CORRECT MATCH: left items "Man / மனிதன்", right items "Sees with eyes / கண்களால் பார்க்கிறான்"
+CORRECT HEADING: "I. Choose the correct answer / சரியான விடையைத் தேர்ந்தெடுக்கவும்"
+CORRECT TRUE/FALSE: "Plants grow in soil. / தாவரங்கள் மண்ணில் வளர்கின்றன. (True / False)"
+WRONG: "பயிர்கள் தான் மண்ணில் தோன்றுகின்றன. / फसलें ही मिट्टी में उगाई जाती हैं।" — BOTH sides are non-${biLang1}! LEFT must be ${biLang1}.
+WRONG: "மனிதன்" alone without ${biLang1} — must be "${biLang1} word / ${biLang2} word".
+TRANSLATION: Google Translate-level accuracy. Natural, grammatically perfect ${biLang2}. No labels like "English:" or "தமிழ்:".`
         : "Write ALL content ONLY in clear English. No Tamil script.";
 
     const marksConfig: Record<string, { partA: number; partB: number; partC: number; partD: number }> = {
@@ -192,23 +203,23 @@ Return ONLY valid JSON (no markdown, no code blocks):
       "subsections": [
         {
           "type": "multiple_choice",
-          "heading": "I. Choose the correct answer",
+          "heading": "${language === "Bilingual" ? `I. Choose the correct answer / சரியான விடையைத் தேர்ந்தெடுக்கவும்` : "I. Choose the correct answer"}",
           "questions": [
-            { "id": 1, "question": "...", "options": ["a) ...", "b) ...", "c) ...", "d) ..."], "answer": "a) ...", "marks": 1 }
+            { "id": 1, "question": "${language === "Bilingual" ? "What gives us light? / நமக்கு ஒளி தருவது எது?" : "..."}", "options": ["${language === "Bilingual" ? "Sun / சூரியன்" : "option1"}", "${language === "Bilingual" ? "Moon / நிலா" : "option2"}", "${language === "Bilingual" ? "Star / நட்சத்திரம்" : "option3"}", "${language === "Bilingual" ? "Cloud / மேகம்" : "option4"}"], "answer": "${language === "Bilingual" ? "Sun / சூரியன்" : "option1"}", "marks": 1 }
           ]
         },
         {
           "type": "fill_in_blanks",
-          "heading": "II. Fill in the blanks",
+          "heading": "${language === "Bilingual" ? "II. Fill in the blanks / கோடிட்ட இடங்களை நிரப்புக" : "II. Fill in the blanks"}",
           "questions": [
-            { "id": 6, "question": "... _______ ...", "answer": "...", "marks": 1 }
+            { "id": 6, "question": "${language === "Bilingual" ? "The _______ gives us light. / _______ நமக்கு ஒளி தருகிறது." : "... _______ ..."}", "answer": "${language === "Bilingual" ? "Sun / சூரியன்" : "..."}", "marks": 1 }
           ]
         },
         {
           "type": "true_false",
-          "heading": "III. Write True or False",
+          "heading": "${language === "Bilingual" ? "III. True or False / சரியா? தவறா?" : "III. Write True or False"}",
           "questions": [
-            { "id": 9, "question": "...", "answer": "True", "marks": 1 }
+            { "id": 9, "question": "${language === "Bilingual" ? "Plants grow in soil. / தாவரங்கள் மண்ணில் வளர்கின்றன." : "..."}", "answer": "True", "marks": 1 }
           ]
         }
       ]
@@ -216,16 +227,16 @@ Return ONLY valid JSON (no markdown, no code blocks):
     {
       "partLabel": "Part B",
       "type": "short",
-      "heading": "Part B: Short Answer Questions",
+      "heading": "${language === "Bilingual" ? "Part B: Short Answer Questions / சிறு விடை வினாக்கள்" : "Part B: Short Answer Questions"}",
       "marksPerQuestion": 2,
       "totalMarks": <calculated>,
-      "instructions": "Answer in one or two sentences",
+      "instructions": "${language === "Bilingual" ? "Answer in one or two sentences / ஓரிரு வாக்கியங்களில் விடையளிக்கவும்" : "Answer in one or two sentences"}",
       "subsections": [
         {
           "type": "match_following",
-          "heading": "IV. Match the following",
+          "heading": "${language === "Bilingual" ? "IV. Match the following / பொருத்துக" : "IV. Match the following"}",
           "questions": [
-            { "id": 12, "left": ["...", "...", "..."], "right": ["...", "...", "..."], "answers": ["...", "...", "..."], "marks": 3 }
+            { "id": 12, "left": ["${language === "Bilingual" ? "Cat / பூனை" : "..."}", "${language === "Bilingual" ? "Dog / நாய்" : "..."}", "${language === "Bilingual" ? "Fish / மீன்" : "..."}"], "right": ["${language === "Bilingual" ? "Swims / நீந்துகிறது" : "..."}", "${language === "Bilingual" ? "Barks / குரைக்கிறது" : "..."}", "${language === "Bilingual" ? "Purrs / சத்தமிடுகிறது" : "..."}"], "answers": ["${language === "Bilingual" ? "Purrs / சத்தமிடுகிறது" : "..."}", "${language === "Bilingual" ? "Barks / குரைக்கிறது" : "..."}", "${language === "Bilingual" ? "Swims / நீந்துகிறது" : "..."}"], "marks": 3 }
           ]
         },
         {
@@ -293,7 +304,14 @@ CRITICAL RULES:
 6. For diagram questions: ALWAYS include "diagramType" with exactly ONE of these values: "plant", "body", "solar", "water_cycle", "map_india", "map_world", "geometry", "custom". Also include "diagramLabels" array with 4-6 string labels.
 7. For map questions: use diagramType "map_india" or "map_world" with place/feature names as diagramLabels
 8. Questions should progress from easy to challenging
-9. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Hindi" ? "EVERY word must be Hindi script only" : language === "Bilingual" ? `FULLY BILINGUAL: Every question AND answer MUST have BOTH ${biLang1} and ${biLang2} separated by " / " (forward slash). NO language labels like "English:" or "தமிழ்:" — just the text in both languages with / separator. Use elegant, natural, literary-quality translations.` : "Pure English only"}
+9. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Hindi" ? "EVERY word must be Hindi script only" : language === "Bilingual" ? `FULLY BILINGUAL — ABSOLUTE RULES:
+   a) EVERY question, answer, option, heading, instruction, match item MUST be "${biLang1} text / ${biLang2} text".
+   b) LEFT of "/" is ALWAYS ${biLang1}. RIGHT is ALWAYS ${biLang2}. NEVER put ${biLang2} on both sides.
+   c) MCQ options: DO NOT include a) b) c) d) prefixes — system adds them. Just "English text / translated text".
+   d) Match items: EACH left and right item must be bilingual "${biLang1} / ${biLang2}".
+   e) Headings: "I. Choose the correct answer / சரியான விடையைத் தேர்ந்தெடுக்கவும்".
+   f) WRONG: "மனிதன்" alone — must be "Man / மனிதன்". WRONG: "பயிர்கள் / फसलें" — LEFT must be ${biLang1}.
+   g) Google Translate-level accuracy for all translations.` : "Pure English only"}
 10. Distribute marks proportionally among the included parts
 11. The diagramType MUST be a single value like "plant" or "body", NEVER pipe-separated like "plant|body|solar"`;
 
