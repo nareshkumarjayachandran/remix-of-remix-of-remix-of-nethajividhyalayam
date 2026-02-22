@@ -51,7 +51,7 @@ serve(async (req) => {
         : language === "Hindi"
         ? "STRICTLY write ALL content — every question, every answer, every option, every heading, every instruction — ONLY in Hindi script (हिंदी). ZERO English words allowed anywhere."
         : language === "Bilingual"
-        ? `Write EVERY question in ${biLang1} first, then its ${biLang2} translation immediately after in parentheses. Format: '${biLang1} question (${biLangLabel2} translation)'. ALL section headings must be bilingual: '${biLang1} Heading (${biLangLabel2} Heading)'. Both languages must always appear together for every piece of content.`
+        ? `FULLY BILINGUAL (${biLang1} + ${biLang2}): Write EVERY piece of content in BOTH languages — questions, answers, options, instructions, headings. Format each question as:\n${biLang1}: <full question>\n${biLangLabel2}: <full translation of the same question>\nDo the same for EVERY answer, EVERY option, EVERY instruction. Both languages must appear completely for ALL content. This is a FULL TRANSLATION, not just a parenthetical hint.`
         : "Write ALL content ONLY in clear, simple English appropriate for the grade level. Do NOT include any Tamil script or Tamil words anywhere. Pure English only.";
 
     const difficultyGuide =
@@ -252,7 +252,7 @@ CRITICAL RULES:
 ${language === "Tamil"
   ? "   ⛔ TAMIL ONLY: Every single word in the ENTIRE JSON output — questions, answers, options, headings, instructions — must be in Tamil script. NO English letters, NO English words, NO romanized Tamil. If you write even one English word, the worksheet is WRONG."
   : language === "Bilingual"
-  ? "   ⚠️ BILINGUAL: Every question MUST have both English AND Tamil. Never write just English or just Tamil alone. Always pair them together."
+  ? `   ⚠️ FULLY BILINGUAL: Every question AND every answer MUST be written completely in BOTH ${biLang1} and ${biLang2}. Full translation of questions, answers, options, instructions — not just a word or parenthetical hint. Both languages in full for ALL content.`
   : "   ⛔ ENGLISH ONLY: Every single word must be in English. NO Tamil script anywhere in the output."
 }
 ${curriculumRules}`;
