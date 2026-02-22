@@ -45,7 +45,10 @@ const socials = [
 const getAcademicYear = () => {
   const now = new Date();
   const year = now.getFullYear();
-  return `${year}-${String(year + 1).slice(-2)}`;
+  const month = now.getMonth(); // 0-indexed: 0=Jan, 5=Jun
+  // Academic year runs June to May. Before June, show previous year's session.
+  const startYear = month < 5 ? year - 1 : year;
+  return `${startYear}-${String(startYear + 1).slice(-2)}`;
 };
 
 const SocialSidebar = () => {

@@ -797,9 +797,11 @@ export default function WorksheetMaker() {
     const html = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
       <head><meta charset="utf-8"><title>${displayedWorksheet.title}</title>
+      <xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml>
       <style>
-        body { font-family: 'Noto Sans Tamil', Arial, sans-serif; font-size: 13px; color: #111; margin: 40px; }
-        h1 { font-size: 18px; text-align: center; color: #1a3a5c; }
+        @page { size: A4 portrait; margin: 1.5cm 2cm; }
+        body { font-family: 'Noto Sans Tamil', Arial, sans-serif; font-size: 13px; color: #111; margin: 0; padding: 0; }
+        h1 { font-size: 18px; text-align: center; color: #1a3a5c; margin: 4px 0; }
         h2 { font-size: 15px; color: #1a3a5c; }
         h3 { font-size: 13px; }
         p { margin: 6px 0; }
@@ -807,16 +809,14 @@ export default function WorksheetMaker() {
       </style>
       </head>
       <body>
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px">
-          <img src="${window.location.origin}/nethaji_logo_print.webp" alt="Logo" style="width:110px;height:110px;object-fit:contain" />
-          <div style="flex:1;text-align:center">
-            <h1 style="margin:0">${displayedWorksheet.title}</h1>
-            <p style="margin:4px 0;color:#555">${formData.curriculum} · ${formData.grade} · ${formData.subject} · ${formData.term}</p>
-          </div>
+        <div style="text-align:center;margin-bottom:12px">
+          <img src="${window.location.origin}/nethaji_logo_print.webp" alt="Logo" style="width:70px;height:70px;object-fit:contain" />
+          <h1 style="margin:4px 0">${displayedWorksheet.title}</h1>
+          <p style="margin:2px 0;color:#555;font-size:12px">${formData.curriculum} · ${formData.grade} · ${formData.subject} · ${formData.term}</p>
         </div>
-        <hr/>
-        <p><b>Name:</b> _____________________________ &nbsp;&nbsp; <b>Date:</b> __________________ &nbsp;&nbsp; <b>Score:</b> ______ / ${formData.numQuestions}</p>
-        <p style="background:#fffde7;padding:8px;border-left:4px solid #f59e0b"><b>Instructions:</b> ${displayedWorksheet.instructions}</p>
+        <hr style="border:1px solid #1a3a5c"/>
+        <p style="font-size:12px"><b>Name:</b> _____________________________ &nbsp;&nbsp; <b>Date:</b> __________________ &nbsp;&nbsp; <b>Score:</b> ______ / ${formData.numQuestions}</p>
+        <p style="background:#fffde7;padding:6px 8px;border-left:4px solid #f59e0b;font-size:12px"><b>Instructions:</b> ${displayedWorksheet.instructions}</p>
         ${sections}
         ${answerKey}
       </body></html>`;
@@ -1065,9 +1065,13 @@ export default function WorksheetMaker() {
       <style>{`
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; font-family: 'Noto Sans Tamil', 'Noto Serif Tamil', Arial, sans-serif !important; }
-          .worksheet-card { box-shadow: none !important; border: 1px solid #aaa !important; }
-          @page { margin: 1.5cm; size: A4 portrait; }
+          body { background: white !important; font-family: 'Noto Sans Tamil', 'Noto Serif Tamil', Arial, sans-serif !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .worksheet-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; }
+          .min-h-screen { min-height: auto !important; background: white !important; }
+          .max-w-4xl { max-width: 100% !important; padding: 0 !important; }
+          @page { margin: 1.2cm 1.5cm; size: A4 portrait; }
+          img { max-height: 80px !important; max-width: 80px !important; }
+          .bg-gradient-to-r { background: #1a3a5c !important; -webkit-print-color-adjust: exact; }
         }
         .tamil-font, .tamil-font * { font-family: 'Noto Sans Tamil', 'Noto Serif Tamil', 'Baloo 2', sans-serif !important; }
         ${isTamil ? `
@@ -1511,7 +1515,6 @@ export default function WorksheetMaker() {
               <Button onClick={generate} variant="outline" className="gap-2 border-gray-300">
                 <RefreshCw className="h-4 w-4" /> Regenerate
               </Button>
-              {/* Download dropdown */}
               {/* WhatsApp Share */}
               <Button
                 onClick={handleShareWhatsApp}
@@ -1520,30 +1523,13 @@ export default function WorksheetMaker() {
                 <Share2 className="h-4 w-4" />
                 <span className="hidden sm:inline">Share on</span> WhatsApp
               </Button>
-              {/* Download dropdown */}
-              <div className="relative group ml-auto">
-                <Button className="gap-2 bg-sky-600 hover:bg-sky-700 text-white pr-3">
-                  <Download className="h-4 w-4" /> Download <ChevronDown className="h-3 w-3 ml-1" />
-                </Button>
-                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden group-hover:block min-w-[180px] overflow-hidden">
-                  <button onClick={handlePrint}
-                    className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-700 transition-colors border-b border-gray-100">
-                    <Printer className="h-4 w-4 text-sky-500" />
-                    <div className="text-left">
-                      <div className="font-semibold">Save as PDF</div>
-                      <div className="text-xs text-gray-400">Print → Save as PDF</div>
-                    </div>
-                  </button>
-                  <button onClick={handleDownloadWord}
-                    className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
-                    <FileText className="h-4 w-4 text-blue-500" />
-                    <div className="text-left">
-                      <div className="font-semibold">Save as Word</div>
-                      <div className="text-xs text-gray-400">Open in Word / LibreOffice</div>
-                    </div>
-                  </button>
-                </div>
-              </div>
+              {/* Direct download buttons */}
+              <Button onClick={handlePrint} className="gap-2 bg-sky-600 hover:bg-sky-700 text-white">
+                <Download className="h-4 w-4" /> Save as PDF
+              </Button>
+              <Button onClick={handleDownloadWord} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+                <FileText className="h-4 w-4" /> Save as Word
+              </Button>
             </div>
 
             {/* Worksheet document */}
@@ -1554,7 +1540,7 @@ export default function WorksheetMaker() {
                 <img
                   src="/nethaji_logo_print.webp"
                   alt="Nethaji Vidhyalayam"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 h-28 w-28 object-contain print:h-24 print:w-24"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-28 w-28 object-contain print:h-16 print:w-16"
                   style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}
                 />
                 {/* Centered title content */}
