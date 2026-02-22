@@ -34,7 +34,7 @@ serve(async (req) => {
         : language === "Hindi"
         ? "Write ALL content ONLY in Hindi script (हिंदी). ZERO English words allowed."
         : language === "Bilingual"
-        ? `Write every question in ${biLang1} first, then ${biLang2} translation in parentheses.`
+        ? `FULLY BILINGUAL (${biLang1} + ${biLang2}): Write EVERY piece of content in BOTH languages — questions, answers, options, instructions, headings. For each question, write the full ${biLang1} version first, then the full ${biLang2} translation. Do the same for EVERY answer and option. This is a COMPLETE TRANSLATION in both languages, not just parenthetical hints.`
         : "Write ALL content ONLY in clear English. No Tamil script.";
 
     const marksConfig: Record<string, { partA: number; partB: number; partC: number; partD: number }> = {
@@ -293,7 +293,7 @@ CRITICAL RULES:
 6. For diagram questions: ALWAYS include "diagramType" with exactly ONE of these values: "plant", "body", "solar", "water_cycle", "map_india", "map_world", "geometry", "custom". Also include "diagramLabels" array with 4-6 string labels.
 7. For map questions: use diagramType "map_india" or "map_world" with place/feature names as diagramLabels
 8. Questions should progress from easy to challenging
-9. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Bilingual" ? "Both English and Tamil for every question" : "Pure English only"}
+9. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Hindi" ? "EVERY word must be Hindi script only" : language === "Bilingual" ? `FULLY BILINGUAL: Every question AND answer must be completely written in BOTH ${biLang1} and ${biLang2}. Full translation, not just hints.` : "Pure English only"}
 10. Distribute marks proportionally among the included parts
 11. The diagramType MUST be a single value like "plant" or "body", NEVER pipe-separated like "plant|body|solar"`;
 
