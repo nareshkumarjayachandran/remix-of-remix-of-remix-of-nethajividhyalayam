@@ -38,14 +38,15 @@ serve(async (req) => {
 STRUCTURE: Write the COMPLETE ${biLang1} text FIRST, then " / ", then the COMPLETE ${biLang2} translation. 
 LEFT of "/" is ALWAYS ${biLang1}. RIGHT of "/" is ALWAYS ${biLang2}.
 APPLY THIS TO EVERYTHING: questions, answers, options, headings, instructions, match items.
-CORRECT: "The sun rises in the east. / சூரியன் கிழக்கில் உதிக்கிறது."
-CORRECT MCQ: options array WITHOUT a) b) prefix — just "Sun / சூரியன்", "Moon / நிலா"
-CORRECT MATCH: left items "Man / மனிதன்", right items "Sees with eyes / கண்களால் பார்க்கிறான்"
-CORRECT HEADING: "I. Choose the correct answer / சரியான விடையைத் தேர்ந்தெடுக்கவும்"
-CORRECT TRUE/FALSE: "Plants grow in soil. / தாவரங்கள் மண்ணில் வளர்கின்றன. (True / False)"
-WRONG: "பயிர்கள் தான் மண்ணில் தோன்றுகின்றன. / फसलें ही मिट्टी में उगाई जाती हैं।" — BOTH sides are non-${biLang1}! LEFT must be ${biLang1}.
-WRONG: "மனிதன்" alone without ${biLang1} — must be "${biLang1} word / ${biLang2} word".
-TRANSLATION: Google Translate-level accuracy. Natural, grammatically perfect ${biLang2}. No labels like "English:" or "தமிழ்:".`
+${biLang1 === "Tamil" && biLang2 === "Hindi" ? `CORRECT: "சூரியன் கிழக்கில் உதிக்கிறது. / सूरज पूरब में उगता है।"
+CORRECT MCQ: "சூரியன் / सूरज", "நிலா / चाँद"
+CORRECT HEADING: "I. சரியான விடையைத் தேர்ந்தெடுக்கவும் / सही उत्तर चुनिए"
+CORRECT MATCH: "பூனை / बिल्ली", "நாய் / कुत्ता"` : biLang1 === "English" ? `CORRECT: "The sun rises in the east. / ${biLang2 === "Tamil" ? "சூரியன் கிழக்கில் உதிக்கிறது." : "सूरज पूरब में उगता है।"}"
+CORRECT MCQ: "Sun / ${biLang2 === "Tamil" ? "சூரியன்" : "सूरज"}", "Moon / ${biLang2 === "Tamil" ? "நிலா" : "चाँद"}"
+CORRECT HEADING: "I. Choose the correct answer / ${biLang2 === "Tamil" ? "சரியான விடையைத் தேர்ந்தெடுக்கவும்" : "सही उत्तर चुनिए"}"` : `CORRECT: "${biLang1} sentence. / ${biLang2} translation."`}
+WRONG: Any output where BOTH sides of "/" are in the SAME language. LEFT must be ${biLang1}, RIGHT must be ${biLang2}.
+MCQ options: DO NOT include a) b) c) d) prefixes — system adds them.
+TRANSLATION: Google Translate-level accuracy. Natural, grammatically perfect ${biLang2}. No labels.`
         : "Write ALL content ONLY in clear English. No Tamil script.";
 
     const marksConfig: Record<string, { partA: number; partB: number; partC: number; partD: number }> = {
