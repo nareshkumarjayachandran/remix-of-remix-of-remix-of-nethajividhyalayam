@@ -209,38 +209,38 @@ Return ONLY valid JSON (no markdown, no code blocks, no explanations — just ra
   "sections": [
     {
       "type": "fill_in_blanks",
-      "heading": "${language === "Tamil" ? "பிரிவு A: காலி இடங்களை நிரப்புக" : language === "Bilingual" ? "Section A: Fill in the Blanks (காலி இடங்களை நிரப்புக)" : "Section A: Fill in the Blanks"}",
+      "heading": "${language === "Tamil" ? "பிரிவு A: காலி இடங்களை நிரப்புக" : language === "Bilingual" ? `Section A: Fill in the Blanks / ${biLang2 === "Tamil" ? "காலி இடங்களை நிரப்புக" : biLang2 === "Hindi" ? "रिक्त स्थान भरिए" : "Fill in the Blanks"}` : "Section A: Fill in the Blanks"}",
       "questions": [
-        { "id": 1, "question": "${language === "Bilingual" ? "The _______ gives us light. / _______ நமக்கு ஒளி தருகிறது." : "sentence with _______ for the blank"}", "answer": "${language === "Bilingual" ? "Sun / சூரியன்" : "exact answer word"}" }
+        { "id": 1, "question": "${biLang1} sentence with _______ / ${biLang2} sentence with _______", "answer": "${biLang1} answer / ${biLang2} answer" }
       ]
     },
     {
       "type": "multiple_choice",
-      "heading": "${language === "Tamil" ? "பிரிவு B: சரியான விடையைத் தேர்க" : language === "Bilingual" ? "Section B: Choose the Correct Answer (சரியான விடையைத் தேர்க)" : "Section B: Choose the Correct Answer"}",
+      "heading": "${language === "Tamil" ? "பிரிவு B: சரியான விடையைத் தேர்க" : language === "Bilingual" ? `Section B: Choose the Correct Answer / ${biLang2 === "Tamil" ? "சரியான விடையைத் தேர்க" : biLang2 === "Hindi" ? "सही उत्तर चुनिए" : "Choose the Correct Answer"}` : "Section B: Choose the Correct Answer"}",
       "questions": [
-        { "id": 5, "question": "${language === "Bilingual" ? "What gives us light? / நமக்கு ஒளி தருவது எது?" : "question text"}", "options": ["${language === "Bilingual" ? "Sun / சூரியன்" : "option1"}", "${language === "Bilingual" ? "Moon / நிலா" : "option2"}", "${language === "Bilingual" ? "Star / நட்சத்திரம்" : "option3"}", "${language === "Bilingual" ? "Cloud / மேகம்" : "option4"}"], "answer": "${language === "Bilingual" ? "Sun / சூரியன்" : "option1"}" }
+        { "id": 5, "question": "${biLang1} question / ${biLang2} question", "options": ["${biLang1} opt / ${biLang2} opt", "..."], "answer": "${biLang1} answer / ${biLang2} answer" }
       ]
     },
     {
       "type": "match_following",
-      "heading": "${language === "Tamil" ? "பிரிவு C: பொருத்துக" : language === "Bilingual" ? "Section C: Match the Following (பொருத்துக)" : "Section C: Match the Following"}",
+      "heading": "${language === "Tamil" ? "பிரிவு C: பொருத்துக" : language === "Bilingual" ? `Section C: Match the Following / ${biLang2 === "Tamil" ? "பொருத்துக" : biLang2 === "Hindi" ? "मिलान कीजिए" : "Match the Following"}` : "Section C: Match the Following"}",
       "questions": [
-        { "id": 8, "left": ["${language === "Bilingual" ? "Cat / பூனை" : "item1"}", "${language === "Bilingual" ? "Dog / நாய்" : "item2"}", "${language === "Bilingual" ? "Fish / மீன்" : "item3"}", "${language === "Bilingual" ? "Bird / பறவை" : "item4"}"], "right": ["${language === "Bilingual" ? "Swims / நீந்துகிறது" : "match_a"}", "${language === "Bilingual" ? "Flies / பறக்கிறது" : "match_b"}", "${language === "Bilingual" ? "Barks / குரைக்கிறது" : "match_c"}", "${language === "Bilingual" ? "Purrs / சத்தமிடுகிறது" : "match_d"}"], "answers": ["${language === "Bilingual" ? "Purrs / சத்தமிடுகிறது" : "match_b"}", "${language === "Bilingual" ? "Barks / குரைக்கிறது" : "match_d"}", "${language === "Bilingual" ? "Swims / நீந்துகிறது" : "match_a"}", "${language === "Bilingual" ? "Flies / பறக்கிறது" : "match_c"}"] }
+        { "id": 8, "left": ["${biLang1} item / ${biLang2} item", "..."], "right": ["${biLang1} match / ${biLang2} match", "..."], "answers": ["${biLang1} ans / ${biLang2} ans", "..."] }
       ]
     },
     {
       "type": "short_answer",
-      "heading": "${language === "Tamil" ? "பிரிவு D: சுருக்கமாக விடை எழுதுக" : language === "Bilingual" ? "Section D: Short Answer (சுருக்கமாக விடை எழுதுக)" : "Section D: Answer in One or Two Sentences"}",
+      "heading": "${language === "Tamil" ? "பிரிவு D: சுருக்கமாக விடை எழுதுக" : language === "Bilingual" ? `Section D: Short Answer / ${biLang2 === "Tamil" ? "சுருக்கமாக விடை எழுதுக" : biLang2 === "Hindi" ? "संक्षिप्त उत्तर" : "Short Answer"}` : "Section D: Answer in One or Two Sentences"}",
       "questions": [
-        { "id": 10, "question": "${language === "Bilingual" ? "What do plants need to grow? / தாவரங்கள் வளர என்ன தேவை?" : "question text"}", "answer": "${language === "Bilingual" ? "Sunlight and water / சூரிய ஒளியும் நீரும்" : "model answer 1-2 sentences"}" }
+        { "id": 10, "question": "${biLang1} question / ${biLang2} question", "answer": "${biLang1} answer / ${biLang2} answer" }
       ]
     },
     ${diagramSection}
     {
       "type": "true_false",
-      "heading": "${language === "Tamil" ? "பிரிவு: சரியா? தவறா?" : language === "Bilingual" ? "Section: True or False (சரியா? தவறா?)" : "Section: True or False"}",
+      "heading": "${language === "Tamil" ? "பிரிவு: சரியா? தவறா?" : language === "Bilingual" ? `Section: True or False / ${biLang2 === "Tamil" ? "சரியா? தவறா?" : biLang2 === "Hindi" ? "सही या गलत?" : "True or False"}` : "Section: True or False"}",
       "questions": [
-        { "id": 12, "question": "${language === "Bilingual" ? "The Earth revolves around the Sun. / பூமி சூரியனைச் சுற்றி வருகிறது." : "statement to evaluate"}", "answer": "True" }
+        { "id": 12, "question": "${biLang1} statement / ${biLang2} statement", "answer": "True" }
       ]
     }
   ]

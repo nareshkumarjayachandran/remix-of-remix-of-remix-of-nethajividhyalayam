@@ -204,23 +204,23 @@ Return ONLY valid JSON (no markdown, no code blocks):
       "subsections": [
         {
           "type": "multiple_choice",
-          "heading": "${language === "Bilingual" ? `I. Choose the correct answer / சரியான விடையைத் தேர்ந்தெடுக்கவும்` : "I. Choose the correct answer"}",
+          "heading": "I. ${biLang1 === "English" ? `Choose the correct answer / ${biLang2 === "Tamil" ? "சரியான விடையைத் தேர்ந்தெடுக்கவும்" : biLang2 === "Hindi" ? "सही उत्तर चुनिए" : "Choose the correct answer"}` : biLang1 === "Tamil" ? `சரியான விடையைத் தேர்ந்தெடுக்கவும் / ${biLang2 === "Hindi" ? "सही उत्तर चुनिए" : "Choose the correct answer"}` : "Choose the correct answer"}",
           "questions": [
-            { "id": 1, "question": "${language === "Bilingual" ? "What gives us light? / நமக்கு ஒளி தருவது எது?" : "..."}", "options": ["${language === "Bilingual" ? "Sun / சூரியன்" : "option1"}", "${language === "Bilingual" ? "Moon / நிலா" : "option2"}", "${language === "Bilingual" ? "Star / நட்சத்திரம்" : "option3"}", "${language === "Bilingual" ? "Cloud / மேகம்" : "option4"}"], "answer": "${language === "Bilingual" ? "Sun / சூரியன்" : "option1"}", "marks": 1 }
+            { "id": 1, "question": "${biLang1} question text / ${biLang2} translation", "options": ["${biLang1} option / ${biLang2} option", "..."], "answer": "${biLang1} answer / ${biLang2} answer", "marks": 1 }
           ]
         },
         {
           "type": "fill_in_blanks",
-          "heading": "${language === "Bilingual" ? "II. Fill in the blanks / கோடிட்ட இடங்களை நிரப்புக" : "II. Fill in the blanks"}",
+          "heading": "II. ${biLang1 === "English" ? `Fill in the blanks / ${biLang2 === "Tamil" ? "கோடிட்ட இடங்களை நிரப்புக" : biLang2 === "Hindi" ? "रिक्त स्थान भरिए" : "Fill in the blanks"}` : biLang1 === "Tamil" ? `கோடிட்ட இடங்களை நிரப்புக / ${biLang2 === "Hindi" ? "रिक्त स्थान भरिए" : "Fill in the blanks"}` : "Fill in the blanks"}",
           "questions": [
-            { "id": 6, "question": "${language === "Bilingual" ? "The _______ gives us light. / _______ நமக்கு ஒளி தருகிறது." : "... _______ ..."}", "answer": "${language === "Bilingual" ? "Sun / சூரியன்" : "..."}", "marks": 1 }
+            { "id": 6, "question": "${biLang1} _______ text / ${biLang2} _______ text", "answer": "${biLang1} answer / ${biLang2} answer", "marks": 1 }
           ]
         },
         {
           "type": "true_false",
-          "heading": "${language === "Bilingual" ? "III. True or False / சரியா? தவறா?" : "III. Write True or False"}",
+          "heading": "III. ${biLang1 === "English" ? `True or False / ${biLang2 === "Tamil" ? "சரியா? தவறா?" : biLang2 === "Hindi" ? "सही या गलत?" : "True or False"}` : biLang1 === "Tamil" ? `சரியா? தவறா? / ${biLang2 === "Hindi" ? "सही या गलत?" : "True or False"}` : "True or False"}",
           "questions": [
-            { "id": 9, "question": "${language === "Bilingual" ? "Plants grow in soil. / தாவரங்கள் மண்ணில் வளர்கின்றன." : "..."}", "answer": "True", "marks": 1 }
+            { "id": 9, "question": "${biLang1} statement / ${biLang2} statement", "answer": "True", "marks": 1 }
           ]
         }
       ]
@@ -228,16 +228,16 @@ Return ONLY valid JSON (no markdown, no code blocks):
     {
       "partLabel": "Part B",
       "type": "short",
-      "heading": "${language === "Bilingual" ? "Part B: Short Answer Questions / சிறு விடை வினாக்கள்" : "Part B: Short Answer Questions"}",
+      "heading": "Part B: ${biLang1 === "English" ? `Short Answer Questions / ${biLang2 === "Tamil" ? "சிறு விடை வினாக்கள்" : biLang2 === "Hindi" ? "संक्षिप्त उत्तर प्रश्न" : "Short Answer Questions"}` : biLang1 === "Tamil" ? `சிறு விடை வினாக்கள் / ${biLang2 === "Hindi" ? "संक्षिप्त उत्तर प्रश्न" : "Short Answer Questions"}` : "Short Answer Questions"}",
       "marksPerQuestion": 2,
       "totalMarks": <calculated>,
-      "instructions": "${language === "Bilingual" ? "Answer in one or two sentences / ஓரிரு வாக்கியங்களில் விடையளிக்கவும்" : "Answer in one or two sentences"}",
+      "instructions": "${biLang1 === "English" ? `Answer in one or two sentences / ${biLang2 === "Tamil" ? "ஓரிரு வாக்கியங்களில் விடையளிக்கவும்" : biLang2 === "Hindi" ? "एक या दो वाक्यों में उत्तर दीजिए" : "Answer in one or two sentences"}` : biLang1 === "Tamil" ? `ஓரிரு வாக்கியங்களில் விடையளிக்கவும் / ${biLang2 === "Hindi" ? "एक या दो वाक्यों में उत्तर दीजिए" : "Answer in one or two sentences"}` : "Answer in one or two sentences"}",
       "subsections": [
         {
           "type": "match_following",
-          "heading": "${language === "Bilingual" ? "IV. Match the following / பொருத்துக" : "IV. Match the following"}",
+          "heading": "IV. ${biLang1 === "English" ? `Match the following / ${biLang2 === "Tamil" ? "பொருத்துக" : biLang2 === "Hindi" ? "मिलान कीजिए" : "Match the following"}` : biLang1 === "Tamil" ? `பொருத்துக / ${biLang2 === "Hindi" ? "मिलान कीजिए" : "Match the following"}` : "Match the following"}",
           "questions": [
-            { "id": 12, "left": ["${language === "Bilingual" ? "Cat / பூனை" : "..."}", "${language === "Bilingual" ? "Dog / நாய்" : "..."}", "${language === "Bilingual" ? "Fish / மீன்" : "..."}"], "right": ["${language === "Bilingual" ? "Swims / நீந்துகிறது" : "..."}", "${language === "Bilingual" ? "Barks / குரைக்கிறது" : "..."}", "${language === "Bilingual" ? "Purrs / சத்தமிடுகிறது" : "..."}"], "answers": ["${language === "Bilingual" ? "Purrs / சத்தமிடுகிறது" : "..."}", "${language === "Bilingual" ? "Barks / குரைக்கிறது" : "..."}", "${language === "Bilingual" ? "Swims / நீந்துகிறது" : "..."}"], "marks": 3 }
+            { "id": 12, "left": ["${biLang1} item / ${biLang2} item", "..."], "right": ["${biLang1} match / ${biLang2} match", "..."], "answers": ["${biLang1} answer / ${biLang2} answer", "..."], "marks": 3 }
           ]
         },
         {
@@ -308,10 +308,10 @@ CRITICAL RULES:
 9. ${language === "Tamil" ? "EVERY word must be Tamil script only" : language === "Hindi" ? "EVERY word must be Hindi script only" : language === "Bilingual" ? `FULLY BILINGUAL — ABSOLUTE RULES:
    a) EVERY question, answer, option, heading, instruction, match item MUST be "${biLang1} text / ${biLang2} text".
    b) LEFT of "/" is ALWAYS ${biLang1}. RIGHT is ALWAYS ${biLang2}. NEVER put ${biLang2} on both sides.
-   c) MCQ options: DO NOT include a) b) c) d) prefixes — system adds them. Just "English text / translated text".
+   c) MCQ options: DO NOT include a) b) c) d) prefixes — system adds them. Just "${biLang1} text / ${biLang2} text".
    d) Match items: EACH left and right item must be bilingual "${biLang1} / ${biLang2}".
-   e) Headings: "I. Choose the correct answer / சரியான விடையைத் தேர்ந்தெடுக்கவும்".
-   f) WRONG: "மனிதன்" alone — must be "Man / மனிதன்". WRONG: "பயிர்கள் / फसलें" — LEFT must be ${biLang1}.
+   e) Headings must be bilingual: "${biLang1} heading / ${biLang2} heading".
+   f) WRONG: Any item in only one language. Every item MUST have "${biLang1} / ${biLang2}" format. LEFT must be ${biLang1}, RIGHT must be ${biLang2}.
    g) Google Translate-level accuracy for all translations.` : "Pure English only"}
 10. Distribute marks proportionally among the included parts
 11. The diagramType MUST be a single value like "plant" or "body", NEVER pipe-separated like "plant|body|solar"`;
