@@ -214,7 +214,7 @@ function drawQuote(doc: jsPDF, y: number, quote: string, author: string): number
 
 // ─── LOGO LOADER (uses print-quality logo) ───
 async function loadLogoBase64(): Promise<string> {
-  const resp = await fetch("/nethaji_logo_print.webp");
+  const resp = await fetch("/nethaji_logo_badge.png");
   const blob = await resp.blob();
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -233,7 +233,7 @@ export async function generateProspectusPDF() {
   // Helper to add logo — no mask, logo should be transparent PNG
   function addLogo(x: number, y: number, size: number, _maskBg?: RGB) {
     if (!logoData) return;
-    try { doc.addImage(logoData, "WEBP", x, y, size, size); } catch { /* skip */ }
+    try { doc.addImage(logoData, "PNG", x, y, size, size); } catch { /* skip */ }
   }
 
   // ═══════════════════════════════════════
