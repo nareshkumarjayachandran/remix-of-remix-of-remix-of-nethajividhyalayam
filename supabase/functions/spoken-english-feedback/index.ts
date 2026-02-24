@@ -52,7 +52,8 @@ serve(async (req) => {
 
   try {
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
-    if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!GROQ_API_KEY && !LOVABLE_API_KEY) throw new Error("No AI API key configured");
 
     const { targetText, spokenText, grade, topic, mode, conversationHistory, tamilMode } = await req.json();
 
@@ -156,26 +157,67 @@ Child just said: "${spokenText}"
 Respond naturally and encouragingly. In "feedback" field, write your conversational response. In "improvement" field, gently note any pronunciation tips if needed. In "nextWord" field, write the exact text you want to say back (for TTS). Keep it age-appropriate for ${grade}.`;
     }
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${GROQ_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 1024,
-      }),
-    });
+    const aiMessages = [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userMessage },
+    ];
 
-    if (!response.ok) {
-      const t = await response.text();
-      throw new Error(`AI gateway error [${response.status}]: ${t}`);
+    let response: Response | null = null;
+
+    // Primary: Groq
+    if (GROQ_API_KEY) {
+      try {
+        response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "llama-3.1-8b-instant",
+            messages: aiMessages,
+            response_format: { type: "json_object" },
+            max_tokens: 1024,
+          }),
+        });
+        if (!response.ok) {
+          console.error("Groq error:", response.status, await response.text());
+          response = null;
+        }
+      } catch (e) {
+        console.error("Groq fetch error:", e);
+        response = null;
+      }
+    }
+
+    // Fallback: Lovable AI
+    if (!response && LOVABLE_API_KEY) {
+      try {
+        response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-3-flash-preview",
+            messages: aiMessages,
+            response_format: { type: "json_object" },
+            max_tokens: 1024,
+          }),
+        });
+        if (!response.ok) {
+          console.error("Lovable AI error:", response.status, await response.text());
+          response = null;
+        }
+      } catch (e) {
+        console.error("Lovable AI fetch error:", e);
+        response = null;
+      }
+    }
+
+    if (!response) {
+      throw new Error("All AI services unavailable. Please try again.");
     }
 
     const data = await response.json();
