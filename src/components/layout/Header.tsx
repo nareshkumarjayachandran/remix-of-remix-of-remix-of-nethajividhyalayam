@@ -85,7 +85,7 @@ const Header = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500",
+        "w-full transition-all duration-500",
         isScrolled ? "bg-primary/95 backdrop-blur-md shadow-lg" : "bg-primary",
       )}
       style={{ overflow: "visible" }}

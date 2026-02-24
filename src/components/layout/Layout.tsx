@@ -12,9 +12,11 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
-      <TopBar />
-      <Header />
-      <main className="flex-1 mt-[60px]">{children}</main>
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <TopBar />
+        <Header />
+      </div>
+      <main className="flex-1 mt-[60px] md:mt-[100px]">{children}</main>
       <Footer />
       <ChatWidget />
       <SocialSidebar />
