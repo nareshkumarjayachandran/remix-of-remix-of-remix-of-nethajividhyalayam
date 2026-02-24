@@ -32,58 +32,75 @@ const CW = PW - M * 2;
 
 function drawBackgroundPattern(doc: jsPDF, variant: number = 0) {
   const patterns = [
-    // Soft circles
+    // Pattern 1: Colorful scattered circles — playful school feel
     () => {
-      doc.setGState(new (doc as any).GState({ opacity: 0.04 }));
-      setFill(doc, ORANGE);
-      for (let i = 0; i < 12; i++) {
-        const cx = 20 + (i % 4) * 55;
-        const cy = 30 + Math.floor(i / 4) * 95;
-        doc.circle(cx, cy, 18 + (i % 3) * 8, "F");
-      }
-      setFill(doc, NAVY);
-      for (let i = 0; i < 8; i++) {
-        const cx = 45 + (i % 3) * 60;
-        const cy = 70 + Math.floor(i / 3) * 80;
-        doc.circle(cx, cy, 12 + (i % 2) * 6, "F");
-      }
+      doc.setGState(new (doc as any).GState({ opacity: 0.045 }));
+      const colors: RGB[] = [ORANGE, TEAL, VIOLET, ROSE, EMERALD, GOLD];
+      const positions = [
+        [25, 35, 22], [170, 50, 18], [60, 130, 25], [150, 160, 20],
+        [30, 220, 16], [180, 250, 24], [100, 80, 14], [90, 200, 19],
+        [140, 100, 17], [50, 270, 21], [120, 240, 15], [170, 180, 13],
+      ];
+      positions.forEach(([x, yp, r], i) => {
+        setFill(doc, colors[i % colors.length]);
+        doc.circle(x, yp, r, "F");
+      });
       doc.setGState(new (doc as any).GState({ opacity: 1 }));
     },
-    // Dots grid
+    // Pattern 2: Colorful dot grid — neat and professional
     () => {
       doc.setGState(new (doc as any).GState({ opacity: 0.06 }));
-      setFill(doc, GOLD);
-      for (let x = 15; x < PW - 10; x += 12) {
-        for (let yp = 20; yp < PH - 20; yp += 12) {
-          doc.circle(x, yp, 1, "F");
+      const dotColors: RGB[] = [GOLD, TEAL, ORANGE, VIOLET];
+      let ci = 0;
+      for (let x = 15; x < PW - 10; x += 14) {
+        for (let yp = 20; yp < PH - 20; yp += 14) {
+          setFill(doc, dotColors[ci % dotColors.length]);
+          doc.circle(x, yp, 1.2, "F");
+          ci++;
         }
       }
       doc.setGState(new (doc as any).GState({ opacity: 1 }));
     },
-    // Diagonal lines
+    // Pattern 3: Corner watercolor blobs + confetti squares
     () => {
-      doc.setGState(new (doc as any).GState({ opacity: 0.03 }));
-      setDraw(doc, ORANGE);
-      doc.setLineWidth(0.5);
-      for (let i = -PH; i < PW + PH; i += 20) {
-        doc.line(i, 0, i + PH, PH);
-      }
+      doc.setGState(new (doc as any).GState({ opacity: 0.04 }));
+      // Corner blobs
+      setFill(doc, TEAL);
+      doc.circle(0, 0, 50, "F");
+      setFill(doc, ORANGE);
+      doc.circle(PW, PH, 45, "F");
+      setFill(doc, VIOLET);
+      doc.circle(PW, 0, 35, "F");
+      setFill(doc, ROSE);
+      doc.circle(0, PH, 38, "F");
+      // Confetti
+      doc.setGState(new (doc as any).GState({ opacity: 0.05 }));
+      const confettiColors: RGB[] = [GOLD, EMERALD, ORANGE, TEAL, VIOLET, ROSE];
+      const confetti = [
+        [40, 60], [160, 45], [80, 140], [130, 200], [50, 240],
+        [170, 120], [100, 90], [30, 180], [150, 270], [90, 260],
+        [120, 50], [60, 100],
+      ];
+      confetti.forEach(([px, py], i) => {
+        setFill(doc, confettiColors[i % confettiColors.length]);
+        doc.rect(px - 2, py - 2, 4, 4, "F");
+      });
       doc.setGState(new (doc as any).GState({ opacity: 1 }));
     },
-    // Corner flourishes + scattered diamonds
+    // Pattern 4: Soft horizontal wave bands — elegant
     () => {
-      doc.setGState(new (doc as any).GState({ opacity: 0.05 }));
-      setFill(doc, TEAL);
-      // Top-right arc
-      doc.circle(PW, 0, 40, "F");
-      // Bottom-left arc
-      doc.circle(0, PH, 40, "F");
+      doc.setGState(new (doc as any).GState({ opacity: 0.03 }));
+      const bandColors: RGB[] = [LIGHT_BLUE, LIGHT_ORANGE, LIGHT_GREEN, LIGHT_PURPLE, LIGHT_ROSE, LIGHT_YELLOW];
+      const bandH = PH / bandColors.length;
+      bandColors.forEach((c, i) => {
+        setFill(doc, c);
+        doc.rect(0, i * bandH, PW, bandH, "F");
+      });
+      // Accent circles on edges
+      doc.setGState(new (doc as any).GState({ opacity: 0.04 }));
       setFill(doc, GOLD);
-      // Scattered small diamonds
-      const pts = [[30, 50], [80, 120], [150, 80], [60, 200], [170, 230], [100, 260], [40, 150], [130, 170]];
-      for (const [px, py] of pts) {
-        doc.rect(px - 2, py - 2, 4, 4, "F");
-      }
+      doc.circle(PW / 2, 0, 30, "F");
+      doc.circle(PW / 2, PH, 30, "F");
       doc.setGState(new (doc as any).GState({ opacity: 1 }));
     },
   ];
@@ -195,9 +212,9 @@ function drawQuote(doc: jsPDF, y: number, quote: string, author: string): number
   return y + 30;
 }
 
-// ─── LOGO LOADER ───
+// ─── LOGO LOADER (uses background-removed circular logo) ───
 async function loadLogoBase64(): Promise<string> {
-  const resp = await fetch("/nethaji_logo_print.webp");
+  const resp = await fetch("/lovable-uploads/23b457f3-cee8-491e-a141-6cdeab1b9559.webp");
   const blob = await resp.blob();
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -213,12 +230,9 @@ export async function generateProspectusPDF() {
   let logoData: string;
   try { logoData = await loadLogoBase64(); } catch { logoData = ""; }
 
-  // Helper to add logo cleanly — white circle mask removes any image background
-  function addLogo(x: number, y: number, size: number, maskBg: RGB = WHITE) {
+  // Helper to add logo cleanly — no background mask needed, logo is already transparent
+  function addLogo(x: number, y: number, size: number, _maskBg?: RGB) {
     if (!logoData) return;
-    // Draw circular mask behind logo to blend cleanly
-    setFill(doc, maskBg);
-    doc.circle(x + size / 2, y + size / 2, size / 2, "F");
     try { doc.addImage(logoData, "WEBP", x, y, size, size); } catch { /* skip */ }
   }
 
