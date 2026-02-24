@@ -30,6 +30,66 @@ const PH = 297;
 const M = 18;
 const CW = PW - M * 2;
 
+function drawBackgroundPattern(doc: jsPDF, variant: number = 0) {
+  const patterns = [
+    // Soft circles
+    () => {
+      doc.setGState(new (doc as any).GState({ opacity: 0.04 }));
+      setFill(doc, ORANGE);
+      for (let i = 0; i < 12; i++) {
+        const cx = 20 + (i % 4) * 55;
+        const cy = 30 + Math.floor(i / 4) * 95;
+        doc.circle(cx, cy, 18 + (i % 3) * 8, "F");
+      }
+      setFill(doc, NAVY);
+      for (let i = 0; i < 8; i++) {
+        const cx = 45 + (i % 3) * 60;
+        const cy = 70 + Math.floor(i / 3) * 80;
+        doc.circle(cx, cy, 12 + (i % 2) * 6, "F");
+      }
+      doc.setGState(new (doc as any).GState({ opacity: 1 }));
+    },
+    // Dots grid
+    () => {
+      doc.setGState(new (doc as any).GState({ opacity: 0.06 }));
+      setFill(doc, GOLD);
+      for (let x = 15; x < PW - 10; x += 12) {
+        for (let yp = 20; yp < PH - 20; yp += 12) {
+          doc.circle(x, yp, 1, "F");
+        }
+      }
+      doc.setGState(new (doc as any).GState({ opacity: 1 }));
+    },
+    // Diagonal lines
+    () => {
+      doc.setGState(new (doc as any).GState({ opacity: 0.03 }));
+      setDraw(doc, ORANGE);
+      doc.setLineWidth(0.5);
+      for (let i = -PH; i < PW + PH; i += 20) {
+        doc.line(i, 0, i + PH, PH);
+      }
+      doc.setGState(new (doc as any).GState({ opacity: 1 }));
+    },
+    // Corner flourishes + scattered diamonds
+    () => {
+      doc.setGState(new (doc as any).GState({ opacity: 0.05 }));
+      setFill(doc, TEAL);
+      // Top-right arc
+      doc.circle(PW, 0, 40, "F");
+      // Bottom-left arc
+      doc.circle(0, PH, 40, "F");
+      setFill(doc, GOLD);
+      // Scattered small diamonds
+      const pts = [[30, 50], [80, 120], [150, 80], [60, 200], [170, 230], [100, 260], [40, 150], [130, 170]];
+      for (const [px, py] of pts) {
+        doc.rect(px - 2, py - 2, 4, 4, "F");
+      }
+      doc.setGState(new (doc as any).GState({ opacity: 1 }));
+    },
+  ];
+  patterns[variant % patterns.length]();
+}
+
 function drawPageBorder(doc: jsPDF) {
   setDraw(doc, NAVY);
   doc.setLineWidth(1);
@@ -153,9 +213,12 @@ export async function generateProspectusPDF() {
   let logoData: string;
   try { logoData = await loadLogoBase64(); } catch { logoData = ""; }
 
-  // Helper to add logo cleanly (no background box)
-  function addLogo(x: number, y: number, size: number) {
+  // Helper to add logo cleanly — white circle mask removes any image background
+  function addLogo(x: number, y: number, size: number, maskBg: RGB = WHITE) {
     if (!logoData) return;
+    // Draw circular mask behind logo to blend cleanly
+    setFill(doc, maskBg);
+    doc.circle(x + size / 2, y + size / 2, size / 2, "F");
     try { doc.addImage(logoData, "WEBP", x, y, size, size); } catch { /* skip */ }
   }
 
@@ -179,7 +242,7 @@ export async function generateProspectusPDF() {
   doc.rect(15, 15, PW - 30, PH - 30);
 
   // Logo (large, centered, no box behind it)
-  addLogo(PW / 2 - 32, 30, 64);
+  addLogo(PW / 2 - 32, 30, 64, NAVY);
 
   // School name
   doc.setFontSize(40);
@@ -242,6 +305,7 @@ export async function generateProspectusPDF() {
   // PAGE 2 — CHAIRMAN'S MESSAGE
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 1);
   drawPageBorder(doc);
   let y = 22;
   y = drawSectionHeader(doc, y, "Chairman's Message", "From the Desk of Mr. J.J. Nareshkumar");
@@ -283,6 +347,7 @@ export async function generateProspectusPDF() {
   // PAGE 3 — ABOUT & VISION
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 2);
   drawPageBorder(doc);
   y = 22;
   y = drawSectionHeader(doc, y, "About Our School", "A Legacy of Excellence Since 2002");
@@ -332,6 +397,7 @@ export async function generateProspectusPDF() {
   // PAGE 4 — FOUNDATIONAL & PREPARATORY
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 3);
   drawPageBorder(doc);
   y = 22;
   y = drawSectionHeader(doc, y, "Academic Programme", "Foundational & Preparatory Stages");
@@ -402,6 +468,7 @@ export async function generateProspectusPDF() {
   // PAGE 5 — MIDDLE & SECONDARY STAGES
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 0);
   drawPageBorder(doc);
   y = 22;
   y = drawSectionHeader(doc, y, "Academic Programme", "Middle & Secondary Stages");
@@ -471,6 +538,7 @@ export async function generateProspectusPDF() {
   // PAGE 6 — TEACHING METHODOLOGY
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 1);
   drawPageBorder(doc);
   y = 22;
   y = drawSectionHeader(doc, y, "Teaching Methodology", "Innovative Approaches to Learning");
@@ -505,6 +573,7 @@ export async function generateProspectusPDF() {
   // PAGE 7 — FACILITIES
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 2);
   drawPageBorder(doc);
   y = 22;
   y = drawSectionHeader(doc, y, "World-Class Facilities", "Infrastructure Designed for Excellence");
@@ -536,6 +605,7 @@ export async function generateProspectusPDF() {
   // PAGE 8 — CO-CURRICULAR ACTIVITIES
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 3);
   drawPageBorder(doc);
   y = 22;
   y = drawSectionHeader(doc, y, "Co-Curricular Activities", "Beyond the Classroom");
@@ -583,6 +653,7 @@ export async function generateProspectusPDF() {
   // PAGE 9 — ASSESSMENT & ACHIEVEMENTS
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 0);
   drawPageBorder(doc);
   y = 22;
   y = drawSectionHeader(doc, y, "Assessment Framework", "Continuous Evaluation for Holistic Growth");
@@ -627,6 +698,7 @@ export async function generateProspectusPDF() {
   // PAGE 10 — SPECIAL PROGRAMMES
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 1);
   drawPageBorder(doc);
   y = 22;
   y = drawSectionHeader(doc, y, "Special Programmes", "Unique Offerings That Set Us Apart");
@@ -658,6 +730,7 @@ export async function generateProspectusPDF() {
   // PAGE 11 — ADMISSIONS
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 2);
   drawPageBorder(doc);
   y = 22;
   y = drawSectionHeader(doc, y, "Admissions 2025-26", "Join the Nethaji Vidhyalayam Family");
@@ -718,6 +791,7 @@ export async function generateProspectusPDF() {
   // PAGE 12 — CONTACT & BACK COVER
   // ═══════════════════════════════════════
   doc.addPage();
+  drawBackgroundPattern(doc, 3);
   drawPageBorder(doc);
 
   // Navy header with logo
@@ -726,7 +800,7 @@ export async function generateProspectusPDF() {
   setFill(doc, ORANGE);
   doc.rect(10, 52, PW - 20, 3, "F");
 
-  addLogo(PW / 2 - 16, 14, 32);
+  addLogo(PW / 2 - 16, 14, 32, NAVY);
 
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
