@@ -90,8 +90,8 @@ const Header = () => {
       )}
       style={{ overflow: "visible" }}
     >
-      <div className="w-full px-6" style={{ overflow: "visible" }}>
-        <div className="flex items-center justify-between h-[60px]" style={{ overflow: "visible" }}>
+      <div className="w-full px-4 lg:px-6" style={{ overflow: "visible" }}>
+        <div className="flex items-center justify-between h-[60px] flex-nowrap" style={{ overflow: "visible" }}>
           {/* Logo */}
           <Link to="/" className="flex items-center gap-1 shrink-0" style={{ overflow: "visible" }}>
             <div
@@ -122,8 +122,8 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center justify-center flex-1 mx-4">
-            <div className="flex items-center gap-0.5">
+          <nav className="hidden lg:flex items-center justify-center flex-1 mx-2 min-w-0 overflow-visible">
+            <div className="flex items-center gap-0.5 flex-nowrap">
               {navItems.map((item) => (
                 <div
                   key={item.label}
@@ -174,19 +174,19 @@ const Header = () => {
             </div>
           </nav>
 
-          {/* CTA Button & Mobile Menu Toggle */}
-          <div className="flex items-center gap-0.5 shrink-0">
+          {/* CTA Button & Mobile Menu Toggle - NEVER hidden */}
+          <div className="flex items-center gap-1 shrink-0 ml-2" style={{ position: 'relative', zIndex: 60 }}>
             <a
               href="tel:+919841594945"
               title="Call Us: +91 9841594945"
-              className="flex items-center justify-center bg-accent text-accent-foreground w-9 h-9 rounded-md font-bold hover:bg-accent/90 hover:shadow-lg transition-all duration-300"
+              className="flex items-center justify-center bg-accent text-accent-foreground w-9 h-9 min-w-[36px] min-h-[36px] rounded-md font-bold hover:bg-accent/90 hover:shadow-lg transition-all duration-300"
             >
               <Phone className="h-4 w-4" />
             </a>
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-primary-foreground hover:text-accent transition-colors"
+              className="lg:hidden p-2 min-w-[40px] min-h-[40px] flex items-center justify-center text-primary-foreground hover:text-accent transition-colors"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
