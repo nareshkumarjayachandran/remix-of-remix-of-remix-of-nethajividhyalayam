@@ -106,49 +106,60 @@ const ChatWidget = () => {
     setIsSpeaking(false);
   }, []);
 
-  const streamChat = useCallback(async (allMessages: Msg[]) => {
-    const resp = await fetch(CHAT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${SUPABASE_KEY}` },
-      body: JSON.stringify({ messages: allMessages }),
-    });
-    if (!resp.ok || !resp.body) {
-      const err = await resp.json().catch(() => ({ error: "Failed" }));
-      throw new Error(err.error || "Failed to connect");
-    }
-    const reader = resp.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    let assistantText = "";
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      let idx: number;
-      while ((idx = buffer.indexOf("\n")) !== -1) {
-        let line = buffer.slice(0, idx);
-        buffer = buffer.slice(idx + 1);
-        if (line.endsWith("\r")) line = line.slice(0, -1);
-        if (!line.startsWith("data: ")) continue;
-        const json = line.slice(6).trim();
-        if (json === "[DONE]") break;
-        try {
-          const parsed = JSON.parse(json);
-          const content = parsed.choices?.[0]?.delta?.content;
-          if (content) {
-            assistantText += content;
-            setMessages((prev) => {
-              const last = prev[prev.length - 1];
-              if (last?.role === "assistant" && prev.length > 1) {
-                return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantText } : m));
+  const streamChat = useCallback(async (allMessages: Msg[], retries = 2): Promise<string> => {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const resp = await fetch(CHAT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${SUPABASE_KEY}` },
+          body: JSON.stringify({ messages: allMessages }),
+        });
+        if (!resp.ok || !resp.body) {
+          const err = await resp.json().catch(() => ({ error: "Failed" }));
+          throw new Error(err.error || `HTTP ${resp.status}`);
+        }
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let assistantText = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          let idx: number;
+          while ((idx = buffer.indexOf("\n")) !== -1) {
+            let line = buffer.slice(0, idx);
+            buffer = buffer.slice(idx + 1);
+            if (line.endsWith("\r")) line = line.slice(0, -1);
+            if (!line.startsWith("data: ")) continue;
+            const json = line.slice(6).trim();
+            if (json === "[DONE]") break;
+            try {
+              const parsed = JSON.parse(json);
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) {
+                assistantText += content;
+                setMessages((prev) => {
+                  const last = prev[prev.length - 1];
+                  if (last?.role === "assistant" && prev.length > 1) {
+                    return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantText } : m));
+                  }
+                  return [...prev, { role: "assistant", content: assistantText }];
+                });
               }
-              return [...prev, { role: "assistant", content: assistantText }];
-            });
+            } catch {}
           }
-        } catch {}
+        }
+        return assistantText;
+      } catch (e) {
+        if (attempt < retries) {
+          await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+          continue;
+        }
+        throw e;
       }
     }
-    return assistantText;
+    throw new Error("Failed to connect after retries");
   }, []);
 
   const send = useCallback(async (text: string) => {
