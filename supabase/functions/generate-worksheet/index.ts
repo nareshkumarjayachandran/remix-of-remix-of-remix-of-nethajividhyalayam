@@ -285,11 +285,11 @@ ${curriculumRules}`;
     };
 
     // Helper: call Lovable AI (OpenAI-compatible endpoint)
-    const callLovable = async (): Promise<Response> => {
-      return await fetch("https://api.lovable.app/v1/chat/completions", {
+    const callLovable = async (maxTokens = 4096): Promise<Response> => {
+      return await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: messagePayload, stream: false, temperature, max_tokens: 4096 }),
+        body: JSON.stringify({ model: "google/gemini-3-flash-preview", messages: messagePayload, stream: false, temperature, max_tokens: maxTokens }),
       });
     };
 
@@ -349,11 +349,7 @@ ${curriculumRules}`;
       console.warn("AI response truncated (finish_reason=length). Retrying with Lovable AI...");
       // Fallback to Lovable AI with higher token limit
       if (LOVABLE_API_KEY) {
-        const retryResp = await fetch("https://api.lovable.app/v1/chat/completions", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-          body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: messagePayload, stream: false, temperature, max_tokens: 8192 }),
-        });
+        const retryResp = await callLovable(8192);
         if (retryResp.ok) {
           const retryData = await retryResp.json();
           const retryContent = retryData.choices?.[0]?.message?.content || "";

@@ -334,7 +334,7 @@ CRITICAL RULES:
       return await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: messagePayload, stream: false, temperature, max_tokens: 8000 }),
+        body: JSON.stringify({ model: "google/gemini-3-flash-preview", messages: messagePayload, stream: false, temperature, max_tokens: 8000 }),
       });
     };
 

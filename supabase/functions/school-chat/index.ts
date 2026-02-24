@@ -347,16 +347,46 @@ When someone asks about the TAMIL PANCHANGAM or PANCHANGAM details:
 - End with a follow-up question when appropriate
 - When asked for today's date, always provide it accurately`;
 
-    // Primary: Lovable AI (google/gemini-3-flash-preview)
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    // Primary: Groq
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     const allMessages = [{ role: "system", content: systemPrompt }, ...messages];
 
     let response: Response | null = null;
 
-    // Try Lovable AI first
-    if (LOVABLE_API_KEY) {
+    // Try Groq first
+    if (GROQ_API_KEY) {
+      try {
+        response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: allMessages,
+            stream: true,
+            max_tokens: 1024,
+          }),
+        });
+        if (!response.ok) {
+          if (response.status === 429) {
+            console.warn("Groq rate limited, falling back to Lovable AI...");
+          } else {
+            console.error("Groq API error:", response.status, await response.text());
+          }
+          response = null;
+        }
+      } catch (e) {
+        console.error("Groq fetch error:", e);
+        response = null;
+      }
+    }
+
+    // Fallback: Lovable AI
+    if (!response && LOVABLE_API_KEY) {
       try {
         response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
@@ -373,37 +403,10 @@ When someone asks about the TAMIL PANCHANGAM or PANCHANGAM details:
         });
         if (!response.ok) {
           console.error("Lovable AI error:", response.status, await response.text());
-          response = null; // fallback to Groq
+          response = null;
         }
       } catch (e) {
         console.error("Lovable AI fetch error:", e);
-        response = null;
-      }
-    }
-
-    // Fallback: Groq
-    if (!response && GROQ_API_KEY) {
-      response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${GROQ_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: allMessages,
-          stream: true,
-          max_tokens: 1024,
-        }),
-      });
-      if (!response.ok) {
-        if (response.status === 429) {
-          return new Response(JSON.stringify({ error: "Too many requests. Please try again in a moment." }), {
-            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-        const t = await response.text();
-        console.error("Groq API error:", response.status, t);
         response = null;
       }
     }
