@@ -3,7 +3,7 @@ import { getTodayPanchangamText } from "./panchangam.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
@@ -11,8 +11,6 @@ serve(async (req) => {
 
   try {
     const { messages } = await req.json();
-    const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
-    if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY is not configured");
 
     const now = new Date();
     const currentDate = now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Kolkata' });
@@ -349,33 +347,70 @@ When someone asks about the TAMIL PANCHANGAM or PANCHANGAM details:
 - End with a follow-up question when appropriate
 - When asked for today's date, always provide it accurately`;
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${GROQ_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages,
-        ],
-        stream: true,
-        max_tokens: 1024,
-      }),
-    });
+    // Primary: Lovable AI (google/gemini-3-flash-preview)
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Too many requests. Please try again in a moment." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const allMessages = [{ role: "system", content: systemPrompt }, ...messages];
+
+    let response: Response | null = null;
+
+    // Try Lovable AI first
+    if (LOVABLE_API_KEY) {
+      try {
+        response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-3-flash-preview",
+            messages: allMessages,
+            stream: true,
+            max_tokens: 1024,
+          }),
         });
+        if (!response.ok) {
+          console.error("Lovable AI error:", response.status, await response.text());
+          response = null; // fallback to Groq
+        }
+      } catch (e) {
+        console.error("Lovable AI fetch error:", e);
+        response = null;
       }
-      const t = await response.text();
-      console.error("Groq API error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI service error" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    }
+
+    // Fallback: Groq
+    if (!response && GROQ_API_KEY) {
+      response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${GROQ_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: allMessages,
+          stream: true,
+          max_tokens: 1024,
+        }),
+      });
+      if (!response.ok) {
+        if (response.status === 429) {
+          return new Response(JSON.stringify({ error: "Too many requests. Please try again in a moment." }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const t = await response.text();
+        console.error("Groq API error:", response.status, t);
+        response = null;
+      }
+    }
+
+    if (!response) {
+      return new Response(JSON.stringify({ error: "AI service temporarily unavailable. Please try again." }), {
+        status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
