@@ -230,10 +230,22 @@ export async function generateProspectusPDF() {
   let logoData: string;
   try { logoData = await loadLogoBase64(); } catch { logoData = ""; }
 
-  // Helper to add logo cleanly — no background mask needed, logo is already transparent
-  function addLogo(x: number, y: number, size: number, _maskBg?: RGB) {
+  // Helper to add logo with circular mask to hide square background
+  function addLogo(x: number, y: number, size: number, maskBg?: RGB) {
     if (!logoData) return;
-    try { doc.addImage(logoData, "WEBP", x, y, size, size); } catch { /* skip */ }
+    try {
+      doc.addImage(logoData, "WEBP", x, y, size, size);
+      if (maskBg) {
+        // Draw a thick ring in the background color to mask the square corners
+        const cx = x + size / 2;
+        const cy = y + size / 2;
+        const r = size / 2;
+        const ringWidth = size * 0.32;
+        doc.setDrawColor(maskBg[0], maskBg[1], maskBg[2]);
+        doc.setLineWidth(ringWidth);
+        doc.circle(cx, cy, r + ringWidth / 2, "S");
+      }
+    } catch { /* skip */ }
   }
 
   // ═══════════════════════════════════════
