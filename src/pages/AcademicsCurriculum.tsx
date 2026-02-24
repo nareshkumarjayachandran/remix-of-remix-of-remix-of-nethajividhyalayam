@@ -230,22 +230,20 @@ const AcademicsCurriculum = () => {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* School Prospectus Brochure CTA */}
       <section className="section-padding bg-primary text-primary-foreground text-center">
         <div className="container-custom max-w-2xl">
-          <h2 className="font-serif text-3xl font-bold mb-4">Download Tamil Nadu Textbooks</h2>
+          <h2 className="font-serif text-3xl font-bold mb-4">School Prospectus</h2>
           <p className="text-primary-foreground/80 mb-8">
-            Access the official Tamil Nadu Samacheer Kalvi textbooks (2024–25 New Syllabus) for all standards — free PDF downloads from the Tamil Nadu government portal.
+            Download the official Nethaji Vidhyalayam prospectus brochure — a colourful overview of our curriculum, facilities, co-curricular activities, admissions, and contact details.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="https://www.tntextbooks.in/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => { import("@/lib/prospectus").then(m => m.generateProspectusPDF()); }}
               className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-8 py-3 rounded-full font-bold hover:bg-accent/90 transition-colors"
             >
-              <BookOpen className="h-5 w-5" /> Download Textbooks (TN Gov)
-            </a>
+              <BookOpen className="h-5 w-5" /> Download Brochure
+            </button>
             <Link
               to="/contact"
               className="inline-flex items-center gap-2 bg-white/10 text-white border border-white/30 px-8 py-3 rounded-full font-bold hover:bg-white/20 transition-colors"
