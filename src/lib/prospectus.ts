@@ -212,9 +212,9 @@ function drawQuote(doc: jsPDF, y: number, quote: string, author: string): number
   return y + 30;
 }
 
-// ─── LOGO LOADER (uses background-removed circular logo) ───
+// ─── LOGO LOADER (uses print-quality logo) ───
 async function loadLogoBase64(): Promise<string> {
-  const resp = await fetch("/lovable-uploads/23b457f3-cee8-491e-a141-6cdeab1b9559.webp");
+  const resp = await fetch("/nethaji_logo_print.webp");
   const blob = await resp.blob();
   return new Promise((resolve) => {
     const reader = new FileReader();
