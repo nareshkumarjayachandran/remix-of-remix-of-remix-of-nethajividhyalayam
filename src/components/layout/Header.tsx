@@ -93,7 +93,8 @@ const Header = () => {
       <div className="w-full px-4 lg:px-6" style={{ overflow: "visible" }}>
         <div className="flex items-center justify-between h-[60px] flex-nowrap" style={{ overflow: "visible" }}>
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-1 shrink-0" style={{ overflow: "visible" }}>
+          {/* Logo - moves independently */}
+          <Link to="/" className="shrink-0" style={{ overflow: "visible" }}>
             <div
               className="w-[160px] h-[110px] shrink-0 flex items-start justify-center pt-1"
               style={{ overflow: "visible", position: "relative", zIndex: 10 }}
@@ -105,21 +106,18 @@ const Header = () => {
                 src={logo}
               />
             </div>
-            <div className="hidden sm:block text-center ml-3">
+          </Link>
+          {/* School Name - stays fixed, does not move with logo */}
+          <div className="hidden sm:block text-center shrink-0">
+            <Link to="/" className="no-underline">
               <h1 className="font-serif font-extrabold text-[23px] text-primary-foreground leading-tight tracking-tight">
                 NETHAJI VIDHYALAYAM
               </h1>
               <p className="font-sans font-bold text-accent text-[11px] tracking-widest">
                 Nurturing Tomorrow's Leaders
               </p>
-              {/* Optional motto/subtitle 
-              <p className="mt-2 text-sm text-primary-foreground/80 font-medium italic">
-                Nurturing Excellence • Empowering Futures
-                //<p className="text-xs text-primary-foreground/70">Nurturing Tomorrow's Leaders</p>
-                //<p className="font-sans font-bold text-accent text-[11px] tracking-widest">
-              </p>*/}
-            </div>
-          </Link>
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center justify-center flex-1 mx-2 min-w-0 overflow-visible">
