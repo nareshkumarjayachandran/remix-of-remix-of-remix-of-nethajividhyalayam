@@ -40,11 +40,10 @@ const AnimatedEmailScroller = ({ className = "" }: AnimatedEmailScrollerProps) =
       <span
         className="inline-block absolute left-0 will-change-transform"
         style={{
-          transition: "transform 0.5s ease-in-out, opacity 0.5s ease-in-out",
+          transition: "transform 0.5s ease-in-out",
           transform: phase === "rolling"
             ? "translateY(-100%)"
             : "translateY(0)",
-          opacity: phase === "rolling" ? 0 : 1,
         }}
       >
         {emails[activeIndex].label}
@@ -54,11 +53,10 @@ const AnimatedEmailScroller = ({ className = "" }: AnimatedEmailScrollerProps) =
       <span
         className="inline-block absolute left-0 will-change-transform"
         style={{
-          transition: "transform 0.5s ease-in-out, opacity 0.5s ease-in-out",
+          transition: "transform 0.5s ease-in-out",
           transform: phase === "rolling"
             ? "translateY(0)"
             : "translateY(100%)",
-          opacity: phase === "rolling" ? 1 : 0,
         }}
       >
         {emails[nextIndex].label}
