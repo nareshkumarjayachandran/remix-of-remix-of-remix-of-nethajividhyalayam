@@ -173,7 +173,16 @@ const Header = () => {
           </nav>
 
           {/* CTA Button & Mobile Menu Toggle */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Phone icon only on mobile/tablet */}
+            <a
+              href="tel:+919841594945"
+              className="flex md:hidden items-center justify-center w-9 h-9 bg-accent text-accent-foreground rounded-full hover:bg-accent/90 transition-colors"
+              aria-label="Call Us"
+            >
+              <Phone className="h-4 w-4" />
+            </a>
+            {/* Full Call Us button on desktop */}
             <a
               href="tel:+919841594945"
               className="hidden md:flex items-center gap-2 bg-accent text-accent-foreground px-4 py-2 rounded-md font-bold hover:bg-accent/90 transition-colors"
@@ -184,7 +193,7 @@ const Header = () => {
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-foreground hover:text-accent transition-colors"
+              className="lg:hidden p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-colors"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
