@@ -13,7 +13,7 @@ import {
   Printer, DollarSign, BarChart3, BookOpen, Loader2, X, Upload, Trash2, Download, Calendar, Pencil, Check,
   Wifi, WifiOff, RefreshCw, Clock, CheckCircle, XCircle
 } from "lucide-react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { offlineDb } from "@/lib/offlineDb";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
@@ -484,9 +484,34 @@ const FeeDesk = () => {
 
     try {
       const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows: any[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(data);
+      const sheet = workbook.worksheets[0];
+      if (!sheet || sheet.rowCount < 2) {
+        toast({ title: "Empty File", description: "No data found in the uploaded file.", variant: "destructive" });
+        setUploadLoading(false);
+        return;
+      }
+      // Convert exceljs sheet to array of objects
+      const headerRow = sheet.getRow(1);
+      const headers: string[] = [];
+      headerRow.eachCell((cell, colNumber) => {
+        headers[colNumber] = String(cell.value || "").trim();
+      });
+      const rows: any[] = [];
+      for (let i = 2; i <= sheet.rowCount; i++) {
+        const row = sheet.getRow(i);
+        const obj: any = {};
+        let hasData = false;
+        headers.forEach((h, colNumber) => {
+          if (h) {
+            const val = row.getCell(colNumber).value;
+            obj[h] = val !== null && val !== undefined ? String(val) : "";
+            if (obj[h]) hasData = true;
+          }
+        });
+        if (hasData) rows.push(obj);
+      }
 
       if (rows.length === 0) {
         toast({ title: "Empty File", description: "No data found in the uploaded file.", variant: "destructive" });
@@ -495,9 +520,9 @@ const FeeDesk = () => {
       }
 
       // Map columns
-      const headers = Object.keys(rows[0]);
+      const colHeaders = Object.keys(rows[0]);
       const columnMap: Record<string, string> = {};
-      for (const h of headers) {
+      for (const h of colHeaders) {
         const mapped = matchColumn(h);
         if (mapped) columnMap[h] = mapped;
       }
@@ -687,7 +712,7 @@ const FeeDesk = () => {
     });
   };
 
-  const handleBulkDownloadPayments = () => {
+  const handleBulkDownloadPayments = async () => {
     const filtered = getFilteredPaymentsForHistory();
     const selected = filtered.filter((p) => selectedPaymentIds.has(p.id));
     const toDownload = selected.length > 0 ? selected : filtered;
@@ -711,10 +736,17 @@ const FeeDesk = () => {
       [],
       ["GRAND TOTAL", "", "", "", "", toDownload.reduce((s, p) => s + Number(p.amount), 0), "", "", ""],
     ];
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Payments");
-    XLSX.writeFile(wb, `PaymentHistory_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Payments");
+    wsData.forEach((row) => ws.addRow(row));
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `PaymentHistory_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   // Term-wise fee calculation for student list
@@ -1040,7 +1072,7 @@ const FeeDesk = () => {
     });
   };
 
-  const handleDownloadReport = (mode: string, reportData: any[]) => {
+  const handleDownloadReport = async (mode: string, reportData: any[]) => {
     const grandTotal = reportData.reduce((s, r) => s + r.total, 0);
     const dateRange = reportDateFrom || reportDateTo
       ? `${reportDateFrom || "Start"} to ${reportDateTo || "Today"}`
@@ -1054,10 +1086,17 @@ const FeeDesk = () => {
       [],
       ["GRAND TOTAL", reportData.reduce((s, r) => s + r.count, 0), grandTotal],
     ];
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Report");
-    XLSX.writeFile(wb, `FeeStatement_${mode}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Report");
+    wsData.forEach((row) => ws.addRow(row));
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `FeeStatement_${mode}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
