@@ -23,8 +23,16 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email, type } = await req.json();
 
-    if (!email) {
-      return new Response(JSON.stringify({ error: "Missing email" }), {
+    if (!email || typeof email !== "string" || !email.includes("@") || email.length > 255) {
+      return new Response(JSON.stringify({ error: "Missing or invalid email" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Validate type
+    if (type && type !== "reset" && type !== "signup") {
+      return new Response(JSON.stringify({ error: "Invalid type" }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -97,7 +105,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error sending admin notification:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: "Failed to send notification" }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });

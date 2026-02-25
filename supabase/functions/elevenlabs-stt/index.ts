@@ -16,6 +16,13 @@ serve(async (req) => {
     const audioFile = formData.get("audio") as File;
     if (!audioFile) throw new Error("No audio file provided");
 
+    // File size validation (max 25MB)
+    if (audioFile.size > 25 * 1024 * 1024) {
+      return new Response(JSON.stringify({ error: "Audio file too large (max 25MB)" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const apiFormData = new FormData();
     apiFormData.append("file", audioFile);
     apiFormData.append("model_id", "scribe_v2");

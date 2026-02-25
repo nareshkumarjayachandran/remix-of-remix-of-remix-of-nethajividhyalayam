@@ -57,6 +57,28 @@ serve(async (req) => {
 
     const { targetText, spokenText, grade, topic, mode, conversationHistory, tamilMode } = await req.json();
 
+    // Input validation
+    if (!mode || typeof mode !== "string") {
+      return new Response(JSON.stringify({ error: "Missing mode" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (spokenText && typeof spokenText === "string" && spokenText.length > 10000) {
+      return new Response(JSON.stringify({ error: "Input too long" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (targetText && typeof targetText === "string" && targetText.length > 5000) {
+      return new Response(JSON.stringify({ error: "Target text too long" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (conversationHistory && Array.isArray(conversationHistory) && conversationHistory.length > 50) {
+      return new Response(JSON.stringify({ error: "Conversation too long" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Build word comparison data for practice mode
     let wordAnalysis = null;
     let accuracyScore = 0;

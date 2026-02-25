@@ -266,7 +266,6 @@ const FeeDesk = () => {
           user: session.user,
           role: fetchedRole,
           email: session.user.email || "",
-          passwordHash: "", // We don't store passwords; offline login uses cached session
         });
       }
     }

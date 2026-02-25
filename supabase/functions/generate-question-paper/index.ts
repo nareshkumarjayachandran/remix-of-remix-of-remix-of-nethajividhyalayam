@@ -10,6 +10,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const body = await req.json();
     const {
       grade, subject, examType, term, language, totalMarks,
       includeAnswerKey, topics, randomSeed = Math.random(),
@@ -18,7 +19,19 @@ serve(async (req) => {
       questionTypes = ["multiple_choice", "fill_in_blanks", "true_false", "match_following", "short_answer", "long_answer", "diagram"],
       hindiSyllabus = "none",
       bilingualPair = "English+Tamil",
-    } = await req.json();
+    } = body;
+
+    // Input validation
+    if (!grade || !subject || !examType || typeof grade !== "string" || typeof subject !== "string") {
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if ((topics && typeof topics === "string" && topics.length > 1000) || subject.length > 200 || grade.length > 50) {
+      return new Response(JSON.stringify({ error: "Input too long" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

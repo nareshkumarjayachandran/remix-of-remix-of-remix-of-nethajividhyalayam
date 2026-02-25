@@ -222,6 +222,8 @@ function getParentSubject(req: FormEmailRequest): string {
 
 
 
+const VALID_FORM_TYPES = ["contact", "admission", "fee_payment", "career"];
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -233,6 +235,30 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!formType || !senderName || !fieldGroups || !title) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Validate form type
+    if (!VALID_FORM_TYPES.includes(formType)) {
+      return new Response(JSON.stringify({ error: "Invalid form type" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Input length validation
+    if (senderName.length > 200 || title.length > 300 || (senderEmail && senderEmail.length > 255)) {
+      return new Response(JSON.stringify({ error: "Input exceeds allowed length" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Email format validation
+    if (senderEmail && !senderEmail.includes("@")) {
+      return new Response(JSON.stringify({ error: "Invalid email format" }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -291,7 +317,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error sending form email:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: "Failed to send email" }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });

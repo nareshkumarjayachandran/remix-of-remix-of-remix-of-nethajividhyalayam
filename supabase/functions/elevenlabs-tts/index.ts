@@ -42,6 +42,13 @@ serve(async (req) => {
     const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
     if (!ELEVENLABS_API_KEY) throw new Error("ELEVENLABS_API_KEY is not configured");
 
+    // Input validation
+    if (!text || typeof text !== "string" || text.length > 5000) {
+      return new Response(JSON.stringify({ error: "Invalid or too long text input" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Resolve voice: explicit voiceId > voiceKey lookup > default Laura
     let selectedVoiceId = voiceId;
     if (!selectedVoiceId && voiceKey && VOICES[voiceKey]) {

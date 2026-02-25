@@ -158,8 +158,8 @@ export const offlineDb = {
   getLastSync: () => getMeta("lastSync") as Promise<number | null>,
 
   // ── Offline auth ───────────────────────────────────────
-  cacheAuthSession: (session: { user: any; role: string; email: string; passwordHash: string }) =>
+  cacheAuthSession: (session: { user: any; role: string; email: string }) =>
     setMeta("cachedAuth", session),
-  getCachedAuthSession: () => getMeta("cachedAuth") as Promise<{ user: any; role: string; email: string; passwordHash: string } | null>,
+  getCachedAuthSession: () => getMeta("cachedAuth") as Promise<{ user: any; role: string; email: string } | null>,
   clearAuthSession: () => setMeta("cachedAuth", null),
 };
