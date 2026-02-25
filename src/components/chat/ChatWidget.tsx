@@ -195,6 +195,66 @@ const ChatWidget = () => {
     throw new Error("Failed to connect after retries");
   }, []);
 
+  // Offline local responder — answers common school queries without internet
+  const getOfflineResponse = useCallback((query: string): string => {
+    const q = query.toLowerCase().trim();
+
+    // Greetings
+    if (/^(hi|hello|hey|vanakkam|good\s*(morning|afternoon|evening))/.test(q))
+      return "👋 Hello! I'm currently in **offline mode**, but I can still answer basic school questions.\n\nTry asking about: admissions, fees, contact, timings, facilities, or academics!";
+
+    // Contact
+    if (/phone|call|contact|number|reach/.test(q))
+      return "📞 **Contact Nethaji Vidhyalayam:**\n- [📞 Call 9841594945](tel:+919841594945)\n- [📞 Call 6380967675](tel:+916380967675)\n- ✉️ nethajividhyalayam@gmail.com\n- 📍 5/325, Rajiv Nagar, S.Kolathur Main Road, Chennai - 600129";
+
+    // Address / directions
+    if (/address|location|direction|where|map|visit/.test(q))
+      return "📍 **Address:** 5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129\n\n[📍 Get Directions](https://www.google.com/maps/dir/?api=1&destination=Nethaji+Vidhyalayam+S.Kolathur+Chennai)";
+
+    // Timings
+    if (/timing|hour|time|open|close|schedule/.test(q))
+      return "🕘 **School Hours:** Monday to Saturday, 8:50 AM – 3:30 PM";
+
+    // Admission
+    if (/admiss|apply|enrol|join|registration/.test(q))
+      return "📝 **Admission Process:**\n1. Enquiry & Registration\n2. Document Submission (birth cert, Aadhaar, photos)\n3. Interaction Round\n4. Fee Payment\n5. Welcome & Admission Kit\n\n[📝 Apply for Admission](/admissions)";
+
+    // Fees
+    if (/fee|pay|payment|upi/.test(q))
+      return "💰 **Fee Payment:** Parents can pay via UPI at the website.\n- UPI ID: nethajividhyalayam@upi\n\n[💰 Pay School Fees](/admissions#fees)";
+
+    // Classes / Age
+    if (/class|grade|standard|age|pre.?kg|lkg|ukg/.test(q))
+      return "🎓 **Classes:** Pre-KG to 5th Grade (English Medium, State Board)\n\n**Age Criteria (as of March 31):**\n- Pre-KG: 3 yrs | LKG: 3-4 | UKG: 4-5\n- Grade 1: 5-6 | Grade 2: 6-7 | Grade 3: 7-8\n- Grade 4: 8-9 | Grade 5: 9-10";
+
+    // Facilities
+    if (/facilit|library|transport|lab|sport|playground|infrastructure/.test(q))
+      return "🏫 **Facilities:** Library (500+ books), Sports Complex, GPS Transport (5-10km), Smart Classrooms, Science Lab, Computer Lab, Music Room, Canteen, Medical Room, 24/7 CCTV\n\n[🏫 View Facilities](/facilities)";
+
+    // Academics / curriculum
+    if (/academ|curricul|subject|syllabus|samacheer|merry.?bird/.test(q))
+      return "📚 **Curriculum:** State Board (Samacheer Kalvi) + Oxford Merry Birds\n- Pre-Primary: Activity-based, phonics, number readiness\n- Primary (1-5): English, Tamil, Maths, EVS, GK, Computer, Art, Music, Dance, Yoga\n\n[📚 View Academics](/academics)";
+
+    // About / leadership
+    if (/about|history|founded|chairman|principal|leader/.test(q))
+      return "🏠 **Nethaji Vidhyalayam** — Founded 11th June 2002\n- Chairman: Mr. J.J. Nareshkumar\n- Principal: Mrs. V. Janani\n- Vice Principal: Mrs. M. Devikala\n- 2000+ Alumni | 12+ Staff | 100% Pass Rate\n\n[🏠 About Us](/about)";
+
+    // Events
+    if (/event|annual|sports\s*day|program/.test(q))
+      return "🎉 **Major Events:** Annual Day (March), Science Exhibition (Feb), Sports Day (Jan), PTM, Festival Celebrations\n\n[🎉 Events](/events)";
+
+    // Career
+    if (/career|job|vacanc|teach|work/.test(q))
+      return "💼 Teaching, Non-Teaching, and Admin positions available.\n\n[💼 Careers](/career)";
+
+    // Worksheet
+    if (/worksheet|homework|practice\s*sheet/.test(q))
+      return "📄 Create custom worksheets offline!\n\n[📄 Open Worksheet Maker](/worksheet-maker)";
+
+    // Fallback
+    return "📶 I'm in **offline mode** right now. I can answer basic questions about:\n\n• 📞 Contact & Address\n• 📝 Admissions & Fees\n• 🎓 Classes & Age Criteria\n• 📚 Academics & Curriculum\n• 🏫 Facilities\n• 🎉 Events\n\nFor detailed AI answers, please reconnect to the internet!";
+  }, []);
+
   const send = useCallback(
     async (text: string) => {
       if (!text.trim() || isLoading) return;
@@ -205,36 +265,27 @@ const ChatWidget = () => {
       setInput("");
       setIsLoading(true);
       resetIdleTimer();
-      // Offline fallback
+
+      // If explicitly offline, use local responder
       if (!navigator.onLine) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content:
-              "📶 You are currently offline. AI responses require an internet connection. Your messages are saved and will work once you're back online.",
-          },
-        ]);
+        const offlineReply = getOfflineResponse(text);
+        setMessages((prev) => [...prev, { role: "assistant", content: offlineReply }]);
         setIsLoading(false);
         return;
       }
+
       try {
         const reply = await streamChat(updated);
         if (reply && voiceEnabled) await speakText(reply);
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "";
-        const friendlyMsg =
-          msg.includes("402") || msg.includes("unavailable")
-            ? "⚠️ AI service is temporarily busy. Please try again in a moment, or call us at [📞 9841594945](tel:+919841594945)"
-            : msg.includes("429")
-              ? "⏳ Too many requests. Please wait a moment and try again."
-              : "🔌 Couldn't connect right now. Please check your internet and try again.";
-        setMessages((prev) => [...prev, { role: "assistant", content: friendlyMsg }]);
+        // Network failed despite navigator.onLine being true — use offline responder
+        const offlineReply = getOfflineResponse(text);
+        setMessages((prev) => [...prev, { role: "assistant", content: offlineReply }]);
       } finally {
         setIsLoading(false);
       }
     },
-    [isLoading, messages, streamChat, speakText, stopSpeaking, voiceEnabled, resetIdleTimer],
+    [isLoading, messages, streamChat, speakText, stopSpeaking, voiceEnabled, resetIdleTimer, getOfflineResponse],
   );
 
   // ElevenLabs STT recording
