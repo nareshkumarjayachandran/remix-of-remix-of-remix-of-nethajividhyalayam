@@ -177,7 +177,7 @@ const Header = () => {
             {/* Phone icon only on mobile/tablet */}
             <a
               href="tel:+919841594945"
-              className="flex md:hidden items-center justify-center w-9 h-9 bg-accent text-accent-foreground rounded-full hover:bg-accent/90 transition-colors"
+              className="flex md:hidden items-center justify-center w-10 h-10 bg-accent text-accent-foreground rounded-lg shadow-md hover:bg-accent/90 hover:shadow-lg hover:scale-105 transition-all duration-200 border border-accent-foreground/10"
               aria-label="Call Us"
             >
               <Phone className="h-4 w-4" />
