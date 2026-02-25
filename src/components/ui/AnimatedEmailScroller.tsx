@@ -21,8 +21,8 @@ const AnimatedEmailScroller = ({ className = "" }: AnimatedEmailScrollerProps) =
       timerRef.current = setTimeout(() => {
         setActiveIndex((prev) => (prev + 1) % emails.length);
         setPhase("stable");
-      }, 2000);
-    }, 9000);
+      }, 600);
+    }, 30000);
 
     return () => {
       clearInterval(interval);
@@ -34,18 +34,17 @@ const AnimatedEmailScroller = ({ className = "" }: AnimatedEmailScrollerProps) =
     <a
       href={emails[phase === "rolling" ? nextIndex : activeIndex].href}
       className={`inline-flex items-center overflow-hidden ${className}`}
-      style={{ perspective: "300px", height: "1.5em", position: "relative" }}
+      style={{ height: "1.5em", position: "relative" }}
     >
       {/* Current email - exits upward */}
       <span
         className="inline-block absolute left-0 will-change-transform"
         style={{
-          transition: "transform 2s ease-in-out, opacity 2s ease-in-out",
+          transition: "transform 0.5s ease-in-out, opacity 0.5s ease-in-out",
           transform: phase === "rolling"
-            ? "translateY(-100%) rotateX(90deg)"
-            : "translateY(0) rotateX(0deg)",
+            ? "translateY(-100%)"
+            : "translateY(0)",
           opacity: phase === "rolling" ? 0 : 1,
-          backfaceVisibility: "hidden",
         }}
       >
         {emails[activeIndex].label}
@@ -55,12 +54,11 @@ const AnimatedEmailScroller = ({ className = "" }: AnimatedEmailScrollerProps) =
       <span
         className="inline-block absolute left-0 will-change-transform"
         style={{
-          transition: "transform 2s ease-in-out, opacity 2s ease-in-out",
+          transition: "transform 0.5s ease-in-out, opacity 0.5s ease-in-out",
           transform: phase === "rolling"
-            ? "translateY(0) rotateX(0deg)"
-            : "translateY(100%) rotateX(-90deg)",
+            ? "translateY(0)"
+            : "translateY(100%)",
           opacity: phase === "rolling" ? 1 : 0,
-          backfaceVisibility: "hidden",
         }}
       >
         {emails[nextIndex].label}
