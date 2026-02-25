@@ -117,17 +117,30 @@ const ChatWidget = () => {
     };
   }, [open, minimized, messages, input, resetIdleTimer]);
 
-  // ElevenLabs TTS
+  // Browser-native Web Speech API fallback
+  const speakWithBrowser = useCallback((text: string) => {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 0.95;
+    utter.pitch = 1.0;
+    utter.onend = () => { setIsSpeaking(false); };
+    utter.onerror = () => { setIsSpeaking(false); };
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utter);
+  }, []);
+
+  // ElevenLabs TTS with Web Speech API fallback
   const speakText = useCallback(
     async (text: string) => {
       if (!voiceEnabled || !text.trim()) return;
+      const clean = stripMarkdown(text).slice(0, 500);
       try {
         if (audioRef.current) {
           audioRef.current.pause();
           audioRef.current = null;
         }
         setIsSpeaking(true);
-        const clean = stripMarkdown(text).slice(0, 500); // limit to 500 chars
         const res = await fetch(TTS_URL, {
           method: "POST",
           headers: {
@@ -151,10 +164,11 @@ const ChatWidget = () => {
         };
         await audio.play();
       } catch {
-        setIsSpeaking(false);
+        // Fallback to browser-native speech synthesis
+        speakWithBrowser(clean);
       }
     },
-    [voiceEnabled],
+    [voiceEnabled, speakWithBrowser],
   );
 
   const stopSpeaking = useCallback(() => {
@@ -162,6 +176,7 @@ const ChatWidget = () => {
       audioRef.current.pause();
       audioRef.current = null;
     }
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
     setIsSpeaking(false);
   }, []);
 

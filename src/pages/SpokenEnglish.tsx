@@ -272,6 +272,26 @@ interface ConvMessage { role: "ai" | "user"; text: string }
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+function browserTts(text: string, speed = 1.0): HTMLAudioElement | null {
+  if (!("speechSynthesis" in window)) return null;
+  // Return a fake Audio-like object that uses Web Speech API
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = speed;
+  utter.pitch = 1.0;
+  const fakeAudio = new Audio(); // dummy for compatibility
+  const origPlay = fakeAudio.play.bind(fakeAudio);
+  fakeAudio.play = () => {
+    return new Promise<void>((resolve) => {
+      utter.onend = () => { fakeAudio.dispatchEvent(new Event("ended")); resolve(); };
+      utter.onerror = () => { fakeAudio.dispatchEvent(new Event("error")); resolve(); };
+      window.speechSynthesis.speak(utter);
+    });
+  };
+  const origPause = fakeAudio.pause.bind(fakeAudio);
+  fakeAudio.pause = () => { window.speechSynthesis.cancel(); origPause(); };
+  return fakeAudio;
+}
+
 async function tts(text: string, voiceKey: VoiceKey, grade: string, speed?: number): Promise<HTMLAudioElement | null> {
   try {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-tts`, {
@@ -279,10 +299,13 @@ async function tts(text: string, voiceKey: VoiceKey, grade: string, speed?: numb
       headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
       body: JSON.stringify({ text, voiceKey, grade, speed }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) throw new Error("TTS failed");
     const blob = await res.blob();
     return new Audio(URL.createObjectURL(blob));
-  } catch { return null; }
+  } catch {
+    // Fallback to browser-native speech
+    return browserTts(text, speed ?? 0.9);
+  }
 }
 
 async function stt(blob: Blob): Promise<string> {
