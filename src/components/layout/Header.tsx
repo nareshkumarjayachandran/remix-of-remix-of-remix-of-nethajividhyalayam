@@ -45,7 +45,7 @@ const navItems = [
     ],
   },
   {
-    label: "Gallery & Events",
+    label: "Gallery",
     path: "/gallery",
     children: [
       { label: "Photo Gallery", path: "/gallery" },
@@ -173,7 +173,7 @@ const Header = () => {
           </nav>
 
           {/* CTA Button & Mobile Menu Toggle - NEVER hidden */}
-          <div className="flex items-center gap-1 shrink-0 ml-2" style={{ position: 'relative', zIndex: 60 }}>
+          <div className="flex items-center gap-1 shrink-0 ml-2" style={{ position: "relative", zIndex: 60 }}>
             <a
               href="tel:+919841594945"
               title="Call Us: +91 9841594945"
