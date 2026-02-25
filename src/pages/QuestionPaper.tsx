@@ -575,19 +575,40 @@ export default function QuestionPaper() {
     setShowAnswers(false);
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-question-paper`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          ...form,
-          totalMarks: selectedExam.marks,
-          includeAnswerKey: true,
-          randomSeed: Math.random(),
-        }),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 120s timeout
+      let res: Response;
+      let fetchAttempt = 0;
+      const maxAttempts = 3;
+      while (true) {
+        fetchAttempt++;
+        try {
+          res = await fetch(`${SUPABASE_URL}/functions/v1/generate-question-paper`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+            body: JSON.stringify({
+              ...form,
+              totalMarks: selectedExam.marks,
+              includeAnswerKey: true,
+              randomSeed: Math.random(),
+            }),
+            signal: controller.signal,
+          });
+          break;
+        } catch (fetchErr: any) {
+          if (fetchAttempt >= maxAttempts) {
+            clearTimeout(timeoutId);
+            throw new Error(fetchErr.name === "AbortError"
+              ? "Request timed out. Please check your internet connection and try again."
+              : "Network error. Please check your internet and try again.");
+          }
+          await new Promise((r) => setTimeout(r, 5000 * fetchAttempt));
+        }
+      }
+      clearTimeout(timeoutId);
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
       // Mark all questions as selected and fix diagram types

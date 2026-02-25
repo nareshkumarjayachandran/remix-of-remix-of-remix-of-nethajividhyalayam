@@ -694,19 +694,39 @@ export default function WorksheetMaker() {
 
   const generateOneSet = async (setNumber: number, attempt = 1): Promise<Worksheet> => {
     const randomSeed = Math.random();
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-worksheet`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
-      body: JSON.stringify({ ...formData, setNumber, randomSeed }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 120s timeout
+    let res: Response;
+    try {
+      res = await fetch(`${SUPABASE_URL}/functions/v1/generate-worksheet`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ ...formData, setNumber, randomSeed }),
+        signal: controller.signal,
+      });
+    } catch (fetchErr: any) {
+      clearTimeout(timeoutId);
+      if (fetchErr.name === "AbortError") {
+        if (attempt <= 2) {
+          await new Promise((r) => setTimeout(r, 3000));
+          return generateOneSet(setNumber, attempt + 1);
+        }
+        throw new Error("Request timed out. Please check your internet connection and try again.");
+      }
+      if (attempt <= 2) {
+        await new Promise((r) => setTimeout(r, 5000 * attempt));
+        return generateOneSet(setNumber, attempt + 1);
+      }
+      throw new Error("Network error. Please check your internet connection and try again.");
+    }
+    clearTimeout(timeoutId);
     const data = await res.json();
     if (res.status === 402) throw new Error("AI worksheet generation is temporarily unavailable (usage limit reached). Please try again later.");
     if (res.status === 429) {
       if (attempt <= 4) {
-        // Exponential backoff: 8s, 16s, 24s, 32s
         const waitMs = 8000 * attempt;
         await new Promise((r) => setTimeout(r, waitMs));
         return generateOneSet(setNumber, attempt + 1);
