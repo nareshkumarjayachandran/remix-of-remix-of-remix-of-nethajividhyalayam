@@ -182,16 +182,6 @@ const Header = () => {
               <Phone className="h-4 w-4" />
             </a>
 
-          {/* CTA Button & Mobile Menu Toggle */}
-          <div className="flex items-center gap-4">
-            <a
-              href="tel:+919841594945"
-              className="hidden md:flex items-center gap-2 bg-accent text-accent-foreground px-4 py-2 rounded-md font-bold hover:bg-accent/90 transition-colors"
-            >
-              <Phone className="h-4 w-4" />
-              <span>Call Us</span>
-            </a>            
-
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden p-2 min-w-[40px] min-h-[40px] flex items-center justify-center text-primary-foreground hover:text-accent transition-colors"
