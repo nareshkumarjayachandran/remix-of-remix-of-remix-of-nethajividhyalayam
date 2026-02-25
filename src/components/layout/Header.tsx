@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
-import logo from "@/assets/nethaji_logo2_circle.webp";
+const logo = "/nethaji_logo2_circle.webp";
 
 const navItems = [
   { label: "Home", path: "/" },
@@ -104,6 +104,7 @@ const Header = () => {
                 className="w-[130px] h-[130px] object-contain drop-shadow-lg brightness-110 contrast-105 animate-logo-pulse-header"
                 style={{ imageRendering: "-webkit-optimize-contrast", position: "relative" }}
                 src={logo}
+                fetchPriority="high"
               />
             </div>
           </Link>
