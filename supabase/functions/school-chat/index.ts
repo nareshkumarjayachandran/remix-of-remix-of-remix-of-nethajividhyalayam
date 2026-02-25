@@ -350,6 +350,7 @@ When someone asks about the TAMIL PANCHANGAM or PANCHANGAM details:
     // Primary: Groq
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const SARVAM_API_KEY = Deno.env.get("SARVAM_API_KEY");
 
     const allMessages = [{ role: "system", content: systemPrompt }, ...messages];
 
@@ -373,7 +374,7 @@ When someone asks about the TAMIL PANCHANGAM or PANCHANGAM details:
         });
         if (!response.ok) {
           if (response.status === 429) {
-            console.warn("Groq rate limited, falling back to Lovable AI...");
+            console.warn("Groq rate limited, falling back to Sarvam AI...");
           } else {
             console.error("Groq API error:", response.status, await response.text());
           }
@@ -385,9 +386,37 @@ When someone asks about the TAMIL PANCHANGAM or PANCHANGAM details:
       }
     }
 
-    // Fallback: Lovable AI
+    // Fallback 1: Sarvam AI
+    if (!response && SARVAM_API_KEY) {
+      try {
+        console.log("Trying Sarvam AI fallback...");
+        response = await fetch("https://api.sarvam.ai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "api-subscription-key": SARVAM_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "sarvam-m",
+            messages: allMessages,
+            stream: true,
+            max_tokens: 1024,
+          }),
+        });
+        if (!response.ok) {
+          console.error("Sarvam AI error:", response.status, await response.text());
+          response = null;
+        }
+      } catch (e) {
+        console.error("Sarvam AI fetch error:", e);
+        response = null;
+      }
+    }
+
+    // Fallback 2: Lovable AI
     if (!response && LOVABLE_API_KEY) {
       try {
+        console.log("Trying Lovable AI fallback...");
         response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
           headers: {

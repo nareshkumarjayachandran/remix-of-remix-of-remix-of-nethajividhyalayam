@@ -268,6 +268,7 @@ ${language === "Tamil"
 ${curriculumRules}`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const SARVAM_API_KEY = Deno.env.get("SARVAM_API_KEY");
 
     const messagePayload = [
       { role: "system", content: systemPrompt },
@@ -284,6 +285,15 @@ ${curriculumRules}`;
       });
     };
 
+    // Helper: call Sarvam AI
+    const callSarvam = async (maxTokens = 4096): Promise<Response> => {
+      return await fetch("https://api.sarvam.ai/v1/chat/completions", {
+        method: "POST",
+        headers: { "api-subscription-key": SARVAM_API_KEY!, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "sarvam-m", messages: messagePayload, stream: false, temperature, max_tokens: maxTokens }),
+      });
+    };
+
     // Helper: call Lovable AI (OpenAI-compatible endpoint)
     const callLovable = async (maxTokens = 4096): Promise<Response> => {
       return await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -295,22 +305,26 @@ ${curriculumRules}`;
 
     let response: Response | null = null;
 
-    // Strategy:
-    // 1. Try llama-3.1-8b-instant (20,000 TPM — 3× more than 70b model)
-    // 2. On 429: retry with 8s / 16s backoff
-    // 3. Still 429: fall back to Lovable AI (no rate limits)
+    // Strategy: Groq → Sarvam AI → Lovable AI
     for (let attempt = 1; attempt <= 3; attempt++) {
       response = await callGroq("llama-3.1-8b-instant");
 
       if (response.status !== 429) break;
 
       if (attempt < 3) {
-        const waitMs = attempt * 8000; // 8s, 16s
+        const waitMs = attempt * 8000;
         console.log(`Groq 429 on attempt ${attempt}, retrying in ${waitMs}ms...`);
         await new Promise((r) => setTimeout(r, waitMs));
       } else {
-        // All Groq retries exhausted — fall back to Lovable AI
-        console.log("Groq rate limit exhausted, falling back to Lovable AI...");
+        // Try Sarvam AI first
+        if (SARVAM_API_KEY) {
+          console.log("Groq rate limit exhausted, falling back to Sarvam AI...");
+          response = await callSarvam();
+          if (response.ok) break;
+          console.error("Sarvam AI fallback error:", response.status);
+        }
+        // Then Lovable AI
+        console.log("Falling back to Lovable AI...");
         if (LOVABLE_API_KEY) {
           response = await callLovable();
           if (!response.ok) {
@@ -346,7 +360,26 @@ ${curriculumRules}`;
     // Check if the response was truncated (finish_reason !== "stop")
     const finishReason = aiData.choices?.[0]?.finish_reason;
     if (finishReason === "length") {
-      console.warn("AI response truncated (finish_reason=length). Retrying with Lovable AI...");
+      console.warn("AI response truncated (finish_reason=length). Retrying with Sarvam/Lovable AI...");
+      // Try Sarvam AI first for truncation retry
+      if (SARVAM_API_KEY) {
+        const sarvamResp = await callSarvam(8192);
+        if (sarvamResp.ok) {
+          const sarvamData = await sarvamResp.json();
+          const sarvamContent = sarvamData.choices?.[0]?.message?.content || "";
+          const sarvamCleaned = sarvamContent.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+          try {
+            const worksheet = JSON.parse(sarvamCleaned);
+            worksheet._hasDiagram = hasDiagram;
+            return new Response(JSON.stringify({ worksheet }), {
+              status: 200,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          } catch {
+            console.error("Sarvam AI retry parse failed, trying Lovable AI...");
+          }
+        }
+      }
       // Fallback to Lovable AI with higher token limit
       if (LOVABLE_API_KEY) {
         const retryResp = await callLovable(8192);
