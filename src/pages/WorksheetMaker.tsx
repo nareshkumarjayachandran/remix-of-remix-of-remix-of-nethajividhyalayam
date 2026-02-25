@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PWAInstallBanner from "@/components/ui/PWAInstallBanner";
 import OfflineBanner from "@/components/ui/OfflineBanner";
@@ -968,9 +968,12 @@ export default function WorksheetMaker() {
               {editMode ? (
                 <input className="border-b border-gray-400 outline-none w-full mt-1 bg-transparent tamil-font" value={q.question || ""} onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)} />
               ) : (
-                <span dangerouslySetInnerHTML={{
-                  __html: (q.question || "").replace(/_{2,}|\[_+\]/g, '<span class="inline-block border-b-2 border-gray-500 print:border-black min-w-[120px] mx-1 align-bottom">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>')
-                }} />
+                <span>{(q.question || "").split(/_{2,}|\[_+\]/).map((part, i, arr) => (
+                  <React.Fragment key={i}>
+                    {part}
+                    {i < arr.length - 1 && <span className="inline-block border-b-2 border-gray-500 print:border-black min-w-[120px] mx-1 align-bottom">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>}
+                  </React.Fragment>
+                ))}</span>
               )}
             </p>
             {showAnswers && <p className="text-green-700 text-sm mt-1 ml-6 print:text-green-900 font-semibold">✓ {q.answer}</p>}
