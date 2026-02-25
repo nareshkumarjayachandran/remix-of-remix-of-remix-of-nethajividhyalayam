@@ -21,7 +21,6 @@ serve(async (req) => {
     } = await req.json();
 
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
-    if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY is not configured");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     // Parse bilingual pair languages
@@ -350,45 +349,42 @@ CRITICAL RULES:
 
     let response: Response | null = null;
 
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      response = await callGroq("llama-3.1-8b-instant");
-      if (response.status !== 429) break;
-      if (attempt < 3) {
-        await new Promise((r) => setTimeout(r, attempt * 8000));
-      } else {
-        // Try Sarvam AI first
-        if (SARVAM_API_KEY) {
-          console.log("Groq rate limit exhausted, falling back to Sarvam AI...");
-          response = await callSarvam();
-          if (response.ok) break;
-          console.error("Sarvam AI fallback error:", response.status);
+    if (GROQ_API_KEY) {
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        response = await callGroq("llama-3.1-8b-instant");
+        if (response.status !== 429) break;
+        if (attempt < 3) {
+          await new Promise((r) => setTimeout(r, attempt * 8000));
         }
-        // Then Lovable AI
-        if (LOVABLE_API_KEY) {
-          console.log("Falling back to Lovable AI...");
-          response = await callLovable();
-          if (!response.ok) {
-            return new Response(
-              JSON.stringify({ error: "AI generation failed after all retries." }),
-              { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
-          }
-          break;
-        } else {
-          return new Response(
-            JSON.stringify({ error: "AI is busy. Please wait and try again." }),
-            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
+      }
+      if (response && !response.ok) {
+        console.warn("Groq failed with status", response.status, "— trying fallbacks");
+        response = null;
       }
     }
 
-    if (!response!.ok) {
-      const errText = await response!.text();
-      console.error("AI API error:", response!.status, errText);
+    // Fallback 1: Sarvam AI
+    if (!response && SARVAM_API_KEY) {
+      console.log("Trying Sarvam AI...");
+      try {
+        response = await callSarvam();
+        if (!response.ok) { console.error("Sarvam AI error:", response.status); response = null; }
+      } catch (e) { console.error("Sarvam fetch error:", e); response = null; }
+    }
+
+    // Fallback 2: Lovable AI
+    if (!response && LOVABLE_API_KEY) {
+      console.log("Trying Lovable AI...");
+      try {
+        response = await callLovable();
+        if (!response.ok) { console.error("Lovable AI error:", response.status); response = null; }
+      } catch (e) { console.error("Lovable fetch error:", e); response = null; }
+    }
+
+    if (!response) {
       return new Response(
-        JSON.stringify({ error: "AI generation failed. Please try again." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "All AI services unavailable. Please try again later." }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
