@@ -162,6 +162,7 @@ Respond naturally and encouragingly. In "feedback" field, write your conversatio
       { role: "user", content: userMessage },
     ];
 
+    const SARVAM_API_KEY = Deno.env.get("SARVAM_API_KEY");
     let response: Response | null = null;
 
     // Primary: Groq
@@ -190,9 +191,36 @@ Respond naturally and encouragingly. In "feedback" field, write your conversatio
       }
     }
 
-    // Fallback: Lovable AI
+    // Fallback 1: Sarvam AI
+    if (!response && SARVAM_API_KEY) {
+      try {
+        console.log("Trying Sarvam AI fallback...");
+        response = await fetch("https://api.sarvam.ai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "api-subscription-key": SARVAM_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "sarvam-m",
+            messages: aiMessages,
+            max_tokens: 1024,
+          }),
+        });
+        if (!response.ok) {
+          console.error("Sarvam AI error:", response.status, await response.text());
+          response = null;
+        }
+      } catch (e) {
+        console.error("Sarvam AI fetch error:", e);
+        response = null;
+      }
+    }
+
+    // Fallback 2: Lovable AI
     if (!response && LOVABLE_API_KEY) {
       try {
+        console.log("Trying Lovable AI fallback...");
         response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
           headers: {

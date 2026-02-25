@@ -322,11 +322,21 @@ CRITICAL RULES:
     ];
     const temperature = 0.7;
 
+    const SARVAM_API_KEY = Deno.env.get("SARVAM_API_KEY");
+
     const callGroq = async (model: string): Promise<Response> => {
       return await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({ model, messages: messagePayload, stream: false, temperature, max_tokens: 8000 }),
+      });
+    };
+
+    const callSarvam = async (): Promise<Response> => {
+      return await fetch("https://api.sarvam.ai/v1/chat/completions", {
+        method: "POST",
+        headers: { "api-subscription-key": SARVAM_API_KEY!, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "sarvam-m", messages: messagePayload, stream: false, temperature, max_tokens: 8000 }),
       });
     };
 
@@ -346,7 +356,16 @@ CRITICAL RULES:
       if (attempt < 3) {
         await new Promise((r) => setTimeout(r, attempt * 8000));
       } else {
+        // Try Sarvam AI first
+        if (SARVAM_API_KEY) {
+          console.log("Groq rate limit exhausted, falling back to Sarvam AI...");
+          response = await callSarvam();
+          if (response.ok) break;
+          console.error("Sarvam AI fallback error:", response.status);
+        }
+        // Then Lovable AI
         if (LOVABLE_API_KEY) {
+          console.log("Falling back to Lovable AI...");
           response = await callLovable();
           if (!response.ok) {
             return new Response(
