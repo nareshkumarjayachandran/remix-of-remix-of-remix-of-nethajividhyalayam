@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -834,9 +834,12 @@ export default function QuestionPaper() {
           return renderQ(q, qi,
             <p className={`font-medium text-base leading-[2.4] ${cm ? "text-gray-800" : "text-gray-700"}`}>
               <span className={`font-bold mr-2 ${cm ? "text-emerald-600" : "text-gray-600"}`}>{sn}.</span>
-              <span dangerouslySetInnerHTML={{
-                __html: (q.question || "").replace(/_{2,}|\[_+\]/g, `<span class="inline-block border-b-2 ${cm ? "border-emerald-400" : "border-gray-500"} min-w-[140px] mx-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`)
-              }} />
+              <span>{(q.question || "").split(/_{2,}|\[_+\]/).map((part, i, arr) => (
+                <React.Fragment key={i}>
+                  {part}
+                  {i < arr.length - 1 && <span className={`inline-block border-b-2 ${cm ? "border-emerald-400" : "border-gray-500"} min-w-[140px] mx-1`}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>}
+                </React.Fragment>
+              ))}</span>
               <span className={`text-xs ml-2 ${cm ? "text-emerald-400" : "text-gray-400"}`}>[{q.marks || 1}M]</span>
             </p>
           );
