@@ -303,7 +303,7 @@ const ChatWidget = () => {
 
       {/* Chat panel */}
       {open && !minimized && (
-        <div className="fixed bottom-4 right-4 z-[60] w-[360px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-2rem)] bg-card rounded-2xl shadow-2xl border flex flex-col overflow-hidden animate-scale-in">
+        <div className="fixed bottom-4 right-4 z-[60] w-[360px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100dvh-2rem)] bg-card rounded-2xl shadow-2xl border flex flex-col overflow-hidden animate-scale-in">
           {/* Header */}
           <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
@@ -463,7 +463,7 @@ const ChatWidget = () => {
                 value={input}
                 onChange={(e) => { setInput(e.target.value); resetIdleTimer(); }}
                 placeholder={isRecording ? "Listening…" : "Type or use mic 🎤"}
-                className="flex-1 bg-muted rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+                className="flex-1 min-w-0 bg-muted rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-accent"
                 disabled={isLoading || isRecording}
               />
               <button
@@ -475,9 +475,37 @@ const ChatWidget = () => {
                 <Send className="h-4 w-4" />
               </button>
             </form>
-            <p className="text-center text-[10px] text-muted-foreground mt-1">
-              🎤 ElevenLabs voice • {voiceEnabled ? "🔊 Voice reply ON" : "🔇 Voice reply OFF"}
-            </p>
+            <div className="flex items-center justify-center gap-3 mt-1.5">
+              {/* Mic toggle */}
+              <button
+                type="button"
+                onClick={toggleMic}
+                disabled={isMicBusy}
+                className="flex items-center gap-1 text-[10px] font-semibold"
+                title={isRecording ? "Stop recording" : "Start voice input"}
+              >
+                <span className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${isRecording ? "bg-red-500 text-white" : "bg-green-500 text-white"}`}>
+                  {isRecording ? <MicOff className="h-3 w-3" /> : <Mic className="h-3 w-3" />}
+                </span>
+                <span className={`${isRecording ? "text-red-500" : "text-green-600"}`}>
+                  {isRecording ? "OFF" : "ON"}
+                </span>
+              </button>
+              {/* Voice reply toggle */}
+              <button
+                type="button"
+                onClick={() => { if (isSpeaking) stopSpeaking(); setVoiceEnabled((v) => !v); }}
+                className="flex items-center gap-1 text-[10px] font-semibold"
+                title={voiceEnabled ? "Mute voice reply" : "Enable voice reply"}
+              >
+                <span className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${voiceEnabled ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
+                  {voiceEnabled ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
+                </span>
+                <span className={`${voiceEnabled ? "text-green-600" : "text-red-500"}`}>
+                  {voiceEnabled ? "ON" : "OFF"}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       )}
