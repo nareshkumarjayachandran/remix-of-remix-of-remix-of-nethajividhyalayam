@@ -561,7 +561,8 @@ export default function QuestionPaper() {
 
   const generate = async () => {
     if (!isOnline) {
-      toast({ title: "You are offline 📶", description: "Question paper generation needs internet.", variant: "destructive" });
+      toast({ title: "You are offline 📶", description: "Question paper generation needs internet. View your saved papers below.", variant: "destructive" });
+      setShowHistory(true);
       return;
     }
     if (form.questionTypes.length === 0) {

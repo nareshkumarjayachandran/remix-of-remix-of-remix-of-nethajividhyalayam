@@ -547,6 +547,10 @@ export default function SpokenEnglish() {
 
   // Practice mode: record & analyze
   const handleMicToggle = useCallback(async () => {
+    if (!isOnline && !isRecording) {
+      alert("📶 You are offline. Speaking practice needs an internet connection. Please try again when connected.");
+      return;
+    }
     if (isRecording) {
       setIsProcessing(true);
       const blob = await stopRecording();
@@ -576,7 +580,7 @@ export default function SpokenEnglish() {
       setSpokenText("");
       await startRecording();
     }
-  }, [isRecording, stopRecording, startRecording, currentSentence, grade, topic, tamilMode, recordSession]);
+  }, [isOnline, isRecording, stopRecording, startRecording, currentSentence, grade, topic, tamilMode, recordSession]);
 
   const nextSentence = useCallback(() => {
     setCurrentIndex((i) => i + 1);
@@ -587,6 +591,10 @@ export default function SpokenEnglish() {
 
   // Free speaking mode
   const handleFreeMicToggle = useCallback(async () => {
+    if (!isOnline && !isRecording) {
+      alert("📶 You are offline. Free speaking needs an internet connection.");
+      return;
+    }
     if (isRecording) {
       setIsProcessing(true);
       const blob = await stopRecording();
@@ -610,10 +618,14 @@ export default function SpokenEnglish() {
       setSpokenText("");
       await startRecording();
     }
-  }, [isRecording, stopRecording, startRecording, grade, freeTopic, tamilMode, recordSession]);
+  }, [isOnline, isRecording, stopRecording, startRecording, grade, freeTopic, tamilMode, recordSession]);
 
   // Conversation mode
   const startConversation = useCallback(async () => {
+    if (!isOnline) {
+      alert("📶 You are offline. Conversation mode needs an internet connection.");
+      return;
+    }
     setConvStarted(true);
     const starters: Record<string, string> = {
       Greetings: "Hello! How are you today? I am Miss Nova, your English teacher! What is your name?",
@@ -626,9 +638,13 @@ export default function SpokenEnglish() {
     const aiText = starters[topic] || starters.default;
     setConvMessages([{ role: "ai", text: aiText }]);
     await speak(aiText, gradeSpeed);
-  }, [topic, speak, gradeSpeed]);
+  }, [isOnline, topic, speak, gradeSpeed]);
 
   const handleConvMic = useCallback(async () => {
+    if (!isOnline && !isRecording) {
+      alert("📶 You are offline. Conversation mode needs an internet connection.");
+      return;
+    }
     if (isRecording) {
       setIsProcessing(true);
       const blob = await stopRecording();
@@ -649,7 +665,7 @@ export default function SpokenEnglish() {
       stopAudio();
       await startRecording();
     }
-  }, [isRecording, stopRecording, startRecording, grade, topic, convMessages, tamilMode, speak, stopAudio, gradeSpeed]);
+  }, [isOnline, isRecording, stopRecording, startRecording, grade, topic, convMessages, tamilMode, speak, stopAudio, gradeSpeed]);
 
   const currentVoice = VOICE_OPTIONS.find((v) => v.key === voiceKey) || VOICE_OPTIONS[0];
 
