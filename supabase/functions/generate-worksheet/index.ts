@@ -32,7 +32,21 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { curriculum, term, grade, subject, topic, numQuestions, language, difficulty, questionTypes, setNumber = 1, randomSeed = Math.random(), hindiSyllabus = "none", bilingualPair = "English+Tamil" } = await req.json();
+    const body = await req.json();
+    const { curriculum, term, grade, subject, topic, numQuestions, language, difficulty, questionTypes, setNumber = 1, randomSeed = Math.random(), hindiSyllabus = "none", bilingualPair = "English+Tamil" } = body;
+
+    // Input validation
+    if (!grade || !subject || !topic || typeof grade !== "string" || typeof subject !== "string" || typeof topic !== "string") {
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (topic.length > 500 || subject.length > 200 || grade.length > 50) {
+      return new Response(JSON.stringify({ error: "Input too long" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const safeNumQuestions = Math.min(Math.max(Number(numQuestions) || 10, 1), 50);
     const isMerryBirds = curriculum === "Oxford Merry Birds (Integrated Term Course)";
 
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
