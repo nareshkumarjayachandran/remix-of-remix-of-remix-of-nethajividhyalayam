@@ -55,20 +55,11 @@ const Admissions = () => {
   }, [location.search]);
 
   // Autocomplete state
-  const [studentSuggestions, setStudentSuggestions] = useState<{ id: string; student_name: string; standard: string; section: string }[]>([]);
+  const [studentSuggestions, setStudentSuggestions] = useState<{ student_name: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
-  // Normalize name: remove initials (single letter followed by dot/space), lowercase, trim
-  const normalizeName = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/\b[a-z]\.\s*/g, "") // remove "K. " style initials
-      .replace(/\s+/g, " ")
-      .trim();
-  };
-
-  // Fetch matching students when name/standard/section change
+  // Fetch matching students via secure edge function (no direct DB access)
   useEffect(() => {
     const name = feeForm.childName.trim();
     if (name.length < 2 || !feeForm.standard || !feeForm.section) {
@@ -79,22 +70,12 @@ const Admissions = () => {
     const timer = setTimeout(async () => {
       setLoadingSuggestions(true);
       try {
-        const { data } = await supabase
-          .from("students")
-          .select("id, student_name, standard, section")
-          .eq("standard", feeForm.standard)
-          .eq("section", feeForm.section)
-          .eq("status", "active");
-
-        if (data) {
-          const normalizedInput = normalizeName(name);
-          const filtered = data.filter((s) => {
-            const normalizedStudent = normalizeName(s.student_name);
-            // Only suggest when the full name (without initials) matches exactly
-            return normalizedStudent === normalizedInput;
-          });
-          setStudentSuggestions(filtered);
-          setShowSuggestions(filtered.length > 0);
+        const { data, error } = await supabase.functions.invoke("student-fee-api", {
+          body: { action: "suggest-students", studentName: name, standard: feeForm.standard, section: feeForm.section },
+        });
+        if (!error && data?.suggestions) {
+          setStudentSuggestions(data.suggestions);
+          setShowSuggestions(data.suggestions.length > 0);
         }
       } catch {
         // silently fail
@@ -108,7 +89,6 @@ const Admissions = () => {
   const selectStudent = (student: typeof studentSuggestions[0]) => {
     setFeeForm({ ...feeForm, childName: student.student_name });
     setShowSuggestions(false);
-    // Auto-verify since we picked from DB
     setStudentVerified(true);
   };
 
@@ -120,25 +100,16 @@ const Admissions = () => {
     setVerifying(true);
     setStudentVerified(null);
     try {
-      // Fetch all active students in that class/section, then fuzzy match
-      const { data, error } = await supabase
-        .from("students")
-        .select("id, student_name")
-        .eq("standard", std)
-        .eq("section", sec)
-        .eq("status", "active");
+      const { data, error } = await supabase.functions.invoke("student-fee-api", {
+        body: { action: "verify-student", studentName: name, standard: std, section: sec },
+      });
       if (error) throw error;
 
-      const normalizedInput = normalizeName(name);
-      const match = data?.find((s) => {
-        const normalizedStudent = normalizeName(s.student_name);
-        return normalizedStudent === normalizedInput || normalizedStudent.includes(normalizedInput) || normalizedInput.includes(normalizedStudent);
-      });
-
-      if (match) {
+      if (data?.verified) {
         setStudentVerified(true);
-        // Update name to official name from DB
-        setFeeForm((prev) => ({ ...prev, childName: match.student_name }));
+        if (data.student_name) {
+          setFeeForm((prev) => ({ ...prev, childName: data.student_name }));
+        }
       } else {
         setStudentVerified(false);
         toast({ title: "⚠️ Student Not Found", description: `No active student matching "${name}" found in Class ${std} ${sec}. Please check the details.`, variant: "destructive" });
@@ -275,17 +246,18 @@ const Admissions = () => {
           { label: "Amount Paid", value: feeForm.amount ? `₹${feeForm.amount}` : "N/A" },
         ],
       };
-      // Save to pending_fee_payments for FeeDesk approval
-      const { error: pendingError } = await supabase.from("pending_fee_payments" as any).insert([{
-        student_name: feeForm.childName.trim(),
-        standard: feeForm.standard,
-        section: feeForm.section,
-        amount: feeForm.amount || null,
-        payment_method: feeForm.paymentMethod,
-        reference_id: feeForm.referenceId.trim(),
-        parent_email: null,
-        status: "pending",
-      }]);
+      // Save to pending_fee_payments via secure edge function
+      const { data: feeResult, error: pendingError } = await supabase.functions.invoke("student-fee-api", {
+        body: {
+          action: "submit-fee-payment",
+          studentName: feeForm.childName.trim(),
+          standard: feeForm.standard,
+          section: feeForm.section,
+          amount: feeForm.amount || null,
+          paymentMethod: feeForm.paymentMethod,
+          referenceId: feeForm.referenceId.trim(),
+        },
+      });
       if (pendingError) console.error("Failed to save pending payment:", pendingError);
       // EmailJS to school
       sendEmail({
@@ -436,15 +408,14 @@ const Admissions = () => {
                     </div>
                     {showSuggestions && studentSuggestions.length > 0 && (
                       <div className="absolute z-50 w-full bg-popover border rounded-md shadow-lg mt-1 max-h-48 overflow-y-auto">
-                        {studentSuggestions.map((s) => (
+                        {studentSuggestions.map((s, idx) => (
                           <button
-                            key={s.id}
+                            key={idx}
                             type="button"
                             className="w-full text-left px-4 py-2.5 text-sm hover:bg-accent hover:text-accent-foreground transition-colors border-b last:border-b-0"
                             onMouseDown={() => selectStudent(s)}
                           >
                             <span className="font-medium">{s.student_name}</span>
-                            <span className="text-muted-foreground ml-2 text-xs">Class {s.standard} - {s.section}</span>
                           </button>
                         ))}
                       </div>
