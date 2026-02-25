@@ -21,3 +21,6 @@ verify_jwt = false
 [functions.spoken-english-feedback]
 verify_jwt = false
 
+[functions.student-fee-api]
+verify_jwt = false
+
