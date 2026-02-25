@@ -349,16 +349,22 @@ CRITICAL RULES:
 
     let response: Response | null = null;
 
-    if (GROQ_API_KEY) {
+    const groqKeys = [GROQ_API_KEY, Deno.env.get("GROQ_API_KEY_2")].filter(Boolean) as string[];
+    for (const gKey of groqKeys) {
+      if (response) break;
       for (let attempt = 1; attempt <= 3; attempt++) {
-        response = await callGroq("llama-3.1-8b-instant");
+        response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${gKey}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ model: "llama-3.1-8b-instant", messages: messagePayload, stream: false, temperature, max_tokens: 8000 }),
+        });
         if (response.status !== 429) break;
         if (attempt < 3) {
           await new Promise((r) => setTimeout(r, attempt * 8000));
         }
       }
       if (response && !response.ok) {
-        console.warn("Groq failed with status", response.status, "— trying fallbacks");
+        console.warn("Groq key failed with status", response.status, "— trying next key/fallback");
         response = null;
       }
     }

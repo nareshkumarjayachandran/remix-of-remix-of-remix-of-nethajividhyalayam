@@ -304,10 +304,16 @@ ${curriculumRules}`;
 
     let response: Response | null = null;
 
-    // Strategy: Groq → Sarvam AI → Lovable AI
-    if (GROQ_API_KEY) {
+    // Strategy: Groq → Groq2 → Sarvam AI → Lovable AI
+    const groqKeys = [GROQ_API_KEY, Deno.env.get("GROQ_API_KEY_2")].filter(Boolean) as string[];
+    for (const gKey of groqKeys) {
+      if (response) break;
       for (let attempt = 1; attempt <= 3; attempt++) {
-        response = await callGroq("llama-3.1-8b-instant");
+        response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${gKey}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ model: "llama-3.1-8b-instant", messages: messagePayload, stream: false, temperature, max_tokens: 4096 }),
+        });
 
         if (response.status !== 429) break;
 
@@ -318,7 +324,7 @@ ${curriculumRules}`;
         }
       }
       if (response && !response.ok) {
-        console.warn("Groq failed with status", response.status, "— trying fallbacks");
+        console.warn("Groq key failed with status", response.status, "— trying next key/fallback");
         response = null;
       }
     }

@@ -165,13 +165,15 @@ Respond naturally and encouragingly. In "feedback" field, write your conversatio
     const SARVAM_API_KEY = Deno.env.get("SARVAM_API_KEY");
     let response: Response | null = null;
 
-    // Primary: Groq
-    if (GROQ_API_KEY) {
+    // Primary: Groq (with backup key)
+    const groqKeys = [GROQ_API_KEY, Deno.env.get("GROQ_API_KEY_2")].filter(Boolean) as string[];
+    for (const gKey of groqKeys) {
+      if (response) break;
       try {
         response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${GROQ_API_KEY}`,
+            Authorization: `Bearer ${gKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -184,6 +186,8 @@ Respond naturally and encouragingly. In "feedback" field, write your conversatio
         if (!response.ok) {
           console.error("Groq error:", response.status, await response.text());
           response = null;
+        } else {
+          break;
         }
       } catch (e) {
         console.error("Groq fetch error:", e);
