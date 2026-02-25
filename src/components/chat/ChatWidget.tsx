@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { MessageCircle, X, Send, Mic, MicOff, ChevronDown, Volume2, VolumeX } from "lucide-react";
+import { MessageCircle, X, Send, Mic, MicOff, ChevronDown, Volume2, VolumeX, Trash2, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 
@@ -11,7 +11,19 @@ const STT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-st
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const IDLE_TIMEOUT = 30000;
 const HISTORY_KEY = "nv_chat_history";
-const HISTORY_TTL = 4 * 60 * 60 * 1000;
+const HISTORY_TTL_KEY = "nv_chat_ttl";
+const TTL_OPTIONS = [
+  { label: "4 Hours", value: 4 * 60 * 60 * 1000 },
+  { label: "1 Day", value: 24 * 60 * 60 * 1000 },
+  { label: "3 Days", value: 3 * 24 * 60 * 60 * 1000 },
+  { label: "7 Days", value: 7 * 24 * 60 * 60 * 1000 },
+];
+const getSavedTTL = (): number => {
+  try {
+    const v = localStorage.getItem(HISTORY_TTL_KEY);
+    return v ? Number(v) : 24 * 60 * 60 * 1000; // default 1 day
+  } catch { return 24 * 60 * 60 * 1000; }
+};
 
 const DEFAULT_MSG: Msg = { role: "assistant", content: "👋 Welcome to Nethaji Vidhyalayam! How can I help you today?" };
 
@@ -20,7 +32,7 @@ const loadHistory = (): Msg[] => {
     const raw = localStorage.getItem(HISTORY_KEY);
     if (!raw) return [DEFAULT_MSG];
     const { ts, msgs } = JSON.parse(raw);
-    if (Date.now() - ts > HISTORY_TTL) {
+    if (Date.now() - ts > getSavedTTL()) {
       localStorage.removeItem(HISTORY_KEY);
       return [DEFAULT_MSG];
     }
@@ -57,6 +69,20 @@ const ChatWidget = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [pulseAnim, setPulseAnim] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+  const [historyTTL, setHistoryTTL] = useState(getSavedTTL);
+
+  const clearChat = useCallback(() => {
+    localStorage.removeItem(HISTORY_KEY);
+    setMessages([DEFAULT_MSG]);
+    setShowSettings(false);
+  }, []);
+
+  const changeTTL = useCallback((val: number) => {
+    setHistoryTTL(val);
+    try { localStorage.setItem(HISTORY_TTL_KEY, String(val)); } catch {}
+    setShowSettings(false);
+  }, []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<MediaRecorder | null>(null);
@@ -437,7 +463,7 @@ const ChatWidget = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 relative">
               {/* Voice toggle */}
               <button
                 onClick={() => {
@@ -449,6 +475,40 @@ const ChatWidget = () => {
               >
                 {voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
               </button>
+              {/* Settings / History */}
+              <button
+                onClick={() => setShowSettings((s) => !s)}
+                className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                title="Chat settings"
+              >
+                <Clock className="h-4 w-4" />
+              </button>
+              {showSettings && (
+                <div className="absolute top-9 right-0 bg-card text-foreground rounded-lg shadow-xl border p-3 w-52 z-50 space-y-2">
+                  <p className="text-xs font-semibold opacity-70 uppercase tracking-wide">Keep History</p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {TTL_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => changeTTL(opt.value)}
+                        className={`text-xs px-2 py-1.5 rounded-md transition-colors ${
+                          historyTTL === opt.value
+                            ? "bg-primary text-primary-foreground font-semibold"
+                            : "bg-muted hover:bg-accent hover:text-accent-foreground"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={clearChat}
+                    className="w-full flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded-md bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors mt-1"
+                  >
+                    <Trash2 className="h-3 w-3" /> Clear Chat History
+                  </button>
+                </div>
+              )}
               <button
                 onClick={() => setMinimized(true)}
                 className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
@@ -461,6 +521,7 @@ const ChatWidget = () => {
                   setOpen(false);
                   setMinimized(false);
                   stopSpeaking();
+                  setShowSettings(false);
                 }}
                 className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
                 aria-label="Close"
