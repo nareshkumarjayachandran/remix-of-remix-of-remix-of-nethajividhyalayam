@@ -812,58 +812,78 @@ export default function SpokenEnglish() {
 
   // ── Render: Home ──────────────────────────────────────────────────────────
   if (screen === "home") {
+    const filteredTopics = Object.entries(TOPICS).filter(([, data]) => {
+      const c = data.curriculum.toLowerCase();
+      if (curriculumFilter === "samacheer") return c.includes("samacheer");
+      if (curriculumFilter === "oxford") return c.includes("merry birds");
+      if (curriculumFilter === "it") return c.includes("it professional");
+      if (curriculumFilter === "phonics") return c.includes("phonics") || c.includes("oral practice") || c.includes("all grades");
+      return true;
+    });
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-100 via-green-50 to-yellow-50 flex flex-col overflow-x-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-violet-100 via-sky-50 to-amber-50 flex flex-col overflow-x-hidden">
         <OfflineBanner isOnline={isOnline} appName="Miss Nova English" offlineCapabilities="Practice mode works — voice recording needs internet" />
         {showVoicePicker && <VoicePickerModal selected={voiceKey} onSelect={setVoiceKey} onClose={() => setShowVoicePicker(false)} />}
 
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-4 py-5 text-white text-center shadow-lg">
-          <div className="text-4xl mb-1">👩‍🏫</div>
-          <h1 className="text-2xl font-extrabold tracking-tight">Miss Nova</h1>
-          <p className="text-blue-200 text-sm mt-0.5">AI English Teacher • Nethaji Vidhyalayam</p>
+        {/* ─── Hero Header ─── */}
+        <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 px-4 pt-6 pb-8 text-white text-center overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-2 left-6 text-5xl animate-bounce" style={{ animationDuration: '3s' }}>✨</div>
+            <div className="absolute top-8 right-8 text-4xl animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}>🌟</div>
+            <div className="absolute bottom-4 left-1/4 text-3xl animate-bounce" style={{ animationDuration: '2s', animationDelay: '1s' }}>📚</div>
+          </div>
+          <div className="relative z-10">
+            <div className="text-5xl mb-2 drop-shadow-lg">👩‍🏫</div>
+            <h1 className="text-3xl font-black tracking-tight drop-shadow">Miss Nova</h1>
+            <p className="text-purple-200 text-sm mt-1 font-medium">AI English Teacher • Nethaji Vidhyalayam</p>
+            {/* Quick stats pills */}
+            <div className="flex items-center justify-center gap-3 mt-3">
+              <span className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-bold flex items-center gap-1">
+                <Flame className="h-3.5 w-3.5 text-orange-300" /> {progress.streak} streak
+              </span>
+              <span className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-bold flex items-center gap-1">
+                <Zap className="h-3.5 w-3.5 text-yellow-300" /> Lv.{level.level}
+              </span>
+              <span className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-bold flex items-center gap-1">
+                <Star className="h-3.5 w-3.5 text-amber-300" /> {progress.levelXP} XP
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="max-w-md mx-auto w-full pt-3">
-          <PWAInstallBanner appName="Miss Nova English" appEmoji="👩‍🏫" appColor="from-blue-600 to-indigo-700" description="Practice offline • Works without internet • Save to home screen" />
+          <PWAInstallBanner appName="Miss Nova English" appEmoji="👩‍🏫" appColor="from-indigo-600 to-purple-600" description="Practice offline • Save to home screen" />
         </div>
 
-        <div className="flex-1 px-4 py-5 max-w-md mx-auto w-full space-y-4">
-          {/* Daily Lesson + Quick Stats */}
-          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-4 text-white shadow-lg">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-xs text-blue-200 font-bold uppercase tracking-wide">Today's Lesson</p>
-                <p className="text-lg font-extrabold mt-1">{dailyLesson.emoji} {dailyLesson.topic}</p>
-                <p className="text-xs text-blue-200 mt-1">{dailyLesson.suggestion}</p>
-              </div>
-              <div className="text-right">
-                <div className="flex items-center gap-1 text-orange-300">
-                  <Flame className="h-4 w-4" />
-                  <span className="font-bold text-sm">{progress.streak} day streak</span>
-                </div>
-                <p className="text-xs text-blue-200 mt-1">Level {level.level} • {progress.levelXP} XP</p>
-              </div>
-            </div>
+        <div className="flex-1 px-4 py-4 max-w-md mx-auto w-full space-y-4">
+          {/* ─── Today's Lesson Card ─── */}
+          <div className="relative bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-4 text-white shadow-xl overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-6 translate-x-6" />
+            <p className="text-[10px] uppercase font-bold tracking-widest text-emerald-200">📅 Today's Lesson</p>
+            <p className="text-xl font-black mt-1">{dailyLesson.emoji} {dailyLesson.topic}</p>
+            <p className="text-xs text-emerald-100 mt-0.5">{dailyLesson.suggestion}</p>
             <button
               onClick={() => { setTopic(dailyLesson.topic); setCurrentIndex(0); setFeedback(null); setSpokenText(""); setShowResult(false); setScreen("practice"); }}
-              className="mt-3 w-full bg-white/20 hover:bg-white/30 rounded-xl py-2.5 text-sm font-bold transition-colors flex items-center justify-center gap-2"
+              className="mt-3 w-full bg-white text-emerald-700 rounded-2xl py-2.5 text-sm font-extrabold transition-all hover:bg-emerald-50 flex items-center justify-center gap-2 shadow-md active:scale-95"
             >
-              <Zap className="h-4 w-4" /> Talk Now — Quick Start
+              <Zap className="h-4 w-4" /> Start Now — Quick Start
             </button>
           </div>
 
-          {/* Grade Selector */}
-          <div>
-            <p className="text-sm font-bold text-gray-600 mb-2 text-center">👤 Select Your Grade</p>
-            <div className="flex flex-wrap gap-2 justify-center">
+          {/* ─── Grade Selector ─── */}
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-3 shadow-sm border border-white/50">
+            <p className="text-xs font-bold text-gray-500 mb-2 text-center uppercase tracking-wide">👤 Your Grade</p>
+            <div className="flex flex-wrap gap-1.5 justify-center">
               {GRADES.map((g) => (
                 <button
                   key={g}
                   onClick={() => setGrade(g)}
                   className={cn(
-                    "px-4 py-2 rounded-full text-sm font-bold border-2 transition-all",
-                    grade === g ? "bg-blue-600 border-blue-600 text-white scale-105 shadow-md" : "bg-white border-blue-200 text-blue-700 hover:border-blue-400"
+                    "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all",
+                    grade === g
+                      ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white scale-105 shadow-lg"
+                      : "bg-white border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600"
                   )}
                 >
                   {g}
@@ -872,38 +892,24 @@ export default function SpokenEnglish() {
             </div>
           </div>
 
-          {/* Voice Selector */}
-          <button
-            onClick={() => setShowVoicePicker(true)}
-            className="w-full flex items-center gap-3 bg-white rounded-2xl px-4 py-3 shadow-sm border border-purple-100 hover:border-purple-300 transition-all"
-          >
-            <span className="text-2xl">{currentVoice.emoji}</span>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-bold text-gray-700">🎙️ Voice: {currentVoice.label}</p>
-              <p className="text-xs text-gray-400">{currentVoice.desc} · tap to change</p>
-            </div>
-            <Settings className="h-4 w-4 text-gray-400" />
-          </button>
-
-          {/* Topic Picker */}
+          {/* ─── Topic Picker ─── */}
           <div>
-            <p className="text-sm font-bold text-gray-600 mb-2 text-center">📚 Choose a Topic</p>
-            {/* Curriculum Filter Tabs */}
+            <p className="text-xs font-bold text-gray-500 mb-2 text-center uppercase tracking-wide">📚 Choose a Topic</p>
             <div className="flex gap-1.5 justify-center mb-3 flex-wrap">
               {([
-                { key: "samacheer", label: "Samacheer", emoji: "📖" },
-                { key: "oxford", label: "Merry Birds", emoji: "🐦" },
-                { key: "phonics", label: "Phonics", emoji: "🗣️" },
-                { key: "it", label: "IT Pro", emoji: "💻" },
+                { key: "samacheer", label: "Samacheer", emoji: "📖", color: "from-blue-500 to-cyan-500" },
+                { key: "oxford", label: "Merry Birds", emoji: "🐦", color: "from-green-500 to-emerald-500" },
+                { key: "phonics", label: "Phonics", emoji: "🗣️", color: "from-orange-500 to-red-500" },
+                { key: "it", label: "IT Pro", emoji: "💻", color: "from-slate-600 to-gray-700" },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setCurriculumFilter(tab.key)}
                   className={cn(
-                    "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
+                    "px-3 py-1.5 rounded-full text-xs font-bold transition-all",
                     curriculumFilter === tab.key
-                      ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                      : "bg-white border-gray-200 text-gray-600 hover:border-blue-300"
+                      ? `bg-gradient-to-r ${tab.color} text-white shadow-md scale-105`
+                      : "bg-white border border-gray-200 text-gray-600 hover:shadow-sm"
                   )}
                 >
                   {tab.emoji} {tab.label}
@@ -911,141 +917,91 @@ export default function SpokenEnglish() {
               ))}
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {Object.entries(TOPICS)
-                .filter(([, data]) => {
-                  const c = data.curriculum.toLowerCase();
-                  if (curriculumFilter === "samacheer") return c.includes("samacheer");
-                  if (curriculumFilter === "oxford") return c.includes("merry birds");
-                  if (curriculumFilter === "it") return c.includes("it professional");
-                  if (curriculumFilter === "phonics") return c.includes("phonics") || c.includes("oral practice") || c.includes("all grades");
-                  return true;
-                })
-                .map(([name, data]) => (
+              {filteredTopics.map(([name, data]) => (
                 <button
                   key={name}
                   onClick={() => setTopic(name)}
                   className={cn(
-                    "p-3 rounded-2xl border-2 text-left transition-all font-semibold text-sm",
+                    "relative p-3 rounded-2xl border-2 text-left transition-all overflow-hidden",
                     topic === name
-                      ? `bg-gradient-to-br ${data.color} text-white border-transparent shadow-lg`
-                      : "bg-white border-gray-200 text-gray-700"
+                      ? `bg-gradient-to-br ${data.color} text-white border-transparent shadow-xl scale-[1.02]`
+                      : "bg-white border-gray-100 text-gray-700 hover:shadow-md hover:border-gray-200 hover:scale-[1.01]"
                   )}
                 >
-                  <span className="text-xl">{data.emoji}</span>
-                  <p className="mt-1 text-xs leading-tight">{name}</p>
+                  {topic === name && <div className="absolute top-0 right-0 w-12 h-12 bg-white/15 rounded-full -translate-y-4 translate-x-4" />}
+                  <span className="text-2xl drop-shadow-sm">{data.emoji}</span>
+                  <p className="mt-1 text-xs font-bold leading-tight">{name}</p>
                   {topic !== name && <p className="text-[10px] text-gray-400 mt-0.5 leading-tight">{data.curriculum}</p>}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Tamil Mode Toggle */}
-          <div className="flex items-center justify-between bg-white rounded-2xl p-3 shadow-sm border border-orange-100">
-            <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4 text-orange-500" />
-              <div>
-                <p className="text-sm font-bold text-gray-700">Tamil Help Mode</p>
-                <p className="text-xs text-gray-500">Get explanations in Tamil</p>
-              </div>
-            </div>
+          {/* ─── Tamil Mode + Voice ─── */}
+          <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setTamilMode(!tamilMode)}
-              className={cn("w-12 h-6 rounded-full transition-colors relative", tamilMode ? "bg-orange-500" : "bg-gray-300")}
+              className={cn(
+                "rounded-2xl p-3 border-2 text-left transition-all",
+                tamilMode
+                  ? "bg-gradient-to-br from-orange-400 to-red-400 text-white border-transparent shadow-lg"
+                  : "bg-white border-orange-100 hover:border-orange-300"
+              )}
             >
-              <span className={cn("absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform", tamilMode ? "left-6" : "left-0.5")} />
+              <Globe className={cn("h-5 w-5 mb-1", tamilMode ? "text-white" : "text-orange-500")} />
+              <p className={cn("text-xs font-bold", tamilMode ? "text-white" : "text-gray-700")}>Tamil Help</p>
+              <p className={cn("text-[10px]", tamilMode ? "text-orange-100" : "text-gray-400")}>
+                {tamilMode ? "✅ ON" : "Tap to enable"}
+              </p>
+            </button>
+            <button
+              onClick={() => setShowVoicePicker(true)}
+              className="bg-white rounded-2xl p-3 border-2 border-purple-100 hover:border-purple-300 text-left transition-all"
+            >
+              <span className="text-xl">{currentVoice.emoji}</span>
+              <p className="text-xs font-bold text-gray-700 mt-1">{currentVoice.label}</p>
+              <p className="text-[10px] text-gray-400">Tap to change</p>
             </button>
           </div>
 
-          {/* Mode Buttons */}
-          <div className="space-y-3">
-            <button
-              onClick={() => { setCurrentIndex(0); setFeedback(null); setSpokenText(""); setShowResult(false); setScreen("practice"); }}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
-            >
-              <div className="flex items-center gap-3">
-                <BookOpen className="h-6 w-6" />
-                <div className="text-left">
-                  <p className="font-extrabold text-lg">Practice Mode</p>
-                  <p className="text-green-100 text-xs">Repeat sentences • Get star rating</p>
+          {/* ─── Mode Buttons ─── */}
+          <div className="space-y-2">
+            {[
+              { screen: "practice" as Screen, icon: <BookOpen className="h-5 w-5" />, label: "Practice Mode", desc: "Repeat sentences • Star rating", gradient: "from-green-500 to-emerald-600", lightText: "text-green-100" },
+              { screen: "conversation" as Screen, icon: <MessageCircle className="h-5 w-5" />, label: "Conversation", desc: "Chat with Miss Nova!", gradient: "from-purple-500 to-pink-500", lightText: "text-purple-100" },
+              { screen: "freespeaking" as Screen, icon: <Mic className="h-5 w-5" />, label: "Free Speaking", desc: "Speak freely • AI feedback", gradient: "from-blue-500 to-indigo-600", lightText: "text-blue-100" },
+              { screen: "storylessons" as Screen, icon: <Sparkles className="h-5 w-5" />, label: "Story Lessons", desc: "Role-play • Dialogues", gradient: "from-pink-500 to-rose-600", lightText: "text-pink-100" },
+              { screen: "bookreading" as Screen, icon: <BookOpen className="h-5 w-5" />, label: "📖 Book Reading", desc: "Samacheer & Oxford • Tamil", gradient: "from-amber-500 to-orange-600", lightText: "text-amber-100" },
+              { screen: "dashboard" as Screen, icon: <BarChart3 className="h-5 w-5" />, label: "My Progress", desc: "Charts • Streak • Fluency", gradient: "from-cyan-500 to-blue-600", lightText: "text-cyan-100" },
+            ].map((mode) => (
+              <button
+                key={mode.screen}
+                onClick={() => {
+                  if (mode.screen === "practice") { setCurrentIndex(0); setFeedback(null); setSpokenText(""); setShowResult(false); }
+                  if (mode.screen === "conversation") { setConvMessages([]); setConvStarted(false); setFeedback(null); }
+                  if (mode.screen === "freespeaking") { setFeedback(null); setSpokenText(""); setShowResult(false); }
+                  setScreen(mode.screen);
+                }}
+                className={cn(
+                  "w-full bg-gradient-to-r text-white rounded-2xl py-3.5 px-5 flex items-center justify-between shadow-lg active:scale-[0.98] transition-all touch-manipulation",
+                  mode.gradient
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  {mode.icon}
+                  <div className="text-left">
+                    <p className="font-extrabold text-base">{mode.label}</p>
+                    <p className={cn("text-[11px]", mode.lightText)}>{mode.desc}</p>
+                  </div>
                 </div>
-              </div>
-              <ChevronRight className="h-6 w-6" />
-            </button>
-
-            <button
-              onClick={() => { setConvMessages([]); setConvStarted(false); setFeedback(null); setScreen("conversation"); }}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
-            >
-              <div className="flex items-center gap-3">
-                <MessageCircle className="h-6 w-6" />
-                <div className="text-left">
-                  <p className="font-extrabold text-lg">Conversation Mode</p>
-                  <p className="text-purple-100 text-xs">Chat with Miss Nova!</p>
-                </div>
-              </div>
-              <ChevronRight className="h-6 w-6" />
-            </button>
-
-            <button
-              onClick={() => { setFeedback(null); setSpokenText(""); setShowResult(false); setScreen("freespeaking"); }}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
-            >
-              <div className="flex items-center gap-3">
-                <Mic className="h-6 w-6" />
-                <div className="text-left">
-                  <p className="font-extrabold text-lg">Free Speaking</p>
-                  <p className="text-blue-100 text-xs">Speak freely • AI analyzes everything</p>
-                </div>
-              </div>
-              <ChevronRight className="h-6 w-6" />
-            </button>
-
-            <button
-              onClick={() => setScreen("storylessons")}
-              className="w-full bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
-            >
-              <div className="flex items-center gap-3">
-                <BookOpen className="h-6 w-6" />
-                <div className="text-left">
-                  <p className="font-extrabold text-lg">Story Lessons</p>
-                  <p className="text-pink-100 text-xs">Real-life scenarios • Role-play dialogues</p>
-                </div>
-              </div>
-              <ChevronRight className="h-6 w-6" />
-            </button>
-
-            <button
-              onClick={() => setScreen("bookreading")}
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
-            >
-              <div className="flex items-center gap-3">
-                <BookOpen className="h-6 w-6" />
-                <div className="text-left">
-                  <p className="font-extrabold text-lg">📖 Book Reading</p>
-                  <p className="text-amber-100 text-xs">Samacheer & Oxford • Tamil Help • Voice</p>
-                </div>
-              </div>
-              <ChevronRight className="h-6 w-6" />
-            </button>
-
-            <button
-              onClick={() => setScreen("dashboard")}
-              className="w-full bg-gradient-to-r from-yellow-500 to-amber-500 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
-            >
-              <div className="flex items-center gap-3">
-                <BarChart3 className="h-6 w-6" />
-                <div className="text-left">
-                  <p className="font-extrabold text-lg">My Progress</p>
-                  <p className="text-orange-100 text-xs">Charts • Streak • Fluency Score</p>
-                </div>
-              </div>
-              <ChevronRight className="h-6 w-6" />
-            </button>
+                <ChevronRight className="h-5 w-5 opacity-70" />
+              </button>
+            ))}
           </div>
 
-          {/* Session Score */}
+          {/* ─── Session Score ─── */}
           {sessionScore.length > 0 && (
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-yellow-100">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-sm border border-yellow-100">
               <p className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
                 <Sparkles className="h-4 w-4 text-yellow-500" /> Session Score
               </p>
@@ -1069,6 +1025,8 @@ export default function SpokenEnglish() {
               </div>
             </div>
           )}
+
+          <div className="h-4" />
         </div>
       </div>
     );
