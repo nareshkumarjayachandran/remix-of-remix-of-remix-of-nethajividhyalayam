@@ -292,20 +292,9 @@ function browserTts(text: string, speed = 1.0): HTMLAudioElement | null {
   return fakeAudio;
 }
 
-async function tts(text: string, voiceKey: VoiceKey, grade: string, speed?: number): Promise<HTMLAudioElement | null> {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-tts`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-      body: JSON.stringify({ text, voiceKey, grade, speed }),
-    });
-    if (!res.ok) throw new Error("TTS failed");
-    const blob = await res.blob();
-    return new Audio(URL.createObjectURL(blob));
-  } catch {
-    // Fallback to browser-native speech
-    return browserTts(text, speed ?? 0.9);
-  }
+async function tts(text: string, _voiceKey: VoiceKey, grade: string, speed?: number): Promise<HTMLAudioElement | null> {
+  const finalSpeed = speed ?? GRADE_SPEED[grade] ?? 0.9;
+  return browserTts(text, finalSpeed);
 }
 
 async function stt(blob: Blob): Promise<string> {
