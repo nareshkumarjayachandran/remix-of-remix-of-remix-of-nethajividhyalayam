@@ -984,32 +984,20 @@ export default function SpokenEnglish() {
             </div>
           </div>
 
-          {/* ─── Tamil Mode + Voice ─── */}
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setTamilMode(!tamilMode)}
-              className={cn(
-                "rounded-2xl p-3 border-2 text-left transition-all",
-                tamilMode
-                  ? "bg-gradient-to-br from-orange-400 to-red-400 text-white border-transparent shadow-lg"
-                  : "bg-white border-orange-100 hover:border-orange-300"
-              )}
-            >
-              <Globe className={cn("h-5 w-5 mb-1", tamilMode ? "text-white" : "text-orange-500")} />
-              <p className={cn("text-xs font-bold", tamilMode ? "text-white" : "text-gray-700")}>Tamil Help</p>
-              <p className={cn("text-[10px]", tamilMode ? "text-orange-100" : "text-gray-400")}>
-                {tamilMode ? "✅ ON" : "Tap to enable"}
-              </p>
-            </button>
-            <button
-              onClick={() => setShowVoicePicker(true)}
-              className="bg-white rounded-2xl p-3 border-2 border-purple-100 hover:border-purple-300 text-left transition-all"
-            >
-              <span className="text-xl">{currentVoice.emoji}</span>
-              <p className="text-xs font-bold text-gray-700 mt-1">{currentVoice.label}</p>
-              <p className="text-[10px] text-gray-400">Tap to change</p>
-            </button>
-          </div>
+          {/* ─── Tamil Toggle (compact) ─── */}
+          <button
+            onClick={() => setTamilMode(!tamilMode)}
+            className={cn(
+              "w-full flex items-center gap-2.5 rounded-xl px-3.5 py-2 border transition-all",
+              tamilMode
+                ? "bg-gradient-to-r from-orange-400 to-red-400 text-white border-transparent shadow-md"
+                : "bg-white border-gray-200 hover:border-orange-300"
+            )}
+          >
+            <Globe className={cn("h-4 w-4 shrink-0", tamilMode ? "text-white" : "text-orange-500")} />
+            <span className={cn("text-xs font-bold flex-1 text-left", tamilMode ? "text-white" : "text-gray-700")}>Tamil Help</span>
+            <span className={cn("text-[10px] font-semibold", tamilMode ? "text-orange-100" : "text-gray-400")}>{tamilMode ? "✅ ON" : "OFF"}</span>
+          </button>
 
           {/* ─── Mode Buttons ─── */}
           <div className="space-y-2">
