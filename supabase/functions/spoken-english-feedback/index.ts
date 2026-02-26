@@ -55,7 +55,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!GROQ_API_KEY && !LOVABLE_API_KEY) throw new Error("No AI API key configured");
 
-    const { targetText, spokenText, grade, topic, mode, conversationHistory, tamilMode } = await req.json();
+    const { targetText, spokenText, grade, topic, mode, conversationHistory, tamilMode, storyContext } = await req.json();
 
     // Input validation
     if (!mode || typeof mode !== "string") {
@@ -177,6 +177,36 @@ ${JSON.stringify(conversationHistory || [])}
 Child just said: "${spokenText}"
 
 Respond naturally and encouragingly. In "feedback" field, write your conversational response. In "improvement" field, gently note any pronunciation tips if needed. In "nextWord" field, write the exact text you want to say back (for TTS). Keep it age-appropriate for ${grade}.`;
+    } else if (mode === "story") {
+      systemPrompt += `\n\nYour job in STORY MODE:
+1. The student is role-playing a real-life scenario and responding to a character's dialogue.
+2. Evaluate their response for appropriateness, grammar, vocabulary, and fluency.
+3. Give a star rating based on how natural and correct their response is.
+4. Suggest a better response if theirs could be improved.
+5. Be warm and encouraging — this is a fun learning exercise!
+
+RESPOND ONLY IN THIS JSON FORMAT:
+{
+  "stars": 4,
+  "feedback": "Great response! You politely told the waiter what you wanted.",
+  "suggestedResponse": "I would like chicken biryani, please.",
+  "grammarMistakes": [{"original": "I wants", "corrected": "I want", "rule": "Subject-verb agreement"}],
+  "improvement": "Try saying 'please' at the end to sound more polite.",
+  "encouragement": "You are doing amazing in this story! 🌟",
+  "tamilFeedback": "",
+  "accuracyScore": 75
+}`;
+
+      const ctx = storyContext || {};
+      userMessage = `Story scenario: ${ctx.setting || topic}
+Character "${ctx.character}" said: "${ctx.characterDialogue}"
+The student was asked to: "${ctx.userPrompt}"
+Suggested responses: ${JSON.stringify(ctx.suggestedResponses || [])}
+
+The ${grade === "IT Pro" ? "IT professional" : `student (Grade: ${grade})`} responded: "${spokenText}"
+${tamilMode ? "Include Tamil explanation in tamilFeedback if needed." : ""}
+
+Rate their response (1-5 stars) based on appropriateness, grammar, and fluency. Suggest a better alternative if needed.`;
     }
 
     const aiMessages = [

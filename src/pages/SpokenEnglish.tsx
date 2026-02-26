@@ -3,6 +3,7 @@ import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { offlineDb } from "@/lib/offlineDb";
 import { useSpokenProgress } from "@/hooks/useSpokenProgress";
 import ProgressDashboard from "@/components/spoken-english/ProgressDashboard";
+import StoryMode from "@/components/spoken-english/StoryMode";
 import PWAInstallBanner from "@/components/ui/PWAInstallBanner";
 import OfflineBanner from "@/components/ui/OfflineBanner";
 import {
@@ -244,7 +245,7 @@ const STAR_MESSAGES: Record<number, { text: string; emoji: string; color: string
   1: { text: "Let's Try Again!", emoji: "🔄", color: "text-red-500" },
 };
 
-type Screen = "home" | "practice" | "conversation" | "freespeaking" | "dashboard";
+type Screen = "home" | "practice" | "conversation" | "freespeaking" | "dashboard" | "storylessons";
 
 interface WordDiff { expected: string; got: string; correct: boolean; distance: number }
 
@@ -682,6 +683,11 @@ export default function SpokenEnglish() {
     return <ProgressDashboard progress={progress} avgFluency={avgFluency} avgStars={avgStars} level={level} onBack={() => setScreen("home")} />;
   }
 
+  // ── Story Lessons ─────────────────────────────────────────────────────────
+  if (screen === "storylessons") {
+    return <StoryMode grade={grade} tamilMode={tamilMode} voiceKey={voiceKey} onBack={() => setScreen("home")} onRecordSession={(stars, accuracy, mistakes) => recordSession(stars, accuracy, mistakes)} />;
+  }
+
   // ── Free Speaking ─────────────────────────────────────────────────────────
   if (screen === "freespeaking") {
     return (
@@ -989,6 +995,20 @@ export default function SpokenEnglish() {
                 <div className="text-left">
                   <p className="font-extrabold text-lg">Free Speaking</p>
                   <p className="text-blue-100 text-xs">Speak freely • AI analyzes everything</p>
+                </div>
+              </div>
+              <ChevronRight className="h-6 w-6" />
+            </button>
+
+            <button
+              onClick={() => setScreen("storylessons")}
+              className="w-full bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
+            >
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-6 w-6" />
+                <div className="text-left">
+                  <p className="font-extrabold text-lg">Story Lessons</p>
+                  <p className="text-pink-100 text-xs">Real-life scenarios • Role-play dialogues</p>
                 </div>
               </div>
               <ChevronRight className="h-6 w-6" />
