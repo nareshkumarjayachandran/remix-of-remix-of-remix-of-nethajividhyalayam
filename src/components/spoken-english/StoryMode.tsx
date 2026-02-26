@@ -42,6 +42,9 @@ interface Props {
   voiceKey: string;
   onBack: () => void;
   onRecordSession: (stars: number, accuracy: number, mistakes: { wrong: string; correct: string }[]) => void;
+  currentVoiceEmoji?: string;
+  currentVoiceLabel?: string;
+  onVoicePickerOpen?: () => void;
 }
 
 // ── Stories Data ────────────────────────────────────────────────────────────
@@ -170,7 +173,7 @@ const GRADE_SPEED: Record<string, number> = {
 };
 
 // ── Component ──────────────────────────────────────────────────────────────
-export default function StoryMode({ grade, tamilMode, voiceKey, onBack, onRecordSession }: Props) {
+export default function StoryMode({ grade, tamilMode, voiceKey, onBack, onRecordSession, currentVoiceEmoji, currentVoiceLabel, onVoicePickerOpen }: Props) {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [stepIndex, setStepIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
@@ -373,6 +376,12 @@ export default function StoryMode({ grade, tamilMode, voiceKey, onBack, onRecord
               <p className="font-extrabold text-lg">📖 Story Lessons</p>
               <p className="text-xs text-purple-200">Learn English through real-life stories</p>
             </div>
+            {onVoicePickerOpen && (
+              <button onClick={onVoicePickerOpen} className="flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5 hover:bg-white/30 transition-all">
+                <span className="text-xs">{currentVoiceEmoji || "👩‍🏫"}</span>
+                <span className="text-[10px] font-semibold">{currentVoiceLabel || "Voice"}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -426,6 +435,12 @@ export default function StoryMode({ grade, tamilMode, voiceKey, onBack, onRecord
             <p className="font-extrabold text-sm">{selectedStory.emoji} {selectedStory.title}</p>
             <p className="text-xs opacity-80">Step {stepIndex + 1} of {selectedStory.steps.length}</p>
           </div>
+          {onVoicePickerOpen && (
+            <button onClick={onVoicePickerOpen} className="flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5 hover:bg-white/30 transition-all">
+              <span className="text-xs">{currentVoiceEmoji || "👩‍🏫"}</span>
+              <span className="text-[10px] font-semibold">{currentVoiceLabel || "Voice"}</span>
+            </button>
+          )}
         </div>
         {/* Progress bar */}
         <div className="mt-2 h-1.5 bg-white/20 rounded-full max-w-md mx-auto overflow-hidden">
