@@ -246,7 +246,7 @@ const STAR_MESSAGES: Record<number, { text: string; emoji: string; color: string
 };
 
 type Screen = "home" | "practice" | "conversation" | "freespeaking" | "dashboard" | "storylessons";
-type CurriculumFilter = "all" | "samacheer" | "oxford" | "it" | "phonics";
+type CurriculumFilter = "samacheer" | "oxford" | "it" | "phonics";
 
 interface WordDiff { expected: string; got: string; correct: boolean; distance: number }
 
@@ -447,7 +447,7 @@ export default function SpokenEnglish() {
     try { return localStorage.getItem("se_topic") || "Greetings"; } catch { return "Greetings"; }
   });
   const [tamilMode, setTamilMode] = useState(false);
-  const [curriculumFilter, setCurriculumFilter] = useState<CurriculumFilter>("all");
+  const [curriculumFilter, setCurriculumFilter] = useState<CurriculumFilter>("samacheer");
   const [voiceKey, setVoiceKey] = useState<VoiceKey>(() => {
     try { return (localStorage.getItem("se_voice") as VoiceKey) || "laura"; } catch { return "laura"; }
   });
@@ -924,7 +924,6 @@ export default function SpokenEnglish() {
             {/* Curriculum Filter Tabs */}
             <div className="flex gap-1.5 justify-center mb-3 flex-wrap">
               {([
-                { key: "all", label: "All", emoji: "📚" },
                 { key: "samacheer", label: "Samacheer", emoji: "📖" },
                 { key: "oxford", label: "Merry Birds", emoji: "🐦" },
                 { key: "phonics", label: "Phonics", emoji: "🗣️" },
@@ -947,7 +946,6 @@ export default function SpokenEnglish() {
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(TOPICS)
                 .filter(([, data]) => {
-                  if (curriculumFilter === "all") return true;
                   const c = data.curriculum.toLowerCase();
                   if (curriculumFilter === "samacheer") return c.includes("samacheer");
                   if (curriculumFilter === "oxford") return c.includes("merry birds");
