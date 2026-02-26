@@ -24,3 +24,6 @@ verify_jwt = false
 [functions.student-fee-api]
 verify_jwt = false
 
+[functions.book-reading-ai]
+verify_jwt = false
+
