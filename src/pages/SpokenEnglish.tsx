@@ -4,6 +4,7 @@ import { offlineDb } from "@/lib/offlineDb";
 import { useSpokenProgress } from "@/hooks/useSpokenProgress";
 import ProgressDashboard from "@/components/spoken-english/ProgressDashboard";
 import StoryMode from "@/components/spoken-english/StoryMode";
+import BookReading from "@/components/spoken-english/BookReading";
 import PWAInstallBanner from "@/components/ui/PWAInstallBanner";
 import OfflineBanner from "@/components/ui/OfflineBanner";
 import {
@@ -206,7 +207,7 @@ const STAR_MESSAGES: Record<number, { text: string; emoji: string; color: string
   1: { text: "Let's Try Again!", emoji: "🔄", color: "text-red-500" },
 };
 
-type Screen = "home" | "practice" | "conversation" | "freespeaking" | "dashboard" | "storylessons";
+type Screen = "home" | "practice" | "conversation" | "freespeaking" | "dashboard" | "storylessons" | "bookreading";
 type CurriculumFilter = "samacheer" | "oxford" | "it" | "phonics";
 
 interface WordDiff { expected: string; got: string; correct: boolean; distance: number }
@@ -651,6 +652,11 @@ export default function SpokenEnglish() {
     return <StoryMode grade={grade} tamilMode={tamilMode} voiceKey={voiceKey} onBack={() => setScreen("home")} onRecordSession={(stars, accuracy, mistakes) => recordSession(stars, accuracy, mistakes)} />;
   }
 
+  // ── Book Reading ──────────────────────────────────────────────────────────
+  if (screen === "bookreading") {
+    return <BookReading grade={grade} voiceKey={voiceKey} onBack={() => setScreen("home")} />;
+  }
+
   // ── Free Speaking ─────────────────────────────────────────────────────────
   if (screen === "freespeaking") {
     return (
@@ -1009,8 +1015,22 @@ export default function SpokenEnglish() {
             </button>
 
             <button
+              onClick={() => setScreen("bookreading")}
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
+            >
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-6 w-6" />
+                <div className="text-left">
+                  <p className="font-extrabold text-lg">📖 Book Reading</p>
+                  <p className="text-amber-100 text-xs">Samacheer & Oxford • Tamil Help • Voice</p>
+                </div>
+              </div>
+              <ChevronRight className="h-6 w-6" />
+            </button>
+
+            <button
               onClick={() => setScreen("dashboard")}
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
+              className="w-full bg-gradient-to-r from-yellow-500 to-amber-500 text-white rounded-2xl py-4 px-6 flex items-center justify-between shadow-lg active:opacity-90 transition-opacity touch-manipulation"
             >
               <div className="flex items-center gap-3">
                 <BarChart3 className="h-6 w-6" />
