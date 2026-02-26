@@ -441,7 +441,7 @@ export default function SpokenEnglish() {
   const convBottomRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const topicData = TOPICS[topic];
+  const topicData = TOPICS[topic] ?? TOPICS[Object.keys(TOPICS)[0]];
   const currentSentence = topicData.items[currentIndex % topicData.items.length];
   const gradeSpeed = GRADE_SPEED[grade] ?? 0.85;
   const dailyLesson = getDailyLesson(grade);
