@@ -517,7 +517,7 @@ const ChatWidget = () => {
                         components={{
                           a: ({ href, children }) => {
                             if (!href) return <span>{children}</span>;
-                            const isBrochure = href === "brochure:download";
+                            const isBrochure = href === "/download-brochure";
                             const isMailto = href.startsWith("mailto:");
                             const isTel = href.startsWith("tel:");
                             const isExternal = href.startsWith("http");
