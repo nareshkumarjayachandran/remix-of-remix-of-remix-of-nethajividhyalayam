@@ -878,47 +878,42 @@ export default function SpokenEnglish() {
 
         <div className="flex-1 px-4 py-4 max-w-md mx-auto w-full space-y-4">
           {/* ─── Today's Lesson Card ─── */}
-          <div className="relative bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-3.5 text-white shadow-xl overflow-hidden">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full -translate-y-5 translate-x-5" />
+          <div className="relative bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-3 text-white shadow-xl overflow-hidden">
+            <div className="absolute top-0 right-0 w-14 h-14 bg-white/10 rounded-full -translate-y-4 translate-x-4" />
+
+            {/* Header row: title + voice chip */}
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] uppercase font-bold tracking-widest text-emerald-200">📅 Today's Lesson</p>
+              <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-200">📅 Today's Lesson</span>
               <button
                 onClick={() => setShowVoicePicker(true)}
-                className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-left hover:bg-white/30 transition-all"
+                className="flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5 hover:bg-white/30 transition-all"
               >
-                <span className="text-sm">{currentVoice.emoji}</span>
-                <span className="text-[10px] font-bold">{currentVoice.label}</span>
-                <Settings className="h-3 w-3 text-emerald-200" />
+                <span className="text-xs">{currentVoice.emoji}</span>
+                <span className="text-[10px] font-semibold">{currentVoice.label}</span>
               </button>
             </div>
 
-            {/* Subject — auto-filled with daily topic */}
+            {/* Topic row: emoji + editable topic + start button */}
             <div className="flex items-center gap-2">
-              <span className="text-xl">{dailyLesson.emoji}</span>
+              <span className="text-2xl shrink-0">{dailyLesson.emoji}</span>
               <input
                 type="text"
                 value={customSubject}
                 onChange={(e) => setCustomSubject(e.target.value)}
-                placeholder="e.g. Body Parts, Animals..."
-                className="flex-1 rounded-xl px-3 py-2 text-sm font-bold text-emerald-800 bg-white/90 placeholder:text-emerald-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-white/50 shadow-inner"
+                placeholder="Type a topic…"
+                className="flex-1 min-w-0 bg-white/20 backdrop-blur-sm rounded-lg px-2.5 py-1.5 text-sm font-bold placeholder:text-white/50 placeholder:font-normal focus:outline-none focus:bg-white/30 transition-all border border-white/20 focus:border-white/40"
               />
+              <button
+                onClick={() => {
+                  if (!customSubject.trim()) return;
+                  setTopic(customSubject.trim());
+                  setCurrentIndex(0); setFeedback(null); setSpokenText(""); setShowResult(false); setScreen("practice");
+                }}
+                className="shrink-0 bg-white text-emerald-700 rounded-lg px-3 py-1.5 text-xs font-extrabold shadow-md hover:bg-emerald-50 active:scale-95 transition-all flex items-center gap-1"
+              >
+                <Zap className="h-3.5 w-3.5" /> Start
+              </button>
             </div>
-
-            <p className="text-[10px] text-emerald-200 mt-1.5 ml-8">{dailyLesson.suggestion}</p>
-
-            <button
-              onClick={() => {
-                if (!customSubject.trim()) {
-                  alert("Please fill in the Subject field.");
-                  return;
-                }
-                setTopic(customSubject.trim());
-                setCurrentIndex(0); setFeedback(null); setSpokenText(""); setShowResult(false); setScreen("practice");
-              }}
-              className="mt-2 w-full bg-white text-emerald-700 rounded-xl py-2 text-sm font-extrabold transition-all hover:bg-emerald-50 flex items-center justify-center gap-2 shadow-md active:scale-95"
-            >
-              <Zap className="h-4 w-4" /> Start Now
-            </button>
           </div>
 
           {/* ─── Grade Selector ─── */}
