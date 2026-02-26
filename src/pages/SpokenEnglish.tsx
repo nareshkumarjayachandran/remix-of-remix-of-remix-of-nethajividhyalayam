@@ -246,6 +246,7 @@ const STAR_MESSAGES: Record<number, { text: string; emoji: string; color: string
 };
 
 type Screen = "home" | "practice" | "conversation" | "freespeaking" | "dashboard" | "storylessons";
+type CurriculumFilter = "all" | "samacheer" | "oxford" | "it" | "phonics";
 
 interface WordDiff { expected: string; got: string; correct: boolean; distance: number }
 
@@ -446,6 +447,7 @@ export default function SpokenEnglish() {
     try { return localStorage.getItem("se_topic") || "Greetings"; } catch { return "Greetings"; }
   });
   const [tamilMode, setTamilMode] = useState(false);
+  const [curriculumFilter, setCurriculumFilter] = useState<CurriculumFilter>("all");
   const [voiceKey, setVoiceKey] = useState<VoiceKey>(() => {
     try { return (localStorage.getItem("se_voice") as VoiceKey) || "laura"; } catch { return "laura"; }
   });
@@ -919,8 +921,41 @@ export default function SpokenEnglish() {
           {/* Topic Picker */}
           <div>
             <p className="text-sm font-bold text-gray-600 mb-2 text-center">📚 Choose a Topic</p>
+            {/* Curriculum Filter Tabs */}
+            <div className="flex gap-1.5 justify-center mb-3 flex-wrap">
+              {([
+                { key: "all", label: "All", emoji: "📚" },
+                { key: "samacheer", label: "Samacheer", emoji: "📖" },
+                { key: "oxford", label: "Merry Birds", emoji: "🐦" },
+                { key: "phonics", label: "Phonics", emoji: "🗣️" },
+                { key: "it", label: "IT Pro", emoji: "💻" },
+              ] as const).map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setCurriculumFilter(tab.key)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
+                    curriculumFilter === tab.key
+                      ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+                      : "bg-white border-gray-200 text-gray-600 hover:border-blue-300"
+                  )}
+                >
+                  {tab.emoji} {tab.label}
+                </button>
+              ))}
+            </div>
             <div className="grid grid-cols-2 gap-2">
-              {Object.entries(TOPICS).map(([name, data]) => (
+              {Object.entries(TOPICS)
+                .filter(([, data]) => {
+                  if (curriculumFilter === "all") return true;
+                  const c = data.curriculum.toLowerCase();
+                  if (curriculumFilter === "samacheer") return c.includes("samacheer");
+                  if (curriculumFilter === "oxford") return c.includes("merry birds");
+                  if (curriculumFilter === "it") return c.includes("it professional");
+                  if (curriculumFilter === "phonics") return c.includes("phonics") || c.includes("oral practice") || c.includes("all grades");
+                  return true;
+                })
+                .map(([name, data]) => (
                 <button
                   key={name}
                   onClick={() => setTopic(name)}
