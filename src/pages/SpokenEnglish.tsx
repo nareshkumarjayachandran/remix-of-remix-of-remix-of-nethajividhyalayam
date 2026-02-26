@@ -52,15 +52,6 @@ const TOPICS: Record<string, TopicData> = {
       "Thank you very much.", "You are welcome.", "Excuse me, may I come in?", "Have a great day!",
     ],
   },
-  "Animals": {
-    emoji: "🐘", color: "from-yellow-400 to-orange-500", curriculum: "Samacheer • 1st & 2nd",
-    items: [
-      "The cat sat on the mat.", "The dog barks loudly.", "The elephant is very big.",
-      "The rabbit hops quickly.", "The bird sings a sweet song.", "The fish swims in water.",
-      "The cow gives us milk.", "The hen lays eggs every day.", "The lion is the king of the jungle.",
-      "The butterfly is very colourful.",
-    ],
-  },
   "Rhymes": {
     emoji: "🎵", color: "from-purple-400 to-pink-500", curriculum: "Merry Birds • Pre-KG to 3rd",
     items: [
@@ -74,15 +65,6 @@ const TOPICS: Record<string, TopicData> = {
       "Rain rain go away, come again another day.",
       "Hickory dickory dock, the mouse ran up the clock.",
       "Row row row your boat gently down the stream.",
-    ],
-  },
-  "Simple Sentences": {
-    emoji: "📝", color: "from-blue-400 to-cyan-500", curriculum: "Samacheer • 1st–3rd",
-    items: [
-      "I go to school every day.", "My name is Arjun.", "I like to read books.",
-      "Today is a sunny day.", "I eat rice and vegetables for lunch.", "My mother is very kind.",
-      "The sky is blue and the grass is green.", "I brush my teeth every morning.",
-      "Please open the window.", "The flowers in the garden are very beautiful.",
     ],
   },
   "Pronunciation": {
@@ -107,17 +89,6 @@ const TOPICS: Record<string, TopicData> = {
       "The ball is round and red.", "I can draw a star shape.",
     ],
   },
-  "Numbers": {
-    emoji: "🔢", color: "from-indigo-400 to-purple-500", curriculum: "Samacheer • KG–2nd",
-    items: [
-      "One two three four five, once I caught a fish alive.",
-      "Six seven eight nine ten, then I let it go again.",
-      "Count from one to ten.", "I have two hands and ten fingers.",
-      "There are seven days in a week.", "There are twelve months in a year.",
-      "Two plus two equals four.", "Five minus three equals two.",
-      "The clock shows three o'clock.", "I have thirty students in my class.",
-    ],
-  },
   "Body Parts": {
     emoji: "🖐️", color: "from-orange-400 to-amber-500", curriculum: "Merry Birds • LKG–UKG",
     items: [
@@ -126,16 +97,6 @@ const TOPICS: Record<string, TopicData> = {
       "I have two hands to hold.", "I have two legs to walk.",
       "My hair is black and curly.", "I wash my face every morning.",
       "My teeth are white and clean.", "I use my fingers to write.",
-    ],
-  },
-  "Food & Fruits": {
-    emoji: "🍎", color: "from-red-400 to-orange-400", curriculum: "Samacheer • 1st–3rd",
-    items: [
-      "An apple a day keeps the doctor away.", "I like to eat bananas.",
-      "Mangoes are sweet and juicy.", "I drink a glass of milk every day.",
-      "Rice is the staple food of Tamil Nadu.", "I love eating idli with sambar.",
-      "Vegetables help us stay healthy.", "I eat breakfast before going to school.",
-      "A coconut has a hard shell.", "Grapes are small and sweet.",
     ],
   },
   "Conversation": {
