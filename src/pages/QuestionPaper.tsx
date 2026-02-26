@@ -756,7 +756,7 @@ export default function QuestionPaper() {
     </div>
     <hr style="border:1px solid #1a3a5c"/>
     <p style="font-size:12px"><b>Name:</b> _____________________________ &nbsp; <b>Adm.No:</b> ______________ &nbsp; <b>Date:</b> ________________</p>
-    ${form.questionPattern !== "custom" && paper.generalInstructions?.length ? `<div style="background:#fffde7;padding:8px 12px;border-left:4px solid #f59e0b;font-size:12px;margin:8px 0"><b>📋 General Instructions:</b><ul style="margin:4px 0 0 16px">${paper.generalInstructions.map(inst => `<li>${inst}</li>`).join("")}</ul></div>` : ""}
+    
     ${sectionsHtml}
     ${answerHtml}
     </body></html>`;
@@ -1410,17 +1410,6 @@ export default function QuestionPaper() {
                 </div>
               </div>
 
-              {/* General Instructions - shown for non-custom patterns */}
-              {paper.generalInstructions && paper.generalInstructions.length > 0 && form.questionPattern !== "custom" && (
-              <div className={`px-8 py-4 border-b ${colorMode ? "bg-amber-50 border-amber-100" : "bg-gray-50 border-gray-200"}`}>
-                <p className={`font-bold text-sm mb-2 ${colorMode ? "text-amber-800" : "text-gray-700"}`}>📋 General Instructions:</p>
-                <ul className={`list-disc list-inside text-sm space-y-1 ${colorMode ? "text-amber-700" : "text-gray-600"}`}>
-                  {paper.generalInstructions.map((inst, i) => (
-                    <li key={i}>{inst}</li>
-                  ))}
-                </ul>
-              </div>
-              )}
 
               {/* Sections */}
               <div className="px-8 py-6 space-y-8">

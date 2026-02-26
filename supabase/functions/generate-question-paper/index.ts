@@ -200,11 +200,7 @@ Return ONLY valid JSON (no markdown, no code blocks):
   "grade": "${grade}",
   "subject": "${subject}",
   "curriculum": "${curriculum}",
-  "generalInstructions": [
-    "Answer all questions.",
-    "Write neatly and legibly.",
-    "Read each question carefully before answering."
-  ],
+  "generalInstructions": [],
   "sections": [
     {
       "partLabel": "Part A",
