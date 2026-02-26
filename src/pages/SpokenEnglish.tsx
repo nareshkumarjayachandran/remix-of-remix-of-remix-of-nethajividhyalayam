@@ -656,12 +656,22 @@ export default function SpokenEnglish() {
 
   // ── Story Lessons ─────────────────────────────────────────────────────────
   if (screen === "storylessons") {
-    return <StoryMode grade={grade} tamilMode={tamilMode} voiceKey={voiceKey} onBack={() => setScreen("home")} onRecordSession={(stars, accuracy, mistakes) => recordSession(stars, accuracy, mistakes)} />;
+    return (
+      <>
+        {showVoicePicker && <VoicePickerModal selected={voiceKey} onSelect={setVoiceKey} onClose={() => setShowVoicePicker(false)} />}
+        <StoryMode grade={grade} tamilMode={tamilMode} voiceKey={voiceKey} onBack={() => setScreen("home")} onRecordSession={(stars, accuracy, mistakes) => recordSession(stars, accuracy, mistakes)} currentVoiceEmoji={currentVoice.emoji} currentVoiceLabel={currentVoice.label} onVoicePickerOpen={() => setShowVoicePicker(true)} />
+      </>
+    );
   }
 
   // ── Book Reading ──────────────────────────────────────────────────────────
   if (screen === "bookreading") {
-    return <BookReading grade={grade} voiceKey={voiceKey} onBack={() => setScreen("home")} />;
+    return (
+      <>
+        {showVoicePicker && <VoicePickerModal selected={voiceKey} onSelect={setVoiceKey} onClose={() => setShowVoicePicker(false)} />}
+        <BookReading grade={grade} voiceKey={voiceKey} onBack={() => setScreen("home")} currentVoiceEmoji={currentVoice.emoji} currentVoiceLabel={currentVoice.label} onVoicePickerOpen={() => setShowVoicePicker(true)} />
+      </>
+    );
   }
 
   // ── Free Speaking ─────────────────────────────────────────────────────────
@@ -677,23 +687,15 @@ export default function SpokenEnglish() {
               <p className="font-extrabold text-lg">🎤 Free Speaking</p>
               <p className="text-xs text-blue-200">Speak freely • Miss Nova analyzes</p>
             </div>
+            <button onClick={() => setShowVoicePicker(true)} className="flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5 hover:bg-white/30 transition-all">
+              <span className="text-xs">{currentVoice.emoji}</span>
+              <span className="text-[10px] font-semibold">{currentVoice.label}</span>
+            </button>
           </div>
         </div>
 
         {showVoicePicker && <VoicePickerModal selected={voiceKey} onSelect={setVoiceKey} onClose={() => setShowVoicePicker(false)} />}
         <div className="flex-1 px-4 py-5 max-w-md mx-auto w-full flex flex-col gap-4 overflow-y-auto">
-          {/* Voice Selection */}
-          <button
-            onClick={() => setShowVoicePicker(true)}
-            className="flex items-center gap-2 bg-white rounded-2xl px-4 py-2.5 shadow-sm border border-indigo-100 hover:border-indigo-300 transition-all"
-          >
-            <span className="text-xl">{currentVoice.emoji}</span>
-            <div className="flex-1 text-left">
-              <p className="text-xs font-bold text-gray-700">{currentVoice.label}</p>
-              <p className="text-[10px] text-gray-400">{currentVoice.desc} · Tap to change</p>
-            </div>
-            <Settings className="h-4 w-4 text-gray-400" />
-          </button>
           {/* Topic Selection */}
           {!showResult && !isRecording && !isProcessing && (
             <div>

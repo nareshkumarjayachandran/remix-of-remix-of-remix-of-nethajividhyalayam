@@ -18,6 +18,9 @@ interface Props {
   grade: string;
   voiceKey: string;
   onBack: () => void;
+  currentVoiceEmoji?: string;
+  currentVoiceLabel?: string;
+  onVoicePickerOpen?: () => void;
 }
 
 type BookScreen = "browse" | "reading";
@@ -53,7 +56,7 @@ function tamilTts(text: string, speed = 0.8): Promise<void> {
   });
 }
 
-export default function BookReading({ grade, voiceKey, onBack }: Props) {
+export default function BookReading({ grade, voiceKey, onBack, currentVoiceEmoji, currentVoiceLabel, onVoicePickerOpen }: Props) {
   const [bookScreen, setBookScreen] = useState<BookScreen>("browse");
   const [curriculum, setCurriculum] = useState<"samacheer" | "oxford">("samacheer");
   const [selectedGrade, setSelectedGrade] = useState(grade);
@@ -250,7 +253,7 @@ export default function BookReading({ grade, voiceKey, onBack }: Props) {
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col overflow-x-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-amber-600 to-orange-600 px-4 py-5 text-white shadow-lg">
-          <div className="flex items-center gap-2 max-w-md mx-auto">
+           <div className="flex items-center gap-2 max-w-md mx-auto">
             <button onClick={onBack} className="p-1 rounded-full bg-white/20 touch-manipulation">
               <ArrowLeft className="h-5 w-5" />
             </button>
@@ -258,6 +261,12 @@ export default function BookReading({ grade, voiceKey, onBack }: Props) {
               <p className="font-extrabold text-xl">📖 Book Reading</p>
               <p className="text-amber-200 text-xs">Read • Listen • Learn with Tamil Help</p>
             </div>
+            {onVoicePickerOpen && (
+              <button onClick={onVoicePickerOpen} className="flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5 hover:bg-white/30 transition-all">
+                <span className="text-xs">{currentVoiceEmoji || "👩‍🏫"}</span>
+                <span className="text-[10px] font-semibold">{currentVoiceLabel || "Voice"}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -384,6 +393,12 @@ export default function BookReading({ grade, voiceKey, onBack }: Props) {
             <p className="font-extrabold text-base truncate">{selectedChapter?.emoji} {selectedChapter?.title}</p>
             <p className="text-xs text-white/80">{selectedGrade} • {getTypeLabel(selectedChapter?.type || "lesson")}</p>
           </div>
+          {onVoicePickerOpen && (
+            <button onClick={onVoicePickerOpen} className="flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5 hover:bg-white/30 transition-all">
+              <span className="text-xs">{currentVoiceEmoji || "👩‍🏫"}</span>
+              <span className="text-[10px] font-semibold">{currentVoiceLabel || "Voice"}</span>
+            </button>
+          )}
         </div>
       </div>
 
