@@ -124,7 +124,7 @@ When someone asks about VIDEOS:
 → [🎬 Video Gallery](/video-gallery)
 
 When someone asks about BROCHURE or PROSPECTUS or DOWNLOAD BROCHURE or SCHOOL BROCHURE or PDF BROCHURE:
-→ [📄 Download Brochure](brochure:download)
+→ [📄 Download Brochure](/download-brochure)
 Explain: "You can download our official school prospectus brochure — a colourful PDF with curriculum, facilities, admissions, and contact details."
 
 
