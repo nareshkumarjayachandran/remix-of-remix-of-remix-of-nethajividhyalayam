@@ -427,6 +427,8 @@ export default function SpokenEnglish() {
   const [isDemoPlaying, setIsDemoPlaying] = useState(false);
   const [freeTopic, setFreeTopic] = useState(FREE_SPEAKING_TOPICS[0]);
   const [freeRecordingTime, setFreeRecordingTime] = useState(0);
+  const [customSubject, setCustomSubject] = useState("");
+  const [customContent, setCustomContent] = useState("");
 
   useEffect(() => {
     try {
@@ -673,7 +675,20 @@ export default function SpokenEnglish() {
           </div>
         </div>
 
+        {showVoicePicker && <VoicePickerModal selected={voiceKey} onSelect={setVoiceKey} onClose={() => setShowVoicePicker(false)} />}
         <div className="flex-1 px-4 py-5 max-w-md mx-auto w-full flex flex-col gap-4 overflow-y-auto">
+          {/* Voice Selection */}
+          <button
+            onClick={() => setShowVoicePicker(true)}
+            className="flex items-center gap-2 bg-white rounded-2xl px-4 py-2.5 shadow-sm border border-indigo-100 hover:border-indigo-300 transition-all"
+          >
+            <span className="text-xl">{currentVoice.emoji}</span>
+            <div className="flex-1 text-left">
+              <p className="text-xs font-bold text-gray-700">{currentVoice.label}</p>
+              <p className="text-[10px] text-gray-400">{currentVoice.desc} · Tap to change</p>
+            </div>
+            <Settings className="h-4 w-4 text-gray-400" />
+          </button>
           {/* Topic Selection */}
           {!showResult && !isRecording && !isProcessing && (
             <div>
@@ -858,13 +873,59 @@ export default function SpokenEnglish() {
 
         <div className="flex-1 px-4 py-4 max-w-md mx-auto w-full space-y-4">
           {/* ─── Today's Lesson Card ─── */}
-          <div className="relative bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-4 text-white shadow-xl overflow-hidden">
+          <div className="relative bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-5 text-white shadow-xl overflow-hidden">
             <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-6 translate-x-6" />
             <p className="text-[10px] uppercase font-bold tracking-widest text-emerald-200">📅 Today's Lesson</p>
-            <p className="text-xl font-black mt-1">{dailyLesson.emoji} {dailyLesson.topic}</p>
-            <p className="text-xs text-emerald-100 mt-0.5">{dailyLesson.suggestion}</p>
+
+            {/* Subject Input */}
+            <div className="mt-3">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-emerald-200 block mb-1">📝 Subject *</label>
+              <input
+                type="text"
+                value={customSubject}
+                onChange={(e) => setCustomSubject(e.target.value)}
+                placeholder="e.g. Body Parts, Animals, My Family..."
+                className="w-full rounded-xl px-3 py-2.5 text-sm font-bold text-emerald-800 bg-white/90 placeholder:text-emerald-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-white/50 shadow-inner"
+              />
+            </div>
+
+            {/* Content / Sentence Input */}
+            <div className="mt-2">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-emerald-200 block mb-1">💡 Content / Hint *</label>
+              <textarea
+                value={customContent}
+                onChange={(e) => setCustomContent(e.target.value)}
+                placeholder="e.g. I have two eyes to see. I have two ears to hear..."
+                rows={2}
+                className="w-full rounded-xl px-3 py-2.5 text-sm text-emerald-800 bg-white/90 placeholder:text-emerald-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-white/50 shadow-inner resize-none"
+              />
+            </div>
+
+            {/* Voice Selection */}
+            <div className="mt-2">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-emerald-200 block mb-1">🎙️ Voice</label>
+              <button
+                onClick={() => setShowVoicePicker(true)}
+                className="w-full flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-xl px-3 py-2 text-left hover:bg-white/30 transition-all"
+              >
+                <span className="text-xl">{currentVoice.emoji}</span>
+                <div className="flex-1">
+                  <p className="text-sm font-bold">{currentVoice.label}</p>
+                  <p className="text-[10px] text-emerald-200">{currentVoice.desc}</p>
+                </div>
+                <Settings className="h-4 w-4 text-emerald-200" />
+              </button>
+            </div>
+
             <button
-              onClick={() => { setTopic(dailyLesson.topic); setCurrentIndex(0); setFeedback(null); setSpokenText(""); setShowResult(false); setScreen("practice"); }}
+              onClick={() => {
+                if (!customSubject.trim() || !customContent.trim()) {
+                  alert("Please fill in both Subject and Content fields.");
+                  return;
+                }
+                setTopic(customSubject.trim());
+                setCurrentIndex(0); setFeedback(null); setSpokenText(""); setShowResult(false); setScreen("practice");
+              }}
               className="mt-3 w-full bg-white text-emerald-700 rounded-2xl py-2.5 text-sm font-extrabold transition-all hover:bg-emerald-50 flex items-center justify-center gap-2 shadow-md active:scale-95"
             >
               <Zap className="h-4 w-4" /> Start Now — Quick Start
