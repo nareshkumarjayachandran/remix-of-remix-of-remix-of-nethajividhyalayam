@@ -4,6 +4,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import ChatWidget from "@/components/chat/ChatWidget";
 import SocialSidebar from "./SocialSidebar";
+import ConnectivityBanner from "@/components/ui/ConnectivityBanner";
 
 interface LayoutProps {
   children: ReactNode;
@@ -23,6 +24,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
+      <ConnectivityBanner />
       <div className="fixed top-0 left-0 right-0 z-50">
         <div
           className={`relative transition-all duration-300 overflow-hidden ${shouldHide ? "max-h-0" : "max-h-[40px]"}`}
