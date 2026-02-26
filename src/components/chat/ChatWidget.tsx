@@ -130,43 +130,16 @@ const ChatWidget = () => {
     window.speechSynthesis.speak(utter);
   }, []);
 
-  // ElevenLabs TTS with Web Speech API fallback
+  // Browser-native TTS (free & unlimited)
   const speakText = useCallback(
     async (text: string) => {
       if (!voiceEnabled || !text.trim()) return;
       const clean = stripMarkdown(text).slice(0, 500);
-      try {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current = null;
-        }
-        setIsSpeaking(true);
-        const res = await fetch(TTS_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-          },
-          body: JSON.stringify({ text: clean, speed: 1.0 }),
-        });
-        if (!res.ok) throw new Error("TTS failed");
-        const blob = await res.blob();
-        const audio = new Audio(URL.createObjectURL(blob));
-        audioRef.current = audio;
-        audio.onended = () => {
-          setIsSpeaking(false);
-          audioRef.current = null;
-        };
-        audio.onerror = () => {
-          setIsSpeaking(false);
-          audioRef.current = null;
-        };
-        await audio.play();
-      } catch {
-        // Fallback to browser-native speech synthesis
-        speakWithBrowser(clean);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
       }
+      speakWithBrowser(clean);
     },
     [voiceEnabled, speakWithBrowser],
   );
