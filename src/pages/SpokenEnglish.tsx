@@ -297,18 +297,7 @@ async function tts(text: string, _voiceKey: VoiceKey, grade: string, speed?: num
   return browserTts(text, finalSpeed);
 }
 
-async function stt(blob: Blob): Promise<string> {
-  const fd = new FormData();
-  fd.append("audio", blob, "recording.webm");
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-stt`, {
-    method: "POST",
-    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-    body: fd,
-  });
-  if (!res.ok) throw new Error("STT failed");
-  const data = await res.json();
-  return data.text || "";
-}
+// STT handled via Web Speech Recognition in component (free & unlimited)
 
 async function getFeedback(payload: object): Promise<Feedback> {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/spoken-english-feedback`, {
@@ -482,8 +471,8 @@ export default function SpokenEnglish() {
     } catch {}
   }, [grade, topic, voiceKey]);
 
-  const mediaRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
+  const recognitionRef = useRef<any>(null);
+  const transcriptRef = useRef<string>("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const convBottomRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -528,31 +517,41 @@ export default function SpokenEnglish() {
   const startRecording = useCallback(async () => {
     try {
       stopAudio();
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-        ? "audio/webm;codecs=opus"
-        : MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/mp4";
-      const mr = new MediaRecorder(stream, { mimeType });
-      chunksRef.current = [];
-      mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      mr.start(100);
-      mediaRef.current = mr;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Speech recognition is not supported in this browser. Please use Chrome.");
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-IN";
+      recognition.interimResults = false;
+      recognition.continuous = true;
+      recognition.maxAlternatives = 1;
+      transcriptRef.current = "";
+      recognition.onresult = (event: any) => {
+        let text = "";
+        for (let i = 0; i < event.results.length; i++) {
+          text += event.results[i][0].transcript + " ";
+        }
+        transcriptRef.current = text.trim();
+      };
+      recognition.onerror = () => {};
+      recognitionRef.current = recognition;
+      recognition.start();
       setIsRecording(true);
     } catch {
       alert("Please allow microphone access to use this feature.");
     }
   }, [stopAudio]);
 
-  const stopRecording = useCallback((): Promise<Blob> => {
+  const stopRecording = useCallback((): Promise<string> => {
     return new Promise((resolve) => {
-      const mr = mediaRef.current;
-      if (!mr || mr.state === "inactive") return resolve(new Blob());
-      mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: mr.mimeType });
-        mr.stream.getTracks().forEach((t) => t.stop());
-        resolve(blob);
+      const recognition = recognitionRef.current;
+      if (!recognition) { resolve(""); return; }
+      recognition.onend = () => {
+        resolve(transcriptRef.current);
       };
-      mr.stop();
+      recognition.stop();
       setIsRecording(false);
     });
   }, []);
@@ -565,9 +564,8 @@ export default function SpokenEnglish() {
     }
     if (isRecording) {
       setIsProcessing(true);
-      const blob = await stopRecording();
+      const spoken = await stopRecording();
       try {
-        const spoken = await stt(blob);
         setSpokenText(spoken);
         const fb = await getFeedback({ targetText: currentSentence, spokenText: spoken, grade, topic, mode: "practice", tamilMode });
         setFeedback(fb);
@@ -609,9 +607,8 @@ export default function SpokenEnglish() {
     }
     if (isRecording) {
       setIsProcessing(true);
-      const blob = await stopRecording();
+      const spoken = await stopRecording();
       try {
-        const spoken = await stt(blob);
         setSpokenText(spoken);
         const fb = await getFeedback({ spokenText: spoken, grade, topic: freeTopic.label, mode: "freespeaking", tamilMode });
         setFeedback(fb);
@@ -659,9 +656,8 @@ export default function SpokenEnglish() {
     }
     if (isRecording) {
       setIsProcessing(true);
-      const blob = await stopRecording();
+      const spoken = await stopRecording();
       try {
-        const spoken = await stt(blob);
         if (!spoken.trim()) { setIsProcessing(false); return; }
         setConvMessages((prev) => [...prev, { role: "user", text: spoken }]);
         const fb = await getFeedback({ spokenText: spoken, grade, topic, mode: "conversation", conversationHistory: convMessages, tamilMode });

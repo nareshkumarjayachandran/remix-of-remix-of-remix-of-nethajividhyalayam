@@ -6,8 +6,6 @@ import ReactMarkdown from "react-markdown";
 type Msg = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/school-chat`;
-const TTS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`;
-const STT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-stt`;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const IDLE_TIMEOUT = 30000;
 const HISTORY_KEY = "nv_chat_history";
@@ -85,8 +83,7 @@ const ChatWidget = () => {
   }, []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const mediaRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
+  const mediaRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -302,69 +299,48 @@ const ChatWidget = () => {
     [isLoading, messages, streamChat, speakText, stopSpeaking, voiceEnabled, resetIdleTimer, getOfflineResponse],
   );
 
-  // ElevenLabs STT recording
+  // Browser Web Speech Recognition (free & unlimited)
   const startRecording = useCallback(async () => {
     try {
       stopSpeaking();
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Pick best supported mimeType
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-        ? "audio/webm;codecs=opus"
-        : MediaRecorder.isTypeSupported("audio/webm")
-          ? "audio/webm"
-          : "audio/mp4";
-      const mr = new MediaRecorder(stream, { mimeType });
-      chunksRef.current = [];
-      mr.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-      mr.start(100);
-      mediaRef.current = mr;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Speech recognition is not supported in this browser. Please use Chrome.");
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-IN";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      mediaRef.current = recognition as any;
       setIsRecording(true);
+
+      recognition.onresult = async (event: any) => {
+        const transcript = event.results[0]?.[0]?.transcript?.trim();
+        setIsRecording(false);
+        if (transcript) {
+          setInput(transcript);
+          await send(transcript);
+        }
+      };
+      recognition.onerror = () => {
+        setIsRecording(false);
+        alert("Could not recognize speech. Please try again.");
+      };
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+      recognition.start();
     } catch {
       alert("Microphone access denied. Please allow mic access in browser settings.");
     }
-  }, [stopSpeaking]);
+  }, [stopSpeaking, send]);
 
   const stopRecordingAndTranscribe = useCallback(async () => {
-    const mr = mediaRef.current;
-    if (!mr || mr.state === "inactive") return;
+    const recognition = mediaRef.current as any;
+    if (recognition?.stop) recognition.stop();
     setIsRecording(false);
-    setIsTranscribing(true);
-    try {
-      const blob: Blob = await new Promise((resolve) => {
-        mr.onstop = () => {
-          const b = new Blob(chunksRef.current, { type: mr.mimeType });
-          mr.stream.getTracks().forEach((t) => t.stop());
-          resolve(b);
-        };
-        mr.stop();
-      });
-      if (blob.size < 1000) {
-        setIsTranscribing(false);
-        return;
-      }
-      const fd = new FormData();
-      fd.append("audio", blob, "recording.webm");
-      const res = await fetch(STT_URL, {
-        method: "POST",
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-        body: fd,
-      });
-      if (!res.ok) throw new Error("STT failed");
-      const data = await res.json();
-      const transcript = data.text?.trim();
-      if (transcript) {
-        setInput(transcript);
-        await send(transcript);
-      }
-    } catch {
-      alert("Could not transcribe audio. Please try again.");
-    } finally {
-      setIsTranscribing(false);
-      mediaRef.current = null;
-    }
-  }, [send]);
+  }, []);
 
   const toggleMic = useCallback(() => {
     if (isRecording) {
