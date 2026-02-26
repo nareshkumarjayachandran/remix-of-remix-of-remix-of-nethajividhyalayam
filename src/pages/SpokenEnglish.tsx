@@ -889,17 +889,6 @@ export default function SpokenEnglish() {
               />
             </div>
 
-            {/* Content / Sentence Input */}
-            <div className="mt-2">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-emerald-200 block mb-1">💡 Content / Hint *</label>
-              <textarea
-                value={customContent}
-                onChange={(e) => setCustomContent(e.target.value)}
-                placeholder="e.g. I have two eyes to see. I have two ears to hear..."
-                rows={2}
-                className="w-full rounded-xl px-3 py-2.5 text-sm text-emerald-800 bg-white/90 placeholder:text-emerald-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-white/50 shadow-inner resize-none"
-              />
-            </div>
 
             {/* Voice Selection */}
             <div className="mt-2">
@@ -919,8 +908,8 @@ export default function SpokenEnglish() {
 
             <button
               onClick={() => {
-                if (!customSubject.trim() || !customContent.trim()) {
-                  alert("Please fill in both Subject and Content fields.");
+                if (!customSubject.trim()) {
+                  alert("Please fill in the Subject field.");
                   return;
                 }
                 setTopic(customSubject.trim());
