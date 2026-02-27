@@ -27,6 +27,7 @@ import {
   ChevronDown,
   Share2,
 } from "lucide-react";
+import VoiceReader from "@/components/ui/VoiceReader";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1685,6 +1686,32 @@ export default function WorksheetMaker() {
               <Button onClick={handleDownloadWord} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
                 <FileText className="h-4 w-4" /> Save as Word
               </Button>
+              <VoiceReader
+                getTextSegments={(withAnswers) => {
+                  if (!displayedWorksheet) return [];
+                  const segments: string[] = [];
+                  segments.push(displayedWorksheet.title);
+                  displayedWorksheet.sections?.forEach((section) => {
+                    segments.push(section.heading);
+                    section.questions.forEach((q) => {
+                      if (q.question) {
+                        segments.push(`Question ${q.id}. ${q.question}`);
+                        if (q.options) segments.push(`Options: ${q.options.join(", ")}`);
+                        if (section.type === "match_following" && q.left && q.right) {
+                          segments.push(`Match: ${q.left.join(", ")} with ${q.right.join(", ")}`);
+                        }
+                      }
+                      if (withAnswers && q.answer) {
+                        segments.push(`Answer: ${q.answer}`);
+                      }
+                      if (withAnswers && section.type === "match_following" && q.answers) {
+                        segments.push(`Answers: ${q.left?.map((l, i) => `${l} matches ${q.answers?.[i]}`).join(", ")}`);
+                      }
+                    });
+                  });
+                  return segments;
+                }}
+              />
             </div>
 
             {/* Worksheet document */}

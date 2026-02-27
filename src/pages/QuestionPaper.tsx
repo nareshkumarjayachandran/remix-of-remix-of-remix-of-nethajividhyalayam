@@ -13,6 +13,7 @@ import {
   PenLine, ChevronDown, Share2, ArrowLeft, CheckSquare, Map,
   Check, Palette, History, Trash2, Clock,
 } from "lucide-react";
+import VoiceReader from "@/components/ui/VoiceReader";
 import { Link } from "react-router-dom";
 
 // ─── Types ────────────────────────────────────────────────────────────────
@@ -1377,6 +1378,40 @@ export default function QuestionPaper() {
               <Button onClick={handleDownloadWord} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
                 <FileText className="h-4 w-4" /> Save as Word
               </Button>
+              <VoiceReader
+                getTextSegments={(withAnswers) => {
+                  if (!paper) return [];
+                  const segments: string[] = [];
+                  segments.push(paper.title);
+                  segments.push(paper.subtitle);
+                  paper.sections?.forEach((section) => {
+                    segments.push(section.heading);
+                    if (section.instructions) segments.push(section.instructions);
+                    section.subsections?.forEach((sub) => {
+                      segments.push(sub.heading);
+                      sub.questions.forEach((q) => {
+                        if (q.question) {
+                          segments.push(`Question ${q.id}. ${q.question}`);
+                          if (q.options) segments.push(`Options: ${q.options.join(", ")}`);
+                          if (sub.type === "match_following" && q.left && q.right) {
+                            segments.push(`Match: ${q.left.join(", ")} with ${q.right.join(", ")}`);
+                          }
+                        }
+                      });
+                    });
+                  });
+                  if (withAnswers && paper.answerKey) {
+                    segments.push("Answer Key");
+                    paper.answerKey.sections?.forEach((section) => {
+                      segments.push(section.partLabel);
+                      section.answers?.forEach((a) => {
+                        segments.push(`Answer ${a.id}. ${a.answer}${a.explanation ? `. Explanation: ${a.explanation}` : ""}`);
+                      });
+                    });
+                  }
+                  return segments;
+                }}
+              />
             </div>
 
             {/* Paper Document */}
