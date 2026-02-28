@@ -94,11 +94,10 @@ const AcademicsNursery = () => {
             </div>
             <div className="relative">
               <img
-                src="https://nethajividhyalayam.com/assets/C0471T01-BpAU8IXr.JPG"
+                src="/photos/academics/nursery-classroom.jpg"
                 alt="Nursery Classroom"
                 className="rounded-2xl shadow-xl w-full object-cover"
                 style={{ maxHeight: 400 }}
-                onError={(e) => { (e.target as HTMLImageElement).src = "/photos/academics/classroom-1.jpg"; }}
               />
             </div>
           </div>
