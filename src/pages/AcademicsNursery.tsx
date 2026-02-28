@@ -1,5 +1,6 @@
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { Sprout, Music, Users, BookOpen, Clock, CheckCircle } from "lucide-react";
+import nurseryClassroomImg from "@/assets/nursery-classroom.jpg";
 
 const AcademicsNursery = () => {
   useScrollToHash();
@@ -94,11 +95,11 @@ const AcademicsNursery = () => {
             </div>
             <div className="relative">
               <img
-
+                src={nurseryClassroomImg}
                 alt="Nursery Classroom"
                 className="rounded-2xl shadow-xl w-full object-cover"
                 style={{ maxHeight: 400 }}
-                onError={(e) => {(e.target as HTMLImageElement).src = "/photos/academics/classroom-1.jpg";}} src="/lovable-uploads/6f23b238-a46a-4fa2-aef7-4a113ecaa113.jpg" />
+              />
 
             </div>
           </div>
