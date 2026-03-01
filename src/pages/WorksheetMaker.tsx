@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
 import PWAInstallBanner from "@/components/ui/PWAInstallBanner";
 import OfflineBanner from "@/components/ui/OfflineBanner";
@@ -1375,15 +1376,21 @@ export default function WorksheetMaker() {
               {/* Topic suggestions */}
               {suggestions.length > 0 && (
                 <div className="mt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowHints(!showHints)}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 transition mb-1.5"
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    {showHints ? "Hide" : "Show"} Topic Hints ({suggestions.length})
-                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showHints ? "rotate-180" : ""}`} />
-                  </button>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setShowHints(!showHints)}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 transition"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {showHints ? "Hide" : "Show"} Topic Hints ({suggestions.length})
+                      <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showHints ? "rotate-180" : ""}`} />
+                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-muted-foreground">Hints</span>
+                      <Switch checked={showHints} onCheckedChange={setShowHints} className="scale-75" />
+                    </div>
+                  </div>
                   {showHints && (
                     <div className="flex flex-wrap gap-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
                       {suggestions.map((s) => (
