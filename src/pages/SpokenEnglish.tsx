@@ -273,11 +273,15 @@ async function tts(text: string, voiceKey: VoiceKey, grade: string, speed?: numb
       });
       if (res.ok) {
         const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        audio.onended = () => URL.revokeObjectURL(url);
-        return audio;
+        if (blob.size > 0 && blob.type.includes("audio")) {
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          audio.onended = () => URL.revokeObjectURL(url);
+          return audio;
+        }
       }
+      // Consume error body to prevent leaks
+      try { await res.text(); } catch {}
       console.warn("ElevenLabs TTS failed, falling back to browser TTS");
     } catch (e) {
       console.warn("ElevenLabs TTS error, falling back to browser TTS", e);
