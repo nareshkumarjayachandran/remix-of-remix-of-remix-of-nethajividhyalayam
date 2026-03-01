@@ -535,12 +535,14 @@ export default function QuestionPaper() {
   });
 
   const [topicSuggestions, setTopicSuggestions] = useState<string[]>([]);
+  const [showHints, setShowHints] = useState(false);
 
   // Update topic suggestions when curriculum/term/grade/subject changes
   useEffect(() => {
     const curricShort = form.curriculum === "Oxford Merry Birds" ? "MB" : "SK";
     const key = `${curricShort}-${form.term}-${form.grade}-${form.subject}`;
     setTopicSuggestions(QP_TOPIC_SUGGESTIONS[key] || []);
+    setShowHints(false);
   }, [form.curriculum, form.term, form.grade, form.subject]);
 
   // Auto-set default pattern when curriculum changes
@@ -1290,21 +1292,36 @@ export default function QuestionPaper() {
                 value={form.topics} onChange={(e) => setForm({ ...form, topics: e.target.value })}
                 className={`${isMerryBirds ? "bg-pink-50" : "bg-indigo-50"} border-gray-200`} />
               {topicSuggestions.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {topicSuggestions.map((s) => (
-                    <button key={s} type="button"
-                      onClick={() => setForm((prev) => ({
-                        ...prev,
-                        topics: prev.topics ? `${prev.topics}, ${s}` : s,
-                      }))}
-                      className={`px-2.5 py-1 text-xs rounded-full border transition-all hover:scale-105 ${
-                        isMerryBirds
-                          ? "bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100"
-                          : "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
-                      }`}>
-                      + {s}
-                    </button>
-                  ))}
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowHints(!showHints)}
+                    className={`flex items-center gap-1.5 text-xs font-semibold transition mb-1.5 ${
+                      isMerryBirds ? "text-pink-600 hover:text-pink-800" : "text-indigo-600 hover:text-indigo-800"
+                    }`}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    {showHints ? "Hide" : "Show"} Topic Hints ({topicSuggestions.length})
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showHints ? "rotate-180" : ""}`} />
+                  </button>
+                  {showHints && (
+                    <div className="flex flex-wrap gap-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
+                      {topicSuggestions.map((s) => (
+                        <button key={s} type="button"
+                          onClick={() => setForm((prev) => ({
+                            ...prev,
+                            topics: prev.topics ? `${prev.topics}, ${s}` : s,
+                          }))}
+                          className={`px-2.5 py-1 text-xs rounded-full border transition-all hover:scale-105 ${
+                            isMerryBirds
+                              ? "bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100"
+                              : "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
+                          }`}>
+                          + {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
