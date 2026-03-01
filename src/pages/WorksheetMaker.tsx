@@ -148,9 +148,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   // ══════════════════════════════════════════════════════
   // OXFORD MERRY BIRDS — LKG
   // ══════════════════════════════════════════════════════
-  "MB-Term 1-LKG-English":          ["Alphabet A–E (Phonics)", "My School", "Animals and their Sounds"],
-  "MB-Term 2-LKG-English":          ["Alphabet F–M (Phonics)", "My Family", "Action Words"],
-  "MB-Term 3-LKG-English":          ["Alphabet N–Z (Phonics)", "My Neighbourhood", "Seasons"],
+  "MB-Term 1-LKG-English":          ["Alphabet A–E (Phonics)", "My School", "Animals and their Sounds", "Tracing Letters", "Colour Names"],
+  "MB-Term 2-LKG-English":          ["Alphabet F–M (Phonics)", "My Family", "Action Words", "Rhyming Words", "Opposites (Big/Small)"],
+  "MB-Term 3-LKG-English":          ["Alphabet N–Z (Phonics)", "My Neighbourhood", "Seasons", "Simple Sentences", "Picture Reading"],
   "MB-Term 1-LKG-Maths":            ["Numbers 1–10", "Shapes (Triangle, Rectangle)", "Counting Objects"],
   "MB-Term 2-LKG-Maths":            ["Numbers 11–20", "Patterns", "Long and Short"],
   "MB-Term 3-LKG-Maths":            ["Numbers 1–20 (Review)", "Before and After", "Addition (intro)"],
@@ -167,9 +167,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   // ══════════════════════════════════════════════════════
   // OXFORD MERRY BIRDS — UKG
   // ══════════════════════════════════════════════════════
-  "MB-Term 1-UKG-English":          ["Phonics – Short Vowel 'a'", "Simple CVC Words", "My Family"],
-  "MB-Term 2-UKG-English":          ["Phonics – Short Vowels e/i", "Animals and their Habitats", "Community Helpers"],
-  "MB-Term 3-UKG-English":          ["Phonics – Short Vowels o/u", "Simple Sentences", "Seasons and Weather"],
+  "MB-Term 1-UKG-English":          ["Phonics – Short Vowel 'a'", "Simple CVC Words", "My Family", "Naming Words", "Sight Words", "Picture Composition"],
+  "MB-Term 2-UKG-English":          ["Phonics – Short Vowels e/i", "Animals and their Habitats", "Community Helpers", "Action Words", "Opposites", "Sentence Making"],
+  "MB-Term 3-UKG-English":          ["Phonics – Short Vowels o/u", "Simple Sentences", "Seasons and Weather", "Punctuation (Full Stop)", "Singular and Plural", "Reading Comprehension"],
   "MB-Term 1-UKG-Maths":            ["Numbers 1–20", "Addition (Single Digit)", "Shapes"],
   "MB-Term 2-UKG-Maths":            ["Numbers 21–50", "Subtraction (Single Digit)", "Measurement (Long/Short)"],
   "MB-Term 3-UKG-Maths":            ["Numbers 51–100", "Patterns", "Time (Day/Night/Morning)"],
@@ -186,9 +186,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   // ══════════════════════════════════════════════════════
   // OXFORD MERRY BIRDS — CLASS 1
   // ══════════════════════════════════════════════════════
-  "MB-Term 1-1st-English":          ["The Little Red Hen", "Phonics – Consonant Blends", "Articles a/an"],
-  "MB-Term 2-1st-English":          ["The Magic Drum (Story)", "Nouns (Common & Proper)", "Action Verbs"],
-  "MB-Term 3-1st-English":          ["The Honest Woodcutter", "Adjectives", "Simple Sentences & Punctuation"],
+  "MB-Term 1-1st-English":          ["The Little Red Hen", "Phonics – Consonant Blends", "Articles a/an", "Naming Words (Nouns)", "Singular and Plural", "Rhyming Words"],
+  "MB-Term 2-1st-English":          ["The Magic Drum (Story)", "Nouns (Common & Proper)", "Action Verbs", "Is/Am/Are", "Opposites", "Picture Composition"],
+  "MB-Term 3-1st-English":          ["The Honest Woodcutter", "Adjectives", "Simple Sentences & Punctuation", "Prepositions (in, on, under)", "Reading Comprehension", "Story Sequencing"],
   "MB-Term 1-1st-Maths":            ["Numbers 1–100", "Addition (2-Digit)", "Subtraction"],
   "MB-Term 2-1st-Maths":            ["Multiplication (2x, 3x)", "Shapes and Patterns", "Measurement (CM)"],
   "MB-Term 3-1st-Maths":            ["Division (intro)", "Money", "Time (Hours)"],
@@ -205,9 +205,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   // ══════════════════════════════════════════════════════
   // OXFORD MERRY BIRDS — CLASS 2
   // ══════════════════════════════════════════════════════
-  "MB-Term 1-2nd-English":          ["The Hen and the Bee (Story)", "Nouns – Singular & Plural", "Rhyming Words"],
-  "MB-Term 2-2nd-English":          ["The Clever Crow (Story)", "Pronouns (I, He, She, They)", "Question Words"],
-  "MB-Term 3-2nd-English":          ["A Rainy Day (Poem)", "Adjectives", "Simple Story Writing"],
+  "MB-Term 1-2nd-English":          ["The Hen and the Bee (Story)", "Nouns – Singular & Plural", "Rhyming Words", "Articles (a, an, the)", "Prepositions", "Tenses (Present Simple)"],
+  "MB-Term 2-2nd-English":          ["The Clever Crow (Story)", "Pronouns (I, He, She, They)", "Question Words", "Opposites (Antonyms)", "Conjunctions (and, but)", "Comprehension Passage"],
+  "MB-Term 3-2nd-English":          ["A Rainy Day (Poem)", "Adjectives", "Simple Story Writing", "Letter Writing (Informal)", "Punctuation", "Picture Composition"],
   "MB-Term 1-2nd-Maths":            ["3-Digit Numbers", "Addition with Carry", "Subtraction with Borrow"],
   "MB-Term 2-2nd-Maths":            ["Multiplication Tables 2–5", "Division (Basic)", "Fractions (Half, Quarter)"],
   "MB-Term 3-2nd-Maths":            ["Time and Calendar", "Money", "Data Handling (Tally)"],
@@ -224,9 +224,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   // ══════════════════════════════════════════════════════
   // OXFORD MERRY BIRDS — CLASS 3
   // ══════════════════════════════════════════════════════
-  "MB-Term 1-3rd-English":          ["The Camel's Hump (Poem)", "Tenses (Past, Present, Future)", "Letter Writing"],
-  "MB-Term 2-3rd-English":          ["The Brave Little Tailor", "Adverbs", "Comprehension Passage"],
-  "MB-Term 3-3rd-English":          ["Robinson Crusoe (excerpts)", "Conjunctions", "Essay Writing"],
+  "MB-Term 1-3rd-English":          ["The Camel's Hump (Poem)", "Tenses (Past, Present, Future)", "Letter Writing", "Nouns (Collective, Abstract)", "Singular & Plural (Irregular)", "Comprehension Passage"],
+  "MB-Term 2-3rd-English":          ["The Brave Little Tailor", "Adverbs", "Comprehension Passage", "Prepositions", "Synonyms and Antonyms", "Paragraph Writing"],
+  "MB-Term 3-3rd-English":          ["Robinson Crusoe (excerpts)", "Conjunctions", "Essay Writing", "Punctuation (Comma, Apostrophe)", "Story Writing", "Degrees of Comparison"],
   "MB-Term 1-3rd-Maths":            ["4-Digit Numbers", "Multiplication (3-digit x 1)", "Division"],
   "MB-Term 2-3rd-Maths":            ["Fractions", "Decimals (intro)", "Geometry (Angles)"],
   "MB-Term 3-3rd-Maths":            ["Area and Perimeter", "Time and Distance", "Data Handling"],
@@ -243,9 +243,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   // ══════════════════════════════════════════════════════
   // OXFORD MERRY BIRDS — CLASS 4
   // ══════════════════════════════════════════════════════
-  "MB-Term 1-4th-English":          ["Alice in Wonderland (Chapter 1)", "Active and Passive Voice", "Paragraph Writing"],
-  "MB-Term 2-4th-English":          ["The Jungle Book (Story)", "Direct and Indirect Speech", "Dialogue Writing"],
-  "MB-Term 3-4th-English":          ["Gulliver's Travels (excerpts)", "Prepositions", "Report Writing"],
+  "MB-Term 1-4th-English":          ["Alice in Wonderland (Chapter 1)", "Active and Passive Voice", "Paragraph Writing", "Tenses (Past, Present, Future)", "Letter Writing (Formal & Informal)", "Comprehension"],
+  "MB-Term 2-4th-English":          ["The Jungle Book (Story)", "Direct and Indirect Speech", "Dialogue Writing", "Prefix and Suffix", "Conjunctions (because, although)", "Notice Writing"],
+  "MB-Term 3-4th-English":          ["Gulliver's Travels (excerpts)", "Prepositions", "Report Writing", "Synonyms and Antonyms", "Essay Writing", "Subject-Verb Agreement"],
   "MB-Term 1-4th-Maths":            ["Large Numbers (Lakhs, Crores)", "Factors and Multiples (LCM, HCF)", "Fractions"],
   "MB-Term 2-4th-Maths":            ["Decimals", "Percentage (intro)", "Geometry – Angles and Lines"],
   "MB-Term 3-4th-Maths":            ["Area and Perimeter", "Volume (Cuboid, Cube)", "Data Handling – Bar Graphs"],
@@ -262,9 +262,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   // ══════════════════════════════════════════════════════
   // OXFORD MERRY BIRDS — CLASS 5
   // ══════════════════════════════════════════════════════
-  "MB-Term 1-5th-English":          ["Adventures of Tom Sawyer", "Clauses and Phrases", "Essay Writing"],
-  "MB-Term 2-5th-English":          ["Treasure Island (Story)", "Reported Speech", "Formal Letter Writing"],
-  "MB-Term 3-5th-English":          ["Oliver Twist (excerpts)", "Idioms and Proverbs", "Story Writing"],
+  "MB-Term 1-5th-English":          ["Adventures of Tom Sawyer", "Clauses and Phrases", "Essay Writing", "Tenses (All Forms)", "Letter Writing (Formal)", "Comprehension (Prose & Poetry)"],
+  "MB-Term 2-5th-English":          ["Treasure Island (Story)", "Reported Speech", "Formal Letter Writing", "Active and Passive Voice", "Diary Entry", "Notice Writing"],
+  "MB-Term 3-5th-English":          ["Oliver Twist (excerpts)", "Idioms and Proverbs", "Story Writing", "Dialogue Writing", "Precis Writing", "Subject-Verb Agreement"],
   "MB-Term 1-5th-Maths":            ["LCM and HCF", "Ratio and Proportion", "Percentage"],
   "MB-Term 2-5th-Maths":            ["Profit and Loss", "Simple Interest", "Algebra (intro)"],
   "MB-Term 3-5th-Maths":            ["Geometry (Quadrilaterals)", "Data Handling – Pie Charts", "Patterns and Sequences"],
@@ -316,9 +316,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   "SK-Term 1-1st-Tamil":    ["உயிர் எழுத்துக்கள்", "வல்லினம் மிகா இடம்", "பெயர்ச்சொல்"],
   "SK-Term 2-1st-Tamil":    ["மெய் எழுத்துக்கள்", "உயிர்மெய் எழுத்துக்கள்", "வினைச்சொல்"],
   "SK-Term 3-1st-Tamil":    ["அகர வரிசை", "எதிர்ச்சொல்", "ஒரே மாதிரியான சொற்கள்"],
-  "SK-Term 1-1st-English":  ["My Body", "My School", "Animals and their Homes"],
-  "SK-Term 2-1st-English":  ["Action Words (Verbs)", "Describing Words (Adjectives)", "Days of the Week"],
-  "SK-Term 3-1st-English":  ["Seasons", "Community Helpers", "Simple Sentences"],
+  "SK-Term 1-1st-English":  ["My Body", "My School", "Animals and their Homes", "Articles (a, an)", "Singular and Plural", "Naming Words (Nouns)"],
+  "SK-Term 2-1st-English":  ["Action Words (Verbs)", "Describing Words (Adjectives)", "Days of the Week", "Opposites", "Rhyming Words", "Is/Am/Are"],
+  "SK-Term 3-1st-English":  ["Seasons", "Community Helpers", "Simple Sentences", "Punctuation (Full Stop, Question Mark)", "One and Many", "Reading Comprehension"],
   "SK-Term 1-1st-Maths":    ["Numbers 1–100", "Addition (2-Digit)", "Subtraction"],
   "SK-Term 2-1st-Maths":    ["Shapes", "Measurement (Long/Short)", "Patterns"],
   "SK-Term 3-1st-Maths":    ["Money", "Time (Clock)", "Data (Tally)"],
@@ -332,9 +332,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   "SK-Term 1-2nd-Tamil":    ["உயிர்மெய் எழுத்துக்கள்", "பெயர்ச்சொல் வகைகள்", "கவிதை – தோட்டம்"],
   "SK-Term 2-2nd-Tamil":    ["வினைச்சொல்", "உவமை", "பாடல் – தாய்மொழி"],
   "SK-Term 3-2nd-Tamil":    ["சொல் விளையாட்டு", "எதிர்ச்சொல்", "புணர்ச்சி (intro)"],
-  "SK-Term 1-2nd-English":  ["Action Words (Verbs)", "The Crow and the Pitcher (Story)", "Nouns"],
-  "SK-Term 2-2nd-English":  ["Adjectives", "Pronouns", "Question Words (Who, What, Where)"],
-  "SK-Term 3-2nd-English":  ["Rhyming Words", "Simple Story Writing", "Punctuation"],
+  "SK-Term 1-2nd-English":  ["Action Words (Verbs)", "The Crow and the Pitcher (Story)", "Nouns", "Singular and Plural", "Articles (a, an, the)", "Prepositions (in, on, under)"],
+  "SK-Term 2-2nd-English":  ["Adjectives", "Pronouns", "Question Words (Who, What, Where)", "Tenses (Present Simple)", "Opposites (Antonyms)", "Comprehension Passage"],
+  "SK-Term 3-2nd-English":  ["Rhyming Words", "Simple Story Writing", "Punctuation", "Letter Writing (Informal)", "Conjunctions (and, but, or)", "Picture Composition"],
   "SK-Term 1-2nd-Maths":    ["3-Digit Numbers", "Addition with Carry", "Subtraction with Borrow"],
   "SK-Term 2-2nd-Maths":    ["Multiplication Tables 2–5", "Division (Basic)", "Fractions (Half, Quarter)"],
   "SK-Term 3-2nd-Maths":    ["Time and Calendar", "Money", "Data Handling (Tally Charts)"],
@@ -351,9 +351,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   "SK-Term 1-3rd-Tamil":    ["நிலா (கவிதை)", "செய்யுள்", "பாடல் – நம் தமிழ்"],
   "SK-Term 2-3rd-Tamil":    ["உரைநடை", "பெயர்ச்சொல் வகைகள்", "வினைமுற்று"],
   "SK-Term 3-3rd-Tamil":    ["புணர்ச்சி", "மடக்கு அணி", "தொகைச்சொல்"],
-  "SK-Term 1-3rd-English":  ["Animals", "Flowers and Plants", "Community Helpers"],
-  "SK-Term 2-3rd-English":  ["Seasons and Weather", "Tenses (Simple)", "Letter Writing (Informal)"],
-  "SK-Term 3-3rd-English":  ["Comprehension Passage", "Adjectives", "Essay (My School)"],
+  "SK-Term 1-3rd-English":  ["Animals", "Flowers and Plants", "Community Helpers", "Nouns (Common, Proper, Collective)", "Singular and Plural (Irregular)", "Articles (a, an, the)"],
+  "SK-Term 2-3rd-English":  ["Seasons and Weather", "Tenses (Past, Present, Future)", "Letter Writing (Informal)", "Pronouns (He, She, It, They)", "Prepositions", "Comprehension Passage"],
+  "SK-Term 3-3rd-English":  ["Comprehension Passage", "Adjectives (Degrees of Comparison)", "Essay (My School)", "Conjunctions", "Punctuation (Comma, Apostrophe)", "Story Writing"],
   "SK-Term 1-3rd-Maths":    ["4-Digit Numbers", "Multiplication (3-Digit x 1)", "Division"],
   "SK-Term 2-3rd-Maths":    ["Fractions", "Decimals (intro)", "Geometry (Angles)"],
   "SK-Term 3-3rd-Maths":    ["Area and Perimeter", "Time and Distance", "Data Handling"],
@@ -370,9 +370,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   "SK-Term 1-4th-Tamil":    ["இயற்கை (கவிதை)", "உரைநடை", "தமிழ் இலக்கணம்"],
   "SK-Term 2-4th-Tamil":    ["வீரமாமுனிவர்", "செய்யுள்", "பாரதியார் பாடல்"],
   "SK-Term 3-4th-Tamil":    ["திருக்குறள்", "அன்றாட வாழ்வில் தமிழ்", "மரபுவழி சொற்கள்"],
-  "SK-Term 1-4th-English":  ["Environment", "Alice in Wonderland (excerpts)", "Active and Passive Voice"],
-  "SK-Term 2-4th-English":  ["Space", "Direct and Indirect Speech", "Paragraph Writing"],
-  "SK-Term 3-4th-English":  ["Famous Personalities", "Prepositions", "Essay Writing"],
+  "SK-Term 1-4th-English":  ["Environment", "Alice in Wonderland (excerpts)", "Active and Passive Voice", "Tenses (Past, Present, Future)", "Letter Writing (Formal & Informal)", "Comprehension Passage"],
+  "SK-Term 2-4th-English":  ["Space", "Direct and Indirect Speech", "Paragraph Writing", "Conjunctions (because, although)", "Prefix and Suffix", "Notice Writing"],
+  "SK-Term 3-4th-English":  ["Famous Personalities", "Prepositions", "Essay Writing", "Synonyms and Antonyms", "Report Writing", "Dialogue Writing"],
   "SK-Term 1-4th-Maths":    ["Large Numbers (Lakhs, Crores)", "Factors and Multiples (LCM, HCF)", "Fractions"],
   "SK-Term 2-4th-Maths":    ["Decimals", "Percentage (intro)", "Geometry – Angles"],
   "SK-Term 3-4th-Maths":    ["Area and Perimeter", "Volume", "Data Handling – Bar Graphs"],
@@ -389,9 +389,9 @@ const TOPIC_SUGGESTIONS_MAP: Record<string, string[]> = {
   "SK-Term 1-5th-Tamil":    ["வீரமாமுனிவர்", "பாரதியார் கவிதை", "திருக்குறள் (அதிகாரம் 1–5)"],
   "SK-Term 2-5th-Tamil":    ["ஔவையார் பாடல்கள்", "உரைநடை", "இலக்கணம் – சொல் வகைகள்"],
   "SK-Term 3-5th-Tamil":    ["திருவாசகம்", "நவீன கவிதை", "தமிழ் இலக்கண – தொடர்"],
-  "SK-Term 1-5th-English":  ["Famous Personalities", "Clauses and Phrases", "Essay Writing"],
-  "SK-Term 2-5th-English":  ["Environment and Conservation", "Reported Speech", "Formal Letter"],
-  "SK-Term 3-5th-English":  ["Technology and Science", "Idioms and Proverbs", "Story Writing"],
+  "SK-Term 1-5th-English":  ["Famous Personalities", "Clauses and Phrases", "Essay Writing", "Tenses (All Forms)", "Letter Writing (Formal)", "Subject-Verb Agreement"],
+  "SK-Term 2-5th-English":  ["Environment and Conservation", "Reported Speech", "Formal Letter", "Active and Passive Voice", "Comprehension (Prose & Poetry)", "Diary Entry"],
+  "SK-Term 3-5th-English":  ["Technology and Science", "Idioms and Proverbs", "Story Writing", "Dialogue Writing", "Notice and Message Writing", "Precis Writing"],
   "SK-Term 1-5th-Maths":    ["LCM and HCF", "Ratio and Proportion", "Percentage"],
   "SK-Term 2-5th-Maths":    ["Profit and Loss", "Simple Interest", "Algebra (intro)"],
   "SK-Term 3-5th-Maths":    ["Geometry (Quadrilaterals)", "Data Handling – Pie Charts", "Patterns"],
