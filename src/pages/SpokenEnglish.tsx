@@ -256,39 +256,8 @@ function browserTts(text: string, speed = 1.0): HTMLAudioElement | null {
   return fakeAudio;
 }
 
-async function tts(text: string, voiceKey: VoiceKey, grade: string, speed?: number): Promise<HTMLAudioElement | null> {
+async function tts(text: string, _voiceKey: VoiceKey, grade: string, speed?: number): Promise<HTMLAudioElement | null> {
   const finalSpeed = speed ?? GRADE_SPEED[grade] ?? 0.9;
-
-  // Try ElevenLabs edge function first (uses selected voice)
-  if (SUPABASE_URL && SUPABASE_KEY) {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-tts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${SUPABASE_KEY}`,
-        },
-        body: JSON.stringify({ text, voiceKey, grade, speed: finalSpeed }),
-      });
-      if (res.ok) {
-        const blob = await res.blob();
-        if (blob.size > 0 && blob.type.includes("audio")) {
-          const url = URL.createObjectURL(blob);
-          const audio = new Audio(url);
-          audio.onended = () => URL.revokeObjectURL(url);
-          return audio;
-        }
-      }
-      // Consume error body to prevent leaks
-      try { await res.text(); } catch {}
-      console.warn("ElevenLabs TTS failed, falling back to browser TTS");
-    } catch (e) {
-      console.warn("ElevenLabs TTS error, falling back to browser TTS", e);
-    }
-  }
-
-  // Fallback to browser-native TTS (same voice always)
   return browserTts(text, finalSpeed);
 }
 
