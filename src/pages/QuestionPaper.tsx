@@ -536,14 +536,14 @@ export default function QuestionPaper() {
   });
 
   const [topicSuggestions, setTopicSuggestions] = useState<string[]>([]);
-  const [showHints, setShowHints] = useState(true);
+  const [showHints, setShowHints] = useState(false);
 
   // Update topic suggestions when curriculum/term/grade/subject changes
   useEffect(() => {
     const curricShort = form.curriculum === "Oxford Merry Birds" ? "MB" : "SK";
     const key = `${curricShort}-${form.term}-${form.grade}-${form.subject}`;
     setTopicSuggestions(QP_TOPIC_SUGGESTIONS[key] || []);
-    setShowHints(true);
+    setShowHints(false);
   }, [form.curriculum, form.term, form.grade, form.subject]);
 
   // Auto-set default pattern when curriculum changes
@@ -1307,8 +1307,8 @@ export default function QuestionPaper() {
                       <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showHints ? "rotate-180" : ""}`} />
                     </button>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground">Hints</span>
-                      <Switch checked={showHints} onCheckedChange={setShowHints} className="scale-75" />
+                      <span className={`text-[10px] font-medium ${showHints ? "text-green-600" : "text-red-500"}`}>{showHints ? "ON" : "OFF"}</span>
+                      <Switch checked={showHints} onCheckedChange={setShowHints} className={`scale-75 ${showHints ? "data-[state=checked]:bg-green-500" : "data-[state=unchecked]:bg-red-400"}`} />
                     </div>
                   </div>
                   {showHints && (

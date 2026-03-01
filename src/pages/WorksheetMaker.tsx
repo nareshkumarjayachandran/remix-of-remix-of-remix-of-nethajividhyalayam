@@ -683,7 +683,7 @@ export default function WorksheetMaker() {
   }, [formData.curriculum, formData.term, formData.grade, formData.subject, formData.language, formData.difficulty, formData.questionTypes]);
   const [showSaved, setShowSaved] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showHints, setShowHints] = useState(true);
+  const [showHints, setShowHints] = useState(false);
 
   // Update topic suggestions when grade/subject changes
   useEffect(() => {
@@ -691,7 +691,7 @@ export default function WorksheetMaker() {
     const curricShort = isMB ? "MB" : "SK";
     const key = `${curricShort}-${formData.term}-${formData.grade}-${formData.subject}`;
     setSuggestions(TOPIC_SUGGESTIONS_MAP[key] || []);
-    setShowHints(true);
+    setShowHints(false);
   }, [formData.curriculum, formData.term, formData.grade, formData.subject]);
 
   // ─── Generate one set (with retry on 429) ─────────────────────────────────
@@ -1387,8 +1387,8 @@ export default function WorksheetMaker() {
                       <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showHints ? "rotate-180" : ""}`} />
                     </button>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground">Hints</span>
-                      <Switch checked={showHints} onCheckedChange={setShowHints} className="scale-75" />
+                      <span className={`text-[10px] font-medium ${showHints ? "text-green-600" : "text-red-500"}`}>{showHints ? "ON" : "OFF"}</span>
+                      <Switch checked={showHints} onCheckedChange={setShowHints} className={`scale-75 ${showHints ? "data-[state=checked]:bg-green-500" : "data-[state=unchecked]:bg-red-400"}`} />
                     </div>
                   </div>
                   {showHints && (
