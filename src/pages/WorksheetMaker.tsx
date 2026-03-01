@@ -682,6 +682,7 @@ export default function WorksheetMaker() {
   }, [formData.curriculum, formData.term, formData.grade, formData.subject, formData.language, formData.difficulty, formData.questionTypes]);
   const [showSaved, setShowSaved] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showHints, setShowHints] = useState(false);
 
   // Update topic suggestions when grade/subject changes
   useEffect(() => {
@@ -689,6 +690,7 @@ export default function WorksheetMaker() {
     const curricShort = isMB ? "MB" : "SK";
     const key = `${curricShort}-${formData.term}-${formData.grade}-${formData.subject}`;
     setSuggestions(TOPIC_SUGGESTIONS_MAP[key] || []);
+    setShowHints(false);
   }, [formData.curriculum, formData.term, formData.grade, formData.subject]);
 
   // ─── Generate one set (with retry on 429) ─────────────────────────────────
@@ -1372,13 +1374,26 @@ export default function WorksheetMaker() {
               </p>
               {/* Topic suggestions */}
               {suggestions.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {suggestions.map((s) => (
-                    <button key={s} onClick={() => setFormData({ ...formData, topic: s })}
-                      className="text-xs px-2.5 py-1 bg-sky-100 text-sky-700 rounded-full border border-sky-200 hover:bg-sky-200 transition tamil-font">
-                      {s}
-                    </button>
-                  ))}
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowHints(!showHints)}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 transition mb-1.5"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    {showHints ? "Hide" : "Show"} Topic Hints ({suggestions.length})
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showHints ? "rotate-180" : ""}`} />
+                  </button>
+                  {showHints && (
+                    <div className="flex flex-wrap gap-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
+                      {suggestions.map((s) => (
+                        <button key={s} onClick={() => setFormData({ ...formData, topic: s })}
+                          className="text-xs px-2.5 py-1 bg-sky-100 text-sky-700 rounded-full border border-sky-200 hover:bg-sky-200 transition tamil-font">
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
