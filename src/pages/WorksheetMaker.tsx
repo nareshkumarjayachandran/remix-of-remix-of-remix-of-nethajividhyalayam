@@ -683,7 +683,7 @@ export default function WorksheetMaker() {
   }, [formData.curriculum, formData.term, formData.grade, formData.subject, formData.language, formData.difficulty, formData.questionTypes]);
   const [showSaved, setShowSaved] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showHints, setShowHints] = useState(false);
+  const [showHints, setShowHints] = useState(true);
 
   // Update topic suggestions when grade/subject changes
   useEffect(() => {
@@ -691,7 +691,7 @@ export default function WorksheetMaker() {
     const curricShort = isMB ? "MB" : "SK";
     const key = `${curricShort}-${formData.term}-${formData.grade}-${formData.subject}`;
     setSuggestions(TOPIC_SUGGESTIONS_MAP[key] || []);
-    setShowHints(false);
+    setShowHints(true);
   }, [formData.curriculum, formData.term, formData.grade, formData.subject]);
 
   // ─── Generate one set (with retry on 429) ─────────────────────────────────

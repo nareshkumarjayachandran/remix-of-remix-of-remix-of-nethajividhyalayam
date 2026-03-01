@@ -536,14 +536,14 @@ export default function QuestionPaper() {
   });
 
   const [topicSuggestions, setTopicSuggestions] = useState<string[]>([]);
-  const [showHints, setShowHints] = useState(false);
+  const [showHints, setShowHints] = useState(true);
 
   // Update topic suggestions when curriculum/term/grade/subject changes
   useEffect(() => {
     const curricShort = form.curriculum === "Oxford Merry Birds" ? "MB" : "SK";
     const key = `${curricShort}-${form.term}-${form.grade}-${form.subject}`;
     setTopicSuggestions(QP_TOPIC_SUGGESTIONS[key] || []);
-    setShowHints(false);
+    setShowHints(true);
   }, [form.curriculum, form.term, form.grade, form.subject]);
 
   // Auto-set default pattern when curriculum changes
