@@ -1,13 +1,13 @@
-name: Mirror to Second Account
+name: Debug Mirror
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
-  mirror:
+  debug:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,77 +16,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Debug environment
-        run: |
-          echo "=== Git Version ==="
-          git --version
-          echo "=== Current Directory ==="
-          pwd
-          echo "=== Files ==="
-          ls -la
-          echo "=== Git Status ==="
-          git status
-          echo "=== Git Branches ==="
-          git branch -a
-
-      - name: Test token (without pushing)
+      - name: Try mirror and show error
         env:
           TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
-          echo "=== Testing Token ==="
-          # Test token with GitHub API
-          RESPONSE=$(curl -s -w "%{http_code}" \
-            -H "Authorization: token $TOKEN" \
-            https://api.github.com/user)
-          HTTP_CODE=${RESPONSE: -3}
-          echo "HTTP Code: $HTTP_CODE"
-          
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ Token is valid!"
-          else
-            echo "❌ Token is invalid!"
-            exit 1
-          fi
-
-      - name: Test remote connection
-        env:
-          TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
-        run: |
-          echo "=== Testing Remote Connection ==="
-          # Try to list remote branches without pushing
-          git ls-remote https://x-access-token:${TOKEN}@github.com/nethajividhyalayam/Websites.git
-          
-          if [ $? -eq 0 ]; then
-            echo "✅ Can connect to remote repository!"
-          else
-            echo "❌ Cannot connect to remote repository!"
-          fi
-
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git config --global http.postBuffer 524288000  # Increase buffer size
-
-      - name: Add remote
-        env:
-          TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
-        run: |
+          # Add remote
           git remote add target https://x-access-token:${TOKEN}@github.com/nethajividhyalayam/Websites.git
-          echo "✅ Remote added successfully"
-
-      - name: Try push with timeout
-        env:
-          TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
-        run: |
-          echo "=== Attempting push with timeout ==="
-          # Try push with timeout to prevent hanging
-          timeout 60 git push --mirror target || {
-            EXIT_CODE=$?
-            if [ $EXIT_CODE -eq 124 ]; then
-              echo "❌ Push timed out after 60 seconds"
-            else
-              echo "❌ Push failed with exit code $EXIT_CODE"
-            fi
-            exit $EXIT_CODE
+          
+          # Try push and capture error
+          git push --mirror target 2>&1 || {
+            echo "=== ERROR DETAILS ==="
+            echo "Push failed with exit code: $?"
+            echo "Current remotes:"
+            git remote -v
+            echo "Current branches:"
+            git branch -a
+            exit 1
           }
