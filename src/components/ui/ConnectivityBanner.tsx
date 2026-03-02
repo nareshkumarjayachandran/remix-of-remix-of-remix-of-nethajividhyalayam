@@ -7,11 +7,14 @@ import { WifiOff, X, ChevronDown, ChevronUp, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const CHECK_INTERVAL = 30_000; // 30s between checks
+const CHECK_INTERVAL = 60_000; // 60s between checks
 const DISMISS_KEY = "connectivity-banner-dismissed";
+const FAILURES_THRESHOLD = 3; // require 3 consecutive failures
 
 export default function ConnectivityBanner() {
   const [backendBlocked, setBackendBlocked] = useState(false);
+  const failCountRef = { current: 0 };
+
   const [expanded, setExpanded] = useState(false);
   const [dismissed, setDismissed] = useState(() => {
     try {
@@ -24,17 +27,23 @@ export default function ConnectivityBanner() {
     if (!SUPABASE_URL || !navigator.onLine) return;
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
+      const timeout = setTimeout(() => controller.abort(), 12000);
       const res = await fetch(`${SUPABASE_URL}/rest/v1/`, {
         method: "HEAD",
         signal: controller.signal,
         headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
       });
       clearTimeout(timeout);
-      setBackendBlocked(!res.ok);
+      if (res.ok) {
+        failCountRef.current = 0;
+        setBackendBlocked(false);
+      } else {
+        failCountRef.current++;
+        if (failCountRef.current >= FAILURES_THRESHOLD) setBackendBlocked(true);
+      }
     } catch {
-      // Network error or timeout → likely blocked
-      setBackendBlocked(true);
+      failCountRef.current++;
+      if (failCountRef.current >= FAILURES_THRESHOLD) setBackendBlocked(true);
     }
   }, []);
 
