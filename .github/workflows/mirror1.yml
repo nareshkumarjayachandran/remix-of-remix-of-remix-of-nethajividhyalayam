@@ -1,0 +1,41 @@
+name: Mirror Repository
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [sync]
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Validate required secrets
+        run: |
+          if [ -z "${MIRROR_TOKEN}" ]; then
+            echo "Error: MIRROR_TOKEN secret is not set." >&2
+            exit 1
+          fi
+          if [ -z "${SOURCE_REPO}" ]; then
+            echo "Error: SOURCE_REPO secret is not set." >&2
+            exit 1
+          fi
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
+
+      - name: Mirroring to Account B
+        # SOURCE_REPO must be set as a repository secret in the format: owner/repo-name
+        # MIRROR_TOKEN must be a PAT with read access to the source repo (Account A)
+        run: |
+          set -e
+          git clone --bare "https://x-access-token:${MIRROR_TOKEN}@github.com/${SOURCE_REPO}.git" repo-mirror
+          cd repo-mirror
+          git push --mirror "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
