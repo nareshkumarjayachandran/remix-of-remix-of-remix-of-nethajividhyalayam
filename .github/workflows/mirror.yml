@@ -2,66 +2,53 @@ name: Mirror to Account B
 
 on:
   push:
-    branches:
-      - main
-      - master
-  workflow_dispatch:  # Allows manual trigger
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history for mirroring
+          fetch-depth: 0
 
-      - name: Verify token (debug step)
+      - name: Check token permissions
         env:
           TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
-          echo "🔍 Verifying token..."
-          # Test token with GitHub API (shows only first 4 chars for security)
-          echo "Token prefix: ${TOKEN:0:4}..."
-          echo "Token length: ${#TOKEN}"
+          echo "Checking token permissions..."
           
-          # Check token owner
-          RESPONSE=$(curl -s -H "Authorization: token $TOKEN" \
-            https://api.github.com/user)
+          # Check token scopes
+          SCOPES=$(curl -s -I -H "Authorization: token $TOKEN" \
+            https://api.github.com/user | grep -i "x-oauth-scopes" | cut -d' ' -f2)
           
-          if echo "$RESPONSE" | grep -q "login"; then
-            USERNAME=$(echo "$RESPONSE" | grep -o '"login": "[^"]*"' | cut -d'"' -f4)
-            echo "✅ Token belongs to: $USERNAME"
-          else
-            echo "❌ Token invalid or expired"
-            echo "Please generate a new token in Account B with 'repo' scope"
+          echo "Token scopes: $SCOPES"
+          
+          if [[ "$SCOPES" != *"repo"* ]]; then
+            echo "❌ ERROR: Token missing 'repo' scope!"
+            echo "Please generate a new token with 'repo' scope selected"
             exit 1
+          else
+            echo "✅ Token has 'repo' scope"
           fi
 
-      - name: Configure Git
-        run: |
-          git config --global user.name "GitHub Sync Bot"
-          git config --global user.email "sync@github.com"
-
-      - name: Add destination remote
+      - name: Push to destination
         env:
           TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
-          # Add Account B as remote using token authentication
-          git remote add destination https://x-access-token:${TOKEN}@github.com/nethajividhyalayam/Websites.git
-          echo "✅ Remote added: destination"
-          git remote -v
-
-      - name: Push to Account B
-        run: |
-          echo "🚀 Mirroring to Account B..."
-          # Push all branches and tags
-          git push --mirror destination
+          git config --global user.name "nethajividhyalayam"
+          git config --global user.email "nethajividhyalayam@gmail.com"
           
-          if [ $? -eq 0 ]; then
+          # Use the correct format with token
+          git remote add target https://nethajividhyalayam:${TOKEN}@github.com/nethajividhyalayam/Websites.git
+          
+          # Try to push
+          echo "Pushing to destination..."
+          if git push --force target main; then
             echo "✅ Successfully mirrored to Account B!"
           else
-            echo "❌ Mirror failed"
+            echo "❌ Push failed"
             exit 1
           fi
