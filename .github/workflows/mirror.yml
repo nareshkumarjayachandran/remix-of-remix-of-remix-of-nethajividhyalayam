@@ -1,41 +1,26 @@
-name: Mirror Repository
+name: Mirror Fixed
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
+  push:
+    branches: [main]
   workflow_dispatch:
-  repository_dispatch:
-    types: [sync]
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Validate required secrets
-        run: |
-          if [ -z "${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}" ]; then
-            echo "Error: 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 secret is not set." >&2
-            exit 1
-          fi
-          if [ -z "${nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam}" ]; then
-            echo "Error: nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam secret is not set." >&2
-            exit 1
-          fi
-        env:
-          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: ${{ secrets.MIRROR_TOKEN }}
-          SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Mirroring to Account B
-        # SOURCE_REPO must be set as a repository secret in the format: owner/repo-name
-        # MIRROR_TOKEN must be a PAT with read access to the source repo (Account A)
+      - name: Push to target repo
         run: |
-          set -e
-          git clone --bare "https://x-access-token:${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}@github.com/${nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam}.git" repo-mirror
-          cd repo-mirror
-          git push --mirror "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+          git config --global user.name "nethajividhyalayam"
+          git config --global user.email "nethajividhyalayam@gmail.com"
+          git config --global --unset-all http.https://github.com/.extraheader || true
+          git remote add target "https://${TARGET_TOKEN}@github.com/nethajividhyalayam/Websites.git"
+          git push target --force --all
+          git push target --force --tags
         env:
-          MIRROR_TOKEN: ${{ secrets.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 }}
-          GITHUB_TOKEN: ${{ github.token }}
-          SOURCE_REPO: ${{ secrets.nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam }}
+          TARGET_TOKEN: ${{ secrets.TARGET_REPO_TOKEN1 }}
