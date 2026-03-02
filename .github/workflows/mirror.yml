@@ -32,7 +32,7 @@ jobs:
         # MIRROR_TOKEN must be a PAT with read access to the source repo (Account A)
         run: |
           set -e
-          git clone --bare "https://x-access-token:${MIRROR_TOKEN}@github.com/${SOURCE_REPO}.git" repo-mirror
+          git clone --bare "https://x-access-token:${MIRROR_TOKEN}@github.com/${nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam}.git" repo-mirror
           cd repo-mirror
           git push --mirror "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
         env:
