@@ -2,7 +2,8 @@ name: Mirror to Account B
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -10,45 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check token permissions
-        env:
-          TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+      - name: Configure Git
         run: |
-          echo "Checking token permissions..."
-          
-          # Check token scopes
-          SCOPES=$(curl -s -I -H "Authorization: token $TOKEN" \
-            https://api.github.com/user | grep -i "x-oauth-scopes" | cut -d' ' -f2)
-          
-          echo "Token scopes: $SCOPES"
-          
-          if [[ "$SCOPES" != *"repo"* ]]; then
-            echo "❌ ERROR: Token missing 'repo' scope!"
-            echo "Please generate a new token with 'repo' scope selected"
-            exit 1
-          else
-            echo "✅ Token has 'repo' scope"
-          fi
+          git config --global user.name "nethajividhyalayam"
+          git config --global user.email "nethajividhyalayam@gmail.com"
 
       - name: Push to destination
         env:
           TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
-          git config --global user.name "nethajividhyalayam"
-          git config --global user.email "nethajividhyalayam@gmail.com"
+          echo "🚀 Mirroring to Account B..."
           
-          # Use the correct format with token
+          # Add remote using token
           git remote add target https://nethajividhyalayam:${TOKEN}@github.com/nethajividhyalayam/Websites.git
           
-          # Try to push
-          echo "Pushing to destination..."
-          if git push --force target main; then
-            echo "✅ Successfully mirrored to Account B!"
-          else
-            echo "❌ Push failed"
-            exit 1
-          fi
+          # Push all branches and tags
+          git push --mirror target
+          
+          echo "✅ Mirror complete!"
