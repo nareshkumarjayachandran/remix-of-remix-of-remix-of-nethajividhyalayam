@@ -16,6 +16,26 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verify token
+        env:
+          TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+        run: |
+          echo "🔍 Verifying token..."
+          echo "Token length: ${#TOKEN}"
+          echo "First 4 chars: ${TOKEN:0:4}"
+          
+          # Test token with GitHub API
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token $TOKEN" \
+            https://api.github.com/user)
+          
+          if [ "$RESPONSE" = "200" ]; then
+            echo "✅ Token is valid!"
+          else
+            echo "❌ Token invalid (HTTP $RESPONSE)"
+            exit 1
+          fi
+
       - name: Configure Git
         run: |
           git config --global user.name "nethajividhyalayam"
@@ -23,12 +43,12 @@ jobs:
 
       - name: Push to destination
         env:
-          TOKEN: ${{ secrets.TARGET_REPO_TOKEN1 }}
+          TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
           echo "🚀 Mirroring to Account B..."
           
-          # Add remote using token
-          git remote add target https://nethajividhyalayam:${TOKEN}@github.com/nethajividhyalayam/Websites.git
+          # Use x-access-token format (most reliable for GitHub Actions)
+          git remote add target https://x-access-token:${TOKEN}@github.com/nethajividhyalayam/Websites.git
           
           # Push all branches and tags
           git push --mirror target
