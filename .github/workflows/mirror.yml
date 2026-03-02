@@ -13,13 +13,14 @@ jobs:
           fetch-depth: 0
 
       - name: Push to target repo
-        env:
-          TOKEN: ${{ secrets.TARGET_REPO_TOKEN1 }}
         run: |
           git config --global user.name "nethajividhyalayam"
           git config --global user.email "nethajividhyalayam@gmail.com"
           
-          git remote add target https://x-access-token:${TOKEN}@github.com/nethajividhyalayam/Websites.git
+          # Disable default credential helper so our token is used
+          git config --global --unset-all http.https://github.com/.extraheader || true
+          
+          git remote add target https://${{ secrets.TARGET_REPO_TOKEN1 }}@github.com/nethajividhyalayam/Websites.git
           
           git push target --force --all
           git push target --force --tags
