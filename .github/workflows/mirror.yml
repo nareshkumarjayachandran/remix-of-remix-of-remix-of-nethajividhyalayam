@@ -23,7 +23,7 @@ jobs:
 
       - name: Push to destination
         env:
-          TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+          TOKEN: ${{ secrets.Mirror to Websites Repo }}
         run: |
           echo "🚀 Mirroring to Account B..."
           
