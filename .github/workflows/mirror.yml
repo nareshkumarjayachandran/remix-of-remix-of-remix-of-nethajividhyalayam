@@ -15,16 +15,16 @@ jobs:
     steps:
       - name: Validate required secrets
         run: |
-          if [ -z "${MIRROR_TOKEN}" ]; then
-            echo "Error: MIRROR_TOKEN secret is not set." >&2
+          if [ -z "${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}" ]; then
+            echo "Error: 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 secret is not set." >&2
             exit 1
           fi
-          if [ -z "${SOURCE_REPO}" ]; then
-            echo "Error: SOURCE_REPO secret is not set." >&2
+          if [ -z "${nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam}" ]; then
+            echo "Error: nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam secret is not set." >&2
             exit 1
           fi
         env:
-          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          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: ${{ secrets.MIRROR_TOKEN }}
           SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
 
       - name: Mirroring to Account B
@@ -32,10 +32,10 @@ jobs:
         # MIRROR_TOKEN must be a PAT with read access to the source repo (Account A)
         run: |
           set -e
-          git clone --bare "https://x-access-token:${MIRROR_TOKEN}@github.com/${nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam}.git" repo-mirror
+          git clone --bare "https://x-access-token:${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}@github.com/${nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam}.git" repo-mirror
           cd repo-mirror
           git push --mirror "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
         env:
-          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          MIRROR_TOKEN: ${{ secrets.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 }}
           GITHUB_TOKEN: ${{ github.token }}
-          SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
+          SOURCE_REPO: ${{ secrets.nareshkumarjayachandran/remix-of-remix-of-remix-of-nethajividhyalayam }}
