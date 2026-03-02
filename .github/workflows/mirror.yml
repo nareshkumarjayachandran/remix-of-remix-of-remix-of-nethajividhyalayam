@@ -1,21 +1,25 @@
-name: Mirror to Second Account
+name: Mirror Repo
 
 on:
   push:
     branches:
-      - main
+      - main   # change to master if needed
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source repo
+      - name: Checkout source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Push to target repo
         run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
           git remote add target https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/nethajividhyalayam/Websites.git
-          git push --force target main
+
+          git push --mirror target
