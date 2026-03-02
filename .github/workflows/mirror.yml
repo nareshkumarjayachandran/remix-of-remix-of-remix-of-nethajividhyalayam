@@ -1,9 +1,6 @@
-name: Mirror to Account B
+name: Mirror Fixed
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -11,27 +8,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false   # IMPORTANT
 
-      - name: Configure Git
-        run: |
-          git config --global user.name "nethajividhyalayam"
-          git config --global user.email "nethajividhyalayam@gmail.com"
-
-      - name: Push to destination
+      - name: Push with OAuth2 format
         env:
           TOKEN: ${{ secrets.TARGET_REPO_TOKEN1 }}
         run: |
-          echo "🚀 Mirroring to Account B..."
+          git config --global user.name "nethajividhyalayam"
+          git config --global user.email "nethajividhyalayam@gmail.com"
           
-          # Add remote using token
-          git remote add target https://nethajividhyalayam:${TOKEN}@github.com/nethajividhyalayam/Websites.git
+          # Use oauth2 format instead of username:token
+          git remote add target https://oauth2:${TOKEN}@github.com/nethajividhyalayam/Websites.git
           
-          # Push all branches and tags
           git push --mirror target
-          
-          echo "✅ Mirror complete!"
