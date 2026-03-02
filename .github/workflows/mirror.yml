@@ -1,4 +1,4 @@
-name: Mirror Repo
+name: Mirror to Second Account
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Push to target repo
+      - name: Push mirror to target
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
