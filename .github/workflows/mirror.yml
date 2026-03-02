@@ -1,8 +1,9 @@
-name: Mirror Fixed
+name: Mirror to Account B
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -10,19 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Push to target repo
+      - name: Configure Git
         run: |
           git config --global user.name "nethajividhyalayam"
           git config --global user.email "nethajividhyalayam@gmail.com"
+
+      - name: Push to destination
+        env:
+          TOKEN: ${{ secrets.TARGET_REPO_TOKEN1 }}
+        run: |
+          echo "🚀 Mirroring to Account B..."
           
-          # Disable default credential helper so our token is used
-          git config --global --unset-all http.https://github.com/.extraheader || true
+          # Add remote using token
+          git remote add target https://nethajividhyalayam:${TOKEN}@github.com/nethajividhyalayam/Websites.git
           
-          git remote add target https://${{ secrets.TARGET_REPO_TOKEN1 }}@github.com/nethajividhyalayam/Websites.git
+          # Push all branches and tags
+          git push --mirror target
           
-          git push target --force --all
-          git push target --force --tags
+          echo "✅ Mirror complete!"
