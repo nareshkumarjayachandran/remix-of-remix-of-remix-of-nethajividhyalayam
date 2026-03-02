@@ -357,29 +357,35 @@ const FeeDesk = () => {
   }, [user, role]);
 
   const fetchStudents = async () => {
-    if (navigator.onLine) {
+    // Always try server first, fall back to IndexedDB on ANY failure (including ISP blocking)
+    try {
       const { data, error } = await supabase.from("students").select("*").eq("status", "active").order("standard").order("student_name");
       if (!error && data) {
         setStudents(data);
         offlineDb.cacheStudents(data);
+        return;
       }
-    } else {
-      const cached = await offlineDb.getCachedStudents();
-      if (cached.length > 0) setStudents(cached.filter((s: any) => s.status === "active"));
+    } catch (e) {
+      console.log("fetchStudents: server unreachable, using cache");
     }
+    // Fallback: load from IndexedDB cache
+    const cached = await offlineDb.getCachedStudents();
+    if (cached.length > 0) setStudents(cached.filter((s: any) => s.status === "active"));
   };
 
   const fetchPayments = async () => {
-    if (navigator.onLine) {
+    try {
       const { data, error } = await supabase.from("fee_payments").select("*, students(student_name, standard, section)").order("created_at", { ascending: false }).limit(1000);
       if (!error && data) {
         setPayments(data);
         offlineDb.cachePayments(data);
+        return;
       }
-    } else {
-      const cached = await offlineDb.getCachedPayments();
-      if (cached.length > 0) setPayments(cached);
+    } catch (e) {
+      console.log("fetchPayments: server unreachable, using cache");
     }
+    const cached = await offlineDb.getCachedPayments();
+    if (cached.length > 0) setPayments(cached);
   };
 
   useEffect(() => {
