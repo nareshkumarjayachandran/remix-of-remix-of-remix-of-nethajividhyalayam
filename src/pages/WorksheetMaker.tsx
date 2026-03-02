@@ -718,13 +718,13 @@ export default function WorksheetMaker() {
           await new Promise((r) => setTimeout(r, 3000));
           return generateOneSet(setNumber, attempt + 1);
         }
-        throw new Error("Request timed out. Please check your internet connection and try again.");
+        throw new Error("Server unreachable — your ISP may be blocking the backend. Try switching to mobile data or changing DNS to 8.8.8.8. Saved worksheets are still available below.");
       }
       if (attempt <= 2) {
         await new Promise((r) => setTimeout(r, 5000 * attempt));
         return generateOneSet(setNumber, attempt + 1);
       }
-      throw new Error("Network error. Please check your internet connection and try again.");
+      throw new Error("Server unreachable — your ISP may be blocking the backend. Try switching to mobile data or changing DNS to 8.8.8.8. Saved worksheets are still available below.");
     }
     clearTimeout(timeoutId);
     const data = await res.json();
@@ -789,6 +789,10 @@ export default function WorksheetMaker() {
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Failed to generate worksheet";
       setGenerateError(msg);
+      // Auto-show saved worksheets when generation fails due to network
+      if (msg.includes("unreachable") || msg.includes("Network")) {
+        setShowSaved(true);
+      }
       toast({ title: "Generation failed", description: msg, variant: "destructive" });
     } finally {
       setLoading(false);
