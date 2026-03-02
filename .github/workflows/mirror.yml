@@ -1,26 +1,41 @@
-name: Mirror Fixed
+name: Mirror Repository
 
 on:
-  push:
-    branches: [main]
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
+  repository_dispatch:
+    types: [sync]
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout source repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Push to target repo
+      - name: Validate required secrets
         run: |
-          git config --global user.name "nethajividhyalayam"
-          git config --global user.email "nethajividhyalayam@gmail.com"
-          git config --global --unset-all http.https://github.com/.extraheader || true
-          git remote add target "https://${TARGET_TOKEN}@github.com/nethajividhyalayam/Websites.git"
-          git push target --force --all
-          git push target --force --tags
+          if [ -z "${MIRROR_TOKEN}" ]; then
+            echo "Error: MIRROR_TOKEN secret is not set." >&2
+            exit 1
+          fi
+          if [ -z "${SOURCE_REPO}" ]; then
+            echo "Error: SOURCE_REPO secret is not set." >&2
+            exit 1
+          fi
         env:
-          TARGET_TOKEN: ${{ secrets.TARGET_REPO_TOKEN1 }}
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
+
+      - name: Mirror repository
+        # SOURCE_REPO must be set as a repository secret in the format: owner/repo-name
+        # MIRROR_TOKEN must be a PAT with read access to the source repo (Account A)
+        run: |
+          set -e
+          git clone --bare "https://x-access-token:${MIRROR_TOKEN}@github.com/${SOURCE_REPO}.git" repo-mirror
+          cd repo-mirror
+          git push --mirror "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_REPO: ${{ secrets.SOURCE_REPO }}
