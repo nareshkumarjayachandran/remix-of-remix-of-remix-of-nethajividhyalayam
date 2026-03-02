@@ -6,9 +6,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  mirror:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # This grants the token permission to push commits
     steps:
+      #- uses: actions/checkout@v4
+      # ... your other steps
+
+
       - name: Checkout source repo
         uses: actions/checkout@v4
         with:
