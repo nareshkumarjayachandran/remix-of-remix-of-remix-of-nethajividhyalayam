@@ -18,7 +18,7 @@ jobs:
 
       - name: Verify token
         env:
-          TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+          TOKEN: ${{ secrets.TARGET_REPO_TOKEN1 }}
         run: |
           echo "🔍 Verifying token..."
           echo "Token length: ${#TOKEN}"
