@@ -1,6 +1,6 @@
 const SCHOOL_FOUNDING_YEAR = 2002;
 const SCHOOL_FOUNDING_MONTH = 5; // June, zero-indexed
-const SCHOOL_FOUNDING_DAY = 11;
+const SCHOOL_FOUNDING_DAY = 8;
 const ACADEMIC_YEAR_START_MONTH = 5; // Academic year begins in June
 
 export function getAcademicYearStartYear(date = new Date()): number {

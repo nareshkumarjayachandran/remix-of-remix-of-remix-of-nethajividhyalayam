@@ -8,7 +8,7 @@ export type AboutTopic = "history" | "story" | "vision" | "leadership" | "princi
 const topics: Record<AboutTopic, { title: string; eyebrow: string; intro: string }> = {
   history: {
     title: "Our History",
-    eyebrow: "Est. 2001",
+    eyebrow: "Est. 2002",
     intro: "From a small classroom to a leading institution, explore the milestones that define our legacy.",
   },
   story: {
@@ -101,16 +101,13 @@ const HistoryContent = () => (
   <section className="section-padding bg-background">
     <div className="container-custom max-w-4xl">
       <article className="border-l-4 border-accent pl-6 md:pl-10">
-        <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">7 June 2001</p>
+        <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">8 June 2002</p>
         <h2 className="section-title">The Birth of Nethaji Vidhyalayam</h2>
         <p className="text-muted-foreground leading-relaxed mb-4">
-          Nethaji Vidhyalayam was established on 7 June 2001. The school was inaugurated by Shri Rama Gopalan, the founder-organizer of Hindu Munnani, Tamil Nadu.
-        </p>
-        <p className="text-muted-foreground leading-relaxed mb-4">
-          Nethaji Vidhyalayam is affiliated with Vidya Bharati, Tamil Nadu, an all-India educational organization. From its beginnings in a small classroom, the school has grown steadily while remaining committed to quality education and student welfare.
+          Nethaji Vidhyalayam blossomed into existence on 8th June 2002, inaugurated by Shri. S. Thirunavukarasar, Former Central Minister of Information and Technology, Tamil Nadu. Affiliated to VIDYA BHARATI, TAMIL NADU - an All India Educational Organisation guiding over 29,000 schools across Bharat - our institution has flourished into one of the most trusted centres of learning in this locality, where rising student strength reflects heartfelt devotion to quality.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          The consistent growth of the school reflects its dedication to nurturing young learners and serving the community. The story of Nethaji Vidhyalayam continues with every student who learns, grows, and contributes to the future.
+          Our vision is wholesome learning through English medium, nurturing values rooted in Bharatiya culture while building a strong academic foundation. Our mission is to offer modern, value-rooted instruction that blossoms the all-round growth of every child.
         </p>
       </article>
     </div>

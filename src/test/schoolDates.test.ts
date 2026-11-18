@@ -14,8 +14,8 @@ describe("automatic school dates", () => {
     expect(getAcademicYearStartYear(new Date(2026, 0, 1))).toBe(2025);
   });
 
-  it("counts completed years from the school founding date of June 11, 2002", () => {
-    expect(getYearsOfExcellence(new Date(2026, 5, 10))).toBe(23);
-    expect(getYearsOfExcellence(new Date(2026, 5, 11))).toBe(24);
+  it("counts completed years from the school founding date of June 8, 2002", () => {
+    expect(getYearsOfExcellence(new Date(2026, 5, 7))).toBe(23);
+    expect(getYearsOfExcellence(new Date(2026, 5, 8))).toBe(24);
   });
 });
