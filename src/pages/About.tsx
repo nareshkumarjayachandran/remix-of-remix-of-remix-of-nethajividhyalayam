@@ -140,19 +140,19 @@ const About = () => {
               {
                 name: "Mr. J.J. NARESHKUMAR",
                 role: "Correspondent / Chairman",
-                image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop",
+                image: "/photos/leadership/chairman.jpg",
                 description: "Leading the institution with decades of experience in education and a vision for holistic student development.",
               },
               {
                 name: "Mrs. V. JANANI",
                 role: "Principal",
-                image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop",
+                image: "/photos/leadership/principal.jpg",
                 description: "An accomplished educator committed to academic excellence and holistic student development.",
               },
               {
                 name: "Mrs. M. DEVIKALA",
                 role: "Vice Principal",
-                image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop",
+                image: "/photos/leadership/vice-principal.jpg",
                 description: "Ensuring smooth administration and upholding the values of the institution with dedication and integrity.",
               },
             ].map((leader) => (
