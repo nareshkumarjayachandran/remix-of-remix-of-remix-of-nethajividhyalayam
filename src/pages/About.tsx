@@ -1,6 +1,8 @@
 import useScrollToHash from "@/hooks/useScrollToHash";
-import { Users, Target, Eye, BookOpen, Award, Shield, Lightbulb, Heart } from "lucide-react";
+import { Users, Target, Eye, BookOpen, Award, Shield, Lightbulb, Heart, ArrowRight } from "lucide-react";
 import { getYearsOfExcellence } from "@/lib/schoolDates";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const About = () => {
   useScrollToHash();
@@ -197,6 +199,66 @@ const About = () => {
                 "We do not build buildings here. We build character, confidence, and the future of our nation."
               </blockquote>
               <p className="font-serif font-bold text-primary">— Mr. J.J. NARESHKUMAR, Chairman</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* School History */}
+      <section id="history" className="bg-background">
+        <div className="bg-primary text-primary-foreground py-16 md:py-20">
+          <div className="container-custom text-center">
+            <p className="inline-flex items-center rounded-full border border-primary-foreground/30 px-4 py-1 text-sm font-semibold">
+              EST. 2001
+            </p>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold mt-5 mb-4">Our Journey</h2>
+            <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
+              From a small classroom to a leading institution, explore the milestones that define our legacy.
+            </p>
+          </div>
+        </div>
+        <div className="section-padding bg-secondary">
+          <div className="container-custom">
+            <div className="grid md:grid-cols-[minmax(0,0.95fr)_3rem_minmax(0,1.05fr)] gap-8 md:gap-6 items-center">
+              <article className="bg-card border-t-4 border-accent rounded-lg p-6 md:p-8 shadow-md">
+                <p className="text-5xl font-bold text-muted/50 mb-3">2001</p>
+                <h3 className="font-serif text-2xl font-bold text-primary mb-4">
+                  The Birth of Nethaji Vidhyalayam
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  Nethaji Vidhyalayam was established on 7th June 2001. The school was inaugurated by Shri Rama Gopalan, the founder-organizer of Hindu Munnani, Tamil Nadu. Nethaji Vidhyalayam is affiliated with Vidya Bharati, Tamil Nadu, an All India Educational Organization with over 28,720 schools across the country.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Over the years, the school has grown significantly and earned recognition as one of the leading institutions in the locality. The consistent growth in student strength is a testament to our commitment to quality education.
+                </p>
+                <p className="mt-6 text-sm font-semibold uppercase text-accent">Milestone Achieved</p>
+              </article>
+              <div className="hidden md:flex h-full min-h-64 justify-center" aria-hidden="true">
+                <div className="relative w-px bg-border">
+                  <span className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-background bg-accent" />
+                </div>
+              </div>
+              <figure>
+                <img
+                  src="/photos/history/milestones.jpg"
+                  alt="Students gathered for a school milestone at Nethaji Vidhyalayam"
+                  className="w-full aspect-[4/3] object-cover rounded-lg shadow-md"
+                  loading="lazy"
+                />
+              </figure>
+            </div>
+            <div className="mt-16 border-t border-border pt-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div>
+                <h3 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-2">Be Part of Our Future</h3>
+                <p className="text-muted-foreground max-w-2xl">
+                  The story of Nethaji Vidhyalayam is still being written. Join us and help shape the next chapter of excellence.
+                </p>
+              </div>
+              <Button asChild className="shrink-0 gap-2 bg-accent text-accent-foreground hover:bg-accent/90">
+                <Link to="/admissions">
+                  Apply for Admission <ArrowRight aria-hidden="true" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
