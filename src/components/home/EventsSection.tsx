@@ -33,7 +33,7 @@ const events = [
     title: "Parent-Teacher Meeting",
     date: "April 10, 2024",
     description: "An opportunity for parents to discuss their child's progress with teachers.",
-    image: "/photos/parent-teacher/ptm.jpeg",
+    image: "/photos/parent-teacher/ptm.jpg",
     category: "Meeting",
   },
   {
@@ -41,7 +41,7 @@ const events = [
     title: "School Annual Picnic",
     date: "November 15, 2024",
     description: "A fun-filled outing for students and teachers to relax, play games, and enjoy nature together.",
-    image: "/photos/school-picnic/picnic.jpeg",
+    image: "/photos/school-picnic/picnic.jpg",
     category: "Recreation",
   },
   {
@@ -73,7 +73,7 @@ const events = [
     title: "Career Guidance Workshop",
     date: "August 10, 2024",
     description: "Expert sessions to guide students on career paths, higher education options, and skill development.",
-    image: "/photos/career-guidance/career-workshop.jpeg",
+    image: "/photos/career-guidance/career-workshop.jpg",
     category: "Workshop",
   },
 ];
