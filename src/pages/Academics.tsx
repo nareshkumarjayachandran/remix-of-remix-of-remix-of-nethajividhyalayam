@@ -42,7 +42,7 @@ const Academics = () => {
             </div>
             <div className="relative">
               <img
-                src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop"
+                src="/photos/academics/academic-program-overview.jpg"
                 alt="Classroom learning"
                 className="rounded-2xl shadow-xl w-full"
               />
@@ -65,7 +65,7 @@ const Academics = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
               <img
-                src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&h=400&fit=crop"
+                src="/photos/academics/pre-primary-program.jpg"
                 alt="Pre-primary children"
                 className="rounded-2xl shadow-xl w-full"
               />
@@ -132,7 +132,7 @@ const Academics = () => {
             </div>
             <div>
               <img
-                src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&h=400&fit=crop"
+                src="/photos/academics/primary-program.jpg"
                 alt="Primary students learning"
                 className="rounded-2xl shadow-xl w-full"
               />
