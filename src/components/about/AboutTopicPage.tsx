@@ -92,7 +92,7 @@ const StoryContent = () => (
           </div>
         </div>
       </div>
-      <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop" alt="School campus" className="rounded-xl shadow-xl w-full" />
+      <img src="/photos/events/cta-background.jpg" alt="School campus" className="rounded-xl shadow-xl w-full" />
     </div>
   </section>
 );
