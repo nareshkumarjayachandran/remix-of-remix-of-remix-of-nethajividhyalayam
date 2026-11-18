@@ -76,7 +76,7 @@ const StoryContent = () => (
         <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">Our Story</p>
         <h2 className="section-title">From Humble Beginnings to Educational Excellence</h2>
         <p className="text-muted-foreground leading-relaxed mb-4">
-          Nethaji Vidhyalayam was established on 11th June 2002 with the vision of providing wholesome education through the English medium. The school aims to offer a strong academic foundation while nurturing values rooted in Bharat culture, with special emphasis on Bharath cultural traditions.
+          Nethaji Vidhyalayam was established on 8th June 2002 with the vision of providing wholesome education through the English medium. The school aims to offer a strong academic foundation while nurturing values rooted in Bharat culture, with special emphasis on Bharath cultural traditions.
         </p>
         <p className="text-muted-foreground leading-relaxed mb-4">
           Our mission is to provide modern, value-based education that supports the overall development of every child. From <strong>Pre KG</strong> to <strong>5th Grade</strong>, the aim of the school is to lay emphasis on experiential learning and grooming of young children thereby making them responsible citizens and leaders with a difference.

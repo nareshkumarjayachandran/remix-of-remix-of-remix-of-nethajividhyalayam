@@ -46,7 +46,7 @@ const Footer = () => {
             </div>
             <p className="text-sm text-primary-foreground/80 leading-relaxed">
               Nethaji Vidhyalayam is committed to providing quality education that nurtures young minds and prepares
-              them for a bright future. Established on 11th June 2002, we have been a beacon of academic excellence.
+              them for a bright future. Established on 8th June 2002, we have been a beacon of academic excellence.
             </p>
             {/* Social Links */}
             <div className="flex gap-3">

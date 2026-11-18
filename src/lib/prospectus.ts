@@ -340,7 +340,7 @@ export async function generateProspectusPDF() {
   const chairmanMsg = [
     "Dear Parents and Well-wishers,",
     "",
-    "It gives me immense pleasure to welcome you to Nethaji Vidhyalayam. Since our founding on 11th June 2002, we have been committed to providing an educational environment that nurtures not just academic excellence, but also the moral, social, and emotional growth of every child.",
+    "It gives me immense pleasure to welcome you to Nethaji Vidhyalayam. Since our founding on 8th June 2002, we have been committed to providing an educational environment that nurtures not just academic excellence, but also the moral, social, and emotional growth of every child.",
     "",
     "At Nethaji Vidhyalayam, we believe that every child is a unique individual with boundless potential. Our dedicated team of educators works tirelessly to create a learning atmosphere that inspires curiosity, fosters creativity, and builds strong character.",
     "",
@@ -878,7 +878,7 @@ export async function generateProspectusPDF() {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   setColor(doc, MUTED);
-  doc.text(`Established: 11th June 2002  |  Over ${yearsOfExcellence} Years of Educational Excellence`, PW / 2, y + 8, { align: "center" });
+  doc.text(`Established: 8th June 2002  |  Over ${yearsOfExcellence} Years of Educational Excellence`, PW / 2, y + 8, { align: "center" });
 
   drawFooter(doc, 12, TOTAL);
 
