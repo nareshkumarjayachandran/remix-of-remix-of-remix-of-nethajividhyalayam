@@ -248,7 +248,7 @@ const ChatWidget = () => {
 
     // About / leadership
     if (/about|history|founded|chairman|principal|leader/.test(q))
-      return "🏠 **Nethaji Vidhyalayam** — Founded 11th June 2002\n- Chairman: Mr. J.J. Nareshkumar\n- Principal: Mrs. V. Janani\n- Vice Principal: Mrs. M. Devikala\n- 2000+ Alumni | 12+ Staff | 100% Pass Rate\n\n[🏠 About Us](/about)";
+      return "🏠 **Nethaji Vidhyalayam** — Founded 11th June 2002\n- Chairman: Mr. J.J. Nareshkumar\n- Principal: Mrs. P.S. Janani\n- Vice Principal: Mrs. M. Devikala\n- 2000+ Alumni | 12+ Staff | 100% Pass Rate\n\n[🏠 About Us](/about)";
 
     // Events
     if (/event|annual|sports\s*day|program/.test(q))

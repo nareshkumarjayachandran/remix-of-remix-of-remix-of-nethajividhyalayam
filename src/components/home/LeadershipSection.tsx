@@ -11,7 +11,7 @@ const teamMembers = [
       "Our commitment to providing world-class education remains unwavering. We believe every child deserves the opportunity to learn, grow, and excel.",
   },
   {
-    name: "Mrs. V. JANANI",
+    name: "Mrs. P.S. JANANI",
     role: "Principal",
     image: "/photos/leadership/principal.jpg",
     message:

@@ -145,7 +145,7 @@ const About = () => {
                 description: "Leading the institution with decades of experience in education and a vision for holistic student development.",
               },
               {
-                name: "Mrs. V. JANANI",
+                name: "Mrs. P.S. JANANI",
                 role: "Principal",
                 image: "/photos/leadership/principal.jpg",
                 description: "An accomplished educator committed to academic excellence and holistic student development.",
@@ -187,12 +187,12 @@ const About = () => {
                 educators works tirelessly to ensure that every student receives personalized 
                 attention and guidance.
               </p>
-              <p className="font-serif font-bold text-primary">— Mrs. V. JANANI, Principal</p>
+              <p className="font-serif font-bold text-primary">— Mrs. P.S. JANANI, Principal</p>
             </div>
             <div className="order-1 md:order-2">
               <img
                 src="/photos/leadership/principal.jpg"
-                alt="Mrs. V. JANANI - Principal"
+                alt="Mrs. P.S. JANANI - Principal"
                 className="rounded-2xl shadow-xl w-full"
               />
             </div>
