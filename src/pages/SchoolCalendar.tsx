@@ -1,33 +1,33 @@
 import { useState, useMemo } from "react";
 import { Sun, Moon, Star, Calendar, Clock, Award } from "lucide-react";
 import { calculateTodayPanchangam } from "@/lib/panchangam";
-import { getAcademicYearFull } from "@/lib/schoolDates";
+import { getAcademicYearFull, getAcademicYearStartYear } from "@/lib/schoolDates";
 
 const calendarMonths = [
-  { month: "June 2025", tamilMonth: "வைகாசி / ஆனி", events: [
+  { month: "June", tamilMonth: "வைகாசி / ஆனி", events: [
     { date: "1", title: "School Reopens" }, { date: "5", title: "Orientation Day" },
     { date: "21", title: "International Yoga Day" },
     { date: "12", title: "V.O.C. Birth Anniversary (வ.உ.சி. பிறந்த நாள்)" },
   ]},
-  { month: "July 2025", tamilMonth: "ஆனி / ஆடி", events: [
+  { month: "July", tamilMonth: "ஆனி / ஆடி", events: [
     { date: "4", title: "Science Week Begins" }, { date: "15", title: "Parent-Teacher Meet" },
     { date: "23", title: "Bal Gangadhar Tilak Birth Anniversary" },
     { date: "28", title: "Bharathiar Memorial Day (பாரதியார் நினைவு நாள்)" },
     { date: "28", title: "Talent Show" },
   ]},
-  { month: "August 2025", tamilMonth: "ஆடி / ஆவணி", events: [
+  { month: "August", tamilMonth: "ஆடி / ஆவணி", events: [
     { date: "15", title: "Independence Day (சுதந்திர தினம்)" },
     { date: "20", title: "Rajaji Birth Anniversary (ராஜாஜி பிறந்த நாள்)" },
     { date: "20", title: "Inter-house Quiz" }, { date: "26", title: "Sports Week Begins" },
   ]},
-  { month: "September 2025", tamilMonth: "ஆவணி / புரட்டாசி", events: [
+  { month: "September", tamilMonth: "ஆவணி / புரட்டாசி", events: [
     { date: "5", title: "Teachers' Day (Dr. Radhakrishnan Birthday)" },
     { date: "11", title: "Bharathiar Birth Anniversary (பாரதியார் பிறந்த நாள்)" },
     { date: "15", title: "Half-Yearly Exams Begin" },
     { date: "17", title: "Periyar Birth Anniversary (பெரியார் பிறந்த நாள்)" },
     { date: "28", title: "Results Day" },
   ]},
-  { month: "October 2025", tamilMonth: "புரட்டாசி / ஐப்பசி", events: [
+  { month: "October", tamilMonth: "புரட்டாசி / ஐப்பசி", events: [
     { date: "2", title: "Gandhi Jayanti (காந்தி ஜெயந்தி)" },
     { date: "7", title: "VOC Memorial Day (வ.உ.சி. நினைவு நாள்)" },
     { date: "10-18", title: "Dussehra / Diwali Holidays" },
@@ -35,14 +35,14 @@ const calendarMonths = [
     { date: "25", title: "School Resumes" },
     { date: "31", title: "Sardar Patel Birth Anniversary (ஒற்றுமை நாள்)" },
   ]},
-  { month: "November 2025", tamilMonth: "ஐப்பசி / கார்த்திகை", events: [
+  { month: "November", tamilMonth: "ஐப்பசி / கார்த்திகை", events: [
     { date: "5", title: "Virendranath Chattopadhyay Birth Anniversary" },
     { date: "11", title: "Maulana Azad Birth Anniversary (Education Day)" },
     { date: "14", title: "Children's Day (Nehru Jayanti)" },
     { date: "19", title: "Rani Lakshmibai Birth Anniversary" },
     { date: "20", title: "Annual Day Rehearsals" },
   ]},
-  { month: "December 2025", tamilMonth: "கார்த்திகை / மார்கழி", events: [
+  { month: "December", tamilMonth: "கார்த்திகை / மார்கழி", events: [
     { date: "1", title: "Annual Day" },
     { date: "6", title: "Dr. B.R. Ambedkar Memorial Day (அம்பேத்கர் நினைவு நாள்)" },
     { date: "11", title: "Subramania Bharati Birth Anniversary (Revised)" },
@@ -50,7 +50,7 @@ const calendarMonths = [
     { date: "22-31", title: "Winter Holidays" },
     { date: "24", title: "Periyar Memorial Day (பெரியார் நினைவு நாள்)" },
   ]},
-  { month: "January 2026", tamilMonth: "மார்கழி / தை", events: [
+  { month: "January", tamilMonth: "மார்கழி / தை", events: [
     { date: "2", title: "School Reopens" },
     { date: "12", title: "Swami Vivekananda Birthday (Youth Day)" },
     { date: "14", title: "Pongal Celebrations" },
@@ -58,25 +58,25 @@ const calendarMonths = [
     { date: "26", title: "Republic Day & Sports Day (குடியரசு தினம்)" },
     { date: "30", title: "Mahatma Gandhi Memorial Day (சகித தினம்)" },
   ]},
-  { month: "February 2026", tamilMonth: "தை / மாசி", events: [
+  { month: "February", tamilMonth: "தை / மாசி", events: [
     { date: "1", title: "Science Exhibition" },
     { date: "14", title: "Valentine's Week Activities" },
     { date: "18", title: "Kamaraj Birth Anniversary (காமராஜர் பிறந்த நாள்)" },
     { date: "20", title: "Pre-Board Exams" },
     { date: "28", title: "Rajendra Prasad Memorial Day" },
   ]},
-  { month: "March 2026", tamilMonth: "மாசி / பங்குனி", events: [
+  { month: "March", tamilMonth: "மாசி / பங்குனி", events: [
     { date: "1-15", title: "Annual Exams" },
     { date: "8", title: "International Women's Day" },
     { date: "20", title: "Results Day" },
     { date: "23", title: "Bhagat Singh, Rajguru & Sukhdev Martyrs' Day (தியாகிகள் தினம்)" },
     { date: "25", title: "Farewell Day" },
   ]},
-  { month: "April 2026", tamilMonth: "பங்குனி / சித்திரை", events: [
+  { month: "April", tamilMonth: "பங்குனி / சித்திரை", events: [
     { date: "1", title: "Summer Holidays Begin" },
     { date: "14", title: "Tamil New Year (புத்தாண்டு) & Dr. Ambedkar Birthday" },
   ]},
-  { month: "May 2026", tamilMonth: "சித்திரை / வைகாசி", events: [
+  { month: "May", tamilMonth: "சித்திரை / வைகாசி", events: [
     { date: "1", title: "May Day" },
     { date: "5", title: "Karl Marx Birthday" },
     { date: "7", title: "Rabindranath Tagore Birthday" },
@@ -201,6 +201,7 @@ type TabType = "school" | "panchangam";
 const SchoolCalendar = () => {
   const [activeTab, setActiveTab] = useState<TabType>("school");
   const today = useMemo(() => calculateTodayPanchangam(), []);
+  const academicYearStartYear = getAcademicYearStartYear();
 
   return (
     <>
@@ -238,7 +239,7 @@ const SchoolCalendar = () => {
               {calendarMonths.map((monthData, idx) => (
                 <div key={idx} className="bg-card rounded-2xl shadow-lg overflow-hidden card-hover animate-fade-up" style={{ animationDelay: `${idx * 0.05}s` }}>
                   <div className="bg-accent text-accent-foreground px-6 py-4">
-                    <h3 className="font-serif text-xl font-bold">{monthData.month}</h3>
+                    <h3 className="font-serif text-xl font-bold">{monthData.month} {academicYearStartYear + (idx >= 7 ? 1 : 0)}</h3>
                     <p className="text-xs opacity-75 mt-1">{monthData.tamilMonth}</p>
                   </div>
                   <div className="p-6 space-y-3">

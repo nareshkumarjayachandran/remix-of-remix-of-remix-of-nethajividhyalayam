@@ -3,19 +3,19 @@ const SCHOOL_FOUNDING_MONTH = 5; // June, zero-indexed
 const SCHOOL_FOUNDING_DAY = 11;
 const ACADEMIC_YEAR_START_MONTH = 5; // Academic year begins in June
 
-export function getAcademicYear(date = new Date()): string {
-  const startYear = date.getMonth() < ACADEMIC_YEAR_START_MONTH
+export function getAcademicYearStartYear(date = new Date()): number {
+  return date.getMonth() < ACADEMIC_YEAR_START_MONTH
     ? date.getFullYear() - 1
     : date.getFullYear();
+}
 
+export function getAcademicYear(date = new Date()): string {
+  const startYear = getAcademicYearStartYear(date);
   return `${startYear}-${String(startYear + 1).slice(-2)}`;
 }
 
 export function getAcademicYearFull(date = new Date()): string {
-  const startYear = date.getMonth() < ACADEMIC_YEAR_START_MONTH
-    ? date.getFullYear() - 1
-    : date.getFullYear();
-
+  const startYear = getAcademicYearStartYear(date);
   return `${startYear}–${startYear + 1}`;
 }
 
