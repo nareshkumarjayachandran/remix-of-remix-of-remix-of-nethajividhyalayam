@@ -12,6 +12,7 @@ import faviconLogo from "./assets/nethaji_logo2_circle.webp";
 
 // Lazy-loaded pages for code splitting
 const About = lazy(() => import("./pages/About"));
+const AboutTopicPage = lazy(() => import("./components/about/AboutTopicPage"));
 const Admissions = lazy(() => import("./pages/Admissions"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const Events = lazy(() => import("./pages/Events"));
@@ -50,6 +51,11 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
+              <Route path="/about/story" element={<AboutTopicPage topic="story" />} />
+              <Route path="/about/vision" element={<AboutTopicPage topic="vision" />} />
+              <Route path="/about/leadership" element={<AboutTopicPage topic="leadership" />} />
+              <Route path="/about/principal" element={<AboutTopicPage topic="principal" />} />
+              <Route path="/about/chairman" element={<AboutTopicPage topic="chairman" />} />
               <Route path="/admissions" element={<Admissions />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/events" element={<Events />} />

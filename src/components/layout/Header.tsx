@@ -10,11 +10,11 @@ const navItems = [
     label: "About Us",
     path: "/about",
     children: [
-      { label: "Our Story", path: "/about#story" },
-      { label: "Vision & Mission", path: "/about#vision" },
-      { label: "Leadership Team", path: "/about#team" },
-      { label: "Principal's Message", path: "/about#message" },
-      { label: "Chairman's Message", path: "/about#correspondent" },
+      { label: "Our Story", path: "/about/story" },
+      { label: "Vision & Mission", path: "/about/vision" },
+      { label: "Leadership Team", path: "/about/leadership" },
+      { label: "Principal's Message", path: "/about/principal" },
+      { label: "Chairman's Message", path: "/about/chairman" },
     ],
   },
   {
