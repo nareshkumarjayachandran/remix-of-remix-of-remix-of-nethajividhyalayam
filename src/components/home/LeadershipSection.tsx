@@ -8,14 +8,14 @@ const teamMembers = [
     role: "Chairman",
     image: "/photos/leadership/chairman.jpg",
     message:
-      "Our commitment to providing world-class education remains unwavering. We believe every child deserves the opportunity to learn, grow, and excel.",
+      "Every child is a lamp waiting to be lit. Our duty is not just to teach, but to ignite.",
   },
   {
     name: "Mrs. P.S. JANANI",
     role: "Principal",
     image: "/photos/leadership/principal.jpg",
     message:
-      "Education is the most powerful weapon which you can use to change the world. At Nethaji, we don't just teach; we inspire.",
+      "At Nethaji, we don't just teach; we inspire. Every child who enters our school is unique. Our promise is to see that uniqueness, nurture it, and let it shine.",
   },
   {
     name: "Mrs. M. DEVIKALA",

@@ -187,6 +187,9 @@ const About = () => {
                 educators works tirelessly to ensure that every student receives personalized 
                 attention and guidance.
               </p>
+              <blockquote className="text-muted-foreground leading-relaxed italic border-l-4 border-accent pl-6 mb-6">
+                "Every child who enters our school is unique. Our promise is to see that uniqueness, nurture it, and let it shine."
+              </blockquote>
               <p className="font-serif font-bold text-primary">— Mrs. P.S. JANANI, Principal</p>
             </div>
             <div className="order-1 md:order-2">
@@ -215,16 +218,17 @@ const About = () => {
               <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">From the Correspondent</p>
               <h2 className="section-title">Chairman's Message</h2>
               <blockquote className="text-muted-foreground leading-relaxed italic border-l-4 border-accent pl-6 mb-6">
-                "Our commitment to providing world-class education remains unwavering. We believe 
-                every child deserves the opportunity to learn, grow, and excel in a supportive 
-                environment."
+                "Every child is a lamp waiting to be lit. Our duty is not just to teach, but to ignite."
               </blockquote>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Since the inception of Nethaji Vidhyalayam on 11th June 2002, our vision has been to create an 
-                educational institution that stands apart in its dedication to student welfare 
-                and academic achievement. We continue to invest in infrastructure, technology, 
-                and faculty development to ensure the best learning experience.
+                Our commitment to providing world-class education remains unwavering. We believe every child deserves the opportunity to learn, grow, and excel in a supportive environment.
               </p>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Since the inception of Nethaji Vidhyalayam in 2002, our vision has been to create an educational institution that stands apart in its dedication to student welfare and academic achievement. We continue to invest in infrastructure, technology, and faculty development to ensure the best learning experience for every child.
+              </p>
+              <blockquote className="text-muted-foreground leading-relaxed italic border-l-4 border-accent pl-6 mb-6">
+                "We do not build buildings here. We build character, confidence, and the future of our nation."
+              </blockquote>
               <p className="font-serif font-bold text-primary">— Mr. J.J. NARESHKUMAR, Chairman</p>
             </div>
           </div>
