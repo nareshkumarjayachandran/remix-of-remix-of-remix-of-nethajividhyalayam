@@ -190,7 +190,7 @@ const About = () => {
             </div>
             <div className="order-1 md:order-2">
               <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&h=600&fit=crop"
+                src="/photos/leadership/principal.jpg"
                 alt="Mrs. V. JANANI - Principal"
                 className="rounded-2xl shadow-xl w-full"
               />
@@ -205,7 +205,7 @@ const About = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <img
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=500&h=600&fit=crop"
+                src="/photos/leadership/chairman.jpg"
                 alt="Mr. J.J. NARESHKUMAR - Chairman"
                 className="rounded-2xl shadow-xl w-full"
               />
