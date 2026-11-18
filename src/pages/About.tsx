@@ -57,7 +57,8 @@ const About = () => {
 
       <section className="section-padding bg-background">
         <div className="container-custom">
-          <div className="grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8 lg:gap-12 items-start">
+          <div className={cn("gap-8 lg:gap-12 items-start", activeTab === "history" ? "block" : "grid lg:grid-cols-[260px_minmax(0,1fr)]")}>
+            {activeTab !== "history" && (
             <nav aria-label="About Us sections" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 border border-border rounded-lg overflow-hidden bg-card">
               {aboutTabs.map((tab, index) => (
                 <Link
@@ -84,6 +85,7 @@ const About = () => {
                 </Link>
               ))}
             </nav>
+            )}
 
             <div className="min-w-0">
               {activeTab === "story" && (
