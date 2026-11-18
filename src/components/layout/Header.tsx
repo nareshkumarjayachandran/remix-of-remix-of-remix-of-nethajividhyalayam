@@ -15,6 +15,7 @@ const navItems = [
       { label: "Leadership Team", path: "/about#team" },
       { label: "Principal's Message", path: "/about#message" },
       { label: "Chairman's Message", path: "/about#correspondent" },
+      { label: "History", path: "/about#history" },
     ],
   },
   {
