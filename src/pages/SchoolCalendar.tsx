@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Sun, Moon, Star, Calendar, Clock, Award } from "lucide-react";
 import { calculateTodayPanchangam } from "@/lib/panchangam";
+import { getAcademicYearFull } from "@/lib/schoolDates";
 
 const calendarMonths = [
   { month: "June 2025", tamilMonth: "வைகாசி / ஆனி", events: [
@@ -206,7 +207,7 @@ const SchoolCalendar = () => {
       <section className="bg-primary text-primary-foreground py-20">
         <div className="container-custom text-center">
           <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4">School Calendar & Tamil Panchangam</h1>
-          <p className="text-lg text-primary-foreground/80">Academic Year 2025–2026 | கலி யுகம் {panchangamData.kaliYugam.year} — {panchangamData.kaliYugam.tamilYear}</p>
+          <p className="text-lg text-primary-foreground/80">Academic Year {getAcademicYearFull()} | கலி யுகம் {panchangamData.kaliYugam.year} — {panchangamData.kaliYugam.tamilYear}</p>
         </div>
       </section>
 

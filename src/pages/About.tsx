@@ -1,5 +1,6 @@
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { Users, Target, Eye, BookOpen, Award, Shield, Lightbulb, Heart } from "lucide-react";
+import { getYearsOfExcellence } from "@/lib/schoolDates";
 
 const About = () => {
   useScrollToHash();
@@ -40,7 +41,7 @@ const About = () => {
               </p>
               <div className="flex gap-8 mt-6">
                 <div className="border-l-4 border-accent pl-4">
-                  <p className="text-3xl font-bold text-primary">25+</p>
+                  <p className="text-3xl font-bold text-primary">{getYearsOfExcellence()}+</p>
                   <p className="text-sm text-muted-foreground">Years of Service</p>
                 </div>
                 <div className="border-l-4 border-accent pl-4">
@@ -235,7 +236,7 @@ const About = () => {
         <div className="container-custom">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { number: "23+", label: "Years of Excellence" },
+              { number: `${getYearsOfExcellence()}+`, label: "Years of Excellence" },
               { number: "2000+", label: "Alumni Network" },
               { number: "12+", label: "Qualified Teaching Staff" },
               { number: "100%", label: "Pass Rate" },

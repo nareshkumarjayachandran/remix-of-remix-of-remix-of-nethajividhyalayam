@@ -1,4 +1,5 @@
 import jsPDF from "jspdf";
+import { getAcademicYear, getAcademicYearFull, getYearsOfExcellence } from "@/lib/schoolDates";
 
 // ─── Color Palette ───
 const NAVY = [30, 58, 95] as const;
@@ -226,6 +227,10 @@ async function loadLogoBase64(): Promise<string> {
 // ─── MAIN GENERATOR ───
 export async function generateProspectusPDF() {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const prospectusDate = new Date();
+  const academicYear = getAcademicYear(prospectusDate);
+  const fullAcademicYear = getAcademicYearFull(prospectusDate);
+  const yearsOfExcellence = getYearsOfExcellence(prospectusDate);
   const TOTAL = 12;
   let logoData: string;
   try { logoData = await loadLogoBase64(); } catch { logoData = ""; }
@@ -282,7 +287,7 @@ export async function generateProspectusPDF() {
   doc.text("SCHOOL PROSPECTUS", PW / 2, 178, { align: "center" });
   doc.setFontSize(14);
   setColor(doc, WHITE);
-  doc.text("Academic Year 2025 - 26", PW / 2, 190, { align: "center" });
+  doc.text(`Academic Year ${fullAcademicYear}`, PW / 2, 190, { align: "center" });
 
   // Feature cards
   const coverFeatures = [
@@ -695,7 +700,7 @@ export async function generateProspectusPDF() {
   y = drawSectionHeader(doc, y, "Our Achievements");
   y += 4;
   const achievements = [
-    "22+ years of educational excellence serving Chennai community",
+    `${yearsOfExcellence}+ years of educational excellence serving Chennai community`,
     "Consistently high academic performance across all standards",
     "Award-winning students in inter-school competitions",
     "Successful alumni pursuing higher education in top institutions",
@@ -747,7 +752,7 @@ export async function generateProspectusPDF() {
   drawBackgroundPattern(doc, 2);
   drawPageBorder(doc);
   y = 22;
-  y = drawSectionHeader(doc, y, "Admissions 2025-26", "Join the Nethaji Vidhyalayam Family");
+  y = drawSectionHeader(doc, y, `Admissions ${academicYear}`, "Join the Nethaji Vidhyalayam Family");
   y += 4;
 
   doc.setFontSize(11);
@@ -873,10 +878,10 @@ export async function generateProspectusPDF() {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   setColor(doc, MUTED);
-  doc.text("Established: 11th June 2002  |  Over 22 Years of Educational Excellence", PW / 2, y + 8, { align: "center" });
+  doc.text(`Established: 11th June 2002  |  Over ${yearsOfExcellence} Years of Educational Excellence`, PW / 2, y + 8, { align: "center" });
 
   drawFooter(doc, 12, TOTAL);
 
   // ─── SAVE ───
-  doc.save("Nethaji_Vidhyalayam_Prospectus_2025-26.pdf");
+  doc.save(`Nethaji_Vidhyalayam_Prospectus_${academicYear}.pdf`);
 }

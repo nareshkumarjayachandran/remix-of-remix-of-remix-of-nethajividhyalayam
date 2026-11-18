@@ -1,5 +1,6 @@
 import { Facebook, Youtube, Instagram } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { getAcademicYear } from "@/lib/schoolDates";
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -41,15 +42,6 @@ const socials = [
     color: "#e6683c",
   },
 ];
-
-const getAcademicYear = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth(); // 0-indexed: 0=Jan, 5=Jun
-  // Academic year runs June to May. Before June, show previous year's session.
-  const startYear = month < 5 ? year - 1 : year;
-  return `${startYear}-${String(startYear + 1).slice(-2)}`;
-};
 
 const SocialSidebar = () => {
   const [now, setNow] = useState(new Date());

@@ -3,15 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, Play, X, ChevronLeft, ChevronRight as ChevronRightIcon, Pause } from "lucide-react";
 import { Link } from "react-router-dom";
 import { heroVideos } from "@/data/schoolVideos";
-
-const getAcademicYear = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth(); // 0-indexed: 0=Jan, 5=Jun
-  // Academic year runs June to May. Before June, show previous year's session.
-  const startYear = month < 5 ? year - 1 : year; // month < 5 means Jan-May
-  return `${startYear}-${String(startYear + 1).slice(-2)}`;
-};
+import { getAcademicYear } from "@/lib/schoolDates";
 
 const HeroSection = () => {
   const [showGallery, setShowGallery] = useState(false);

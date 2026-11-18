@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Award, Users, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getYearsOfExcellence } from "@/lib/schoolDates";
 
 const AboutSection = () => {
   const stats = [
-    { icon: Award, value: "23+", label: "Years of Excellence" },
+    { icon: Award, value: `${getYearsOfExcellence()}+`, label: "Years of Excellence" },
     { icon: Users, value: "2000+", label: "Happy Alumni" },
     { icon: BookOpen, value: "50+", label: "Expert Teachers" },
   ];

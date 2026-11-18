@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone } from "lucide-react";
+import { getYearsOfExcellence } from "@/lib/schoolDates";
 
 const CTASection = () => {
   return (
@@ -52,7 +53,7 @@ const CTASection = () => {
           <div className="mt-12 flex flex-wrap justify-center gap-8 text-sm text-white/80">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-accent rounded-full" />
-              <span>23+ Years of Excellence</span>
+              <span>{getYearsOfExcellence()}+ Years of Excellence</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-accent rounded-full" />
