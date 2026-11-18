@@ -66,7 +66,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB – covers school photos
+        maximumFileSizeToCacheInBytes: 20 * 1024 * 1024, // Covers current school photos up to 18MB
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff,woff2}"],
 
         // Offline fallback: navigate to /offline.html when no cache available
