@@ -3,9 +3,14 @@ import { Eye, Target } from "lucide-react";
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { getYearsOfExcellence } from "@/lib/schoolDates";
 
-export type AboutTopic = "story" | "vision" | "leadership" | "principal" | "chairman";
+export type AboutTopic = "history" | "story" | "vision" | "leadership" | "principal" | "chairman";
 
 const topics: Record<AboutTopic, { title: string; eyebrow: string; intro: string }> = {
+  history: {
+    title: "Our History",
+    eyebrow: "Est. 2001",
+    intro: "From a small classroom to a leading institution, explore the milestones that define our legacy.",
+  },
   story: {
     title: "Our Story",
     eyebrow: "Who We Are",
@@ -92,6 +97,26 @@ const StoryContent = () => (
   </section>
 );
 
+const HistoryContent = () => (
+  <section className="section-padding bg-background">
+    <div className="container-custom max-w-4xl">
+      <article className="border-l-4 border-accent pl-6 md:pl-10">
+        <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">7 June 2001</p>
+        <h2 className="section-title">The Birth of Nethaji Vidhyalayam</h2>
+        <p className="text-muted-foreground leading-relaxed mb-4">
+          Nethaji Vidhyalayam was established on 7 June 2001. The school was inaugurated by Shri Rama Gopalan, the founder-organizer of Hindu Munnani, Tamil Nadu.
+        </p>
+        <p className="text-muted-foreground leading-relaxed mb-4">
+          Nethaji Vidhyalayam is affiliated with Vidya Bharati, Tamil Nadu, an all-India educational organization. From its beginnings in a small classroom, the school has grown steadily while remaining committed to quality education and student welfare.
+        </p>
+        <p className="text-muted-foreground leading-relaxed">
+          The consistent growth of the school reflects its dedication to nurturing young learners and serving the community. The story of Nethaji Vidhyalayam continues with every student who learns, grows, and contributes to the future.
+        </p>
+      </article>
+    </div>
+  </section>
+);
+
 const VisionContent = () => (
   <section className="section-padding bg-secondary">
     <div className="container-custom grid md:grid-cols-2 gap-8">
@@ -162,6 +187,7 @@ const PrincipalContent = () => (
 );
 
 const content: Record<AboutTopic, () => JSX.Element> = {
+  history: HistoryContent,
   story: StoryContent,
   vision: VisionContent,
   leadership: LeadershipContent,
