@@ -207,8 +207,8 @@ const Header = () => {
       {/* Mobile Navigation */}
       <div
         className={cn(
-          "lg:hidden fixed inset-x-0 top-16 bg-background border-t shadow-lg transition-all duration-300 overflow-hidden",
-          isMobileMenuOpen ? "max-h-screen" : "max-h-0",
+          "lg:hidden fixed inset-x-0 top-16 bg-background border-t shadow-lg transition-all duration-300 overscroll-contain",
+          isMobileMenuOpen ? "max-h-[calc(100dvh-4rem)] overflow-y-auto" : "max-h-0 overflow-hidden",
         )}
       >
         <nav className="container-custom py-4 space-y-2">
@@ -231,7 +231,7 @@ const Header = () => {
                   <div
                     className={cn(
                       "overflow-hidden transition-all duration-200",
-                      openDropdown === item.label ? "max-h-64" : "max-h-0",
+                      openDropdown === item.label ? "max-h-96" : "max-h-0",
                     )}
                   >
                     <div className="pl-4 py-2 space-y-1">
