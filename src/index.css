@@ -354,7 +354,7 @@
 @keyframes logoPulseFavicon {
   0%,
   100% {
-    transform: scale(1);
+    transform: scale(1.2);
   }
   50% {
     transform: scale(1.4);
