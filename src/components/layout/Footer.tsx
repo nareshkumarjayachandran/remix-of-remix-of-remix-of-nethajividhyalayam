@@ -32,7 +32,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About Section */}
           <div className="space-y-6">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-8 pl-5">
               <img
                 alt="Nethaji Vidhyalayam Logo"
                 className="w-[80px] h-[80px] object-contain brightness-110 contrast-105 animate-logo-pulse-footer"

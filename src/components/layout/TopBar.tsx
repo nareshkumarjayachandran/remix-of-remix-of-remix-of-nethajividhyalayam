@@ -7,7 +7,7 @@ const TopBar = () => {
     <div className="bg-primary text-primary-foreground py-2 text-sm hidden md:block relative">
       <div className="container-custom flex justify-between items-center lg:justify-end">
         {/* Contact Info */}
-        <div className="flex items-center gap-6 pl-[110px] lg:absolute lg:left-[150px] lg:top-1/2 lg:-translate-y-1/2 lg:pl-0">
+        <div className="flex items-center gap-6 pl-[110px] lg:absolute lg:left-[170px] lg:top-1/2 lg:-translate-y-1/2 lg:pl-0">
           <a 
             href="tel:+919841594945" 
             className="flex items-center gap-2 hover:text-accent transition-colors"
@@ -22,7 +22,7 @@ const TopBar = () => {
         </div>
 
         {/* Quick Links */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 pr-10">
           <a 
             href="https://mail.google.com/mail/u/nethajividhyalayam@gmail.com" 
             target="_blank"
