@@ -200,10 +200,15 @@ const Header = () => {
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-colors"
-              aria-label="Toggle menu"
+              className={cn(
+                "lg:hidden p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-all duration-300",
+                isMobileMenuOpen && "opacity-0 translate-x-8 pointer-events-none",
+              )}
+              aria-label="Open menu"
+              aria-hidden={isMobileMenuOpen}
+              tabIndex={isMobileMenuOpen ? -1 : 0}
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              <Menu className="h-6 w-6" />
             </button>
           </div>
         </div>
@@ -216,7 +221,16 @@ const Header = () => {
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <nav className="px-3 py-4 space-y-2">
+        <div className="flex justify-end px-3 pt-3">
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-colors"
+            aria-label="Close menu"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <nav className="px-3 pb-4 pt-1 space-y-2">
           {navItems.map((item) => (
             <div key={item.label}>
               {item.children ? (
