@@ -7,7 +7,7 @@ const TopBar = () => {
     <div className="bg-primary text-primary-foreground py-2 text-sm hidden md:block">
       <div className="container-custom flex justify-between items-center">
         {/* Contact Info */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 pl-[110px] lg:pl-[140px]">
           <a 
             href="tel:+919841594945" 
             className="flex items-center gap-2 hover:text-accent transition-colors"
