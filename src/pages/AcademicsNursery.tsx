@@ -73,14 +73,15 @@ const AcademicsNursery = () => {
                 A Joyful Beginning to Lifelong Learning
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                We create a nurturing environment where children feel safe, loved, and confident—allowing
-                learning to happen naturally through meaningful experiences.
+                Our school places great emphasis on the early education of children. We provide a
+                joyful and stimulating learning environment where children learn naturally through
+                the well-researched <strong>Shishuvatika Methodology</strong>.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                <strong>Shishuvatika</strong> is the foundational stage of learning where a child's
-                educational journey begins with care, play, and joyful exploration. At our school,
-                Shishuvatika is thoughtfully designed to support the holistic development of every
-                child, guided by the timeless Panchakosha principles.
+                Our primary education curriculum is designed based on the <strong>Pancha Koshas</strong>,
+                focusing on the holistic development of every child. The primary objective of our
+                educational approach is not merely to teach children but to create a meaningful
+                learning environment that encourages exploration, experience, creativity and self-learning.
               </p>
               <div className="bg-secondary rounded-xl p-5 border-l-4 border-accent mt-4">
                 <h4 className="font-serif font-bold text-primary mb-2">Meaning of Shishuvatika</h4>
