@@ -5,7 +5,7 @@ import useScrollToHash from "@/hooks/useScrollToHash";
 
 const stagesData = [
   {
-    title: "Foundational Stage (Pre-KG-II STD)",
+    title: "Foundational Stage (Pre-KG)",
     summary: "Play-based Learning, Phonics, Basic Numeracy, Motor Skills",
     link: "/academics/nursery",
     subjects: [
@@ -68,6 +68,27 @@ const pillars = [
   { icon: Heart, title: "Character Development", desc: "Emphasis on values, ethics, and social responsibility." },
   { icon: Globe, title: "Global Perspective", desc: "Exposure to diverse cultures, languages, and worldviews." },
   { icon: Zap, title: "Skill-Based Learning", desc: "Focus on critical thinking, creativity, and problem-solving." },
+];
+
+const foundationalColumns = [
+  { key: "prekg", label: "Aruna (Pre-KG)", sub: "3–4 yrs" },
+  { key: "lkg", label: "Udhaya (LKG)", sub: "4–5 yrs" },
+  { key: "ukg", label: "Prabhath (UKG)", sub: "5–6 yrs" },
+  { key: "std1", label: "Std. I", sub: "6–7 yrs" },
+  { key: "std2", label: "Std. II", sub: "7–8 yrs" },
+];
+
+const foundationalRows = [
+  { area: "Language Development", values: ["Listening, rhymes, simple words", "Vocabulary, conversation", "Alphabet recognition, pre-writing", "Reading, writing, sentences", "Reading fluency, comprehension"] },
+  { area: "Numeracy", values: ["Colours, shapes, sorting", "Counting, patterns", "Number recognition", "Addition, subtraction", "Multiplication, division"] },
+  { area: "Physical Development", values: ["Walking, running, balancing", "Motor skills, games", "Yoga, coordination", "Yoga, physical education", "Sports, physical fitness"] },
+  { area: "Environmental Awareness", values: ["My body, family", "Plants, animals, birds", "Nature, seasons", "Environmental studies", "Environment and community"] },
+  { area: "Creative Development", values: ["Scribbling, music", "Drawing, colouring", "Art, craft, role play", "Art, music, craft", "Creative expression"] },
+  { area: "Social & Emotional Development", values: ["Sharing, bonding", "Cooperation, habits", "Confidence, independence", "Teamwork, responsibility", "Leadership, empathy"] },
+  { area: "Cultural & Value Education", values: ["Rhymes, stories", "Festivals, traditions", "Indian culture", "Moral values, heritage", "National values, traditions"] },
+  { area: "Panchakosha Development", values: ["Annamaya", "Annamaya, Pranamaya", "Manomaya", "Vijnanamaya", "Anandamaya"] },
+  { area: "Teaching Methodology", values: ["Play-based", "Activity-based", "Experiential", "Concept-based", "Application-based"] },
+  { area: "Assessment", values: ["Observation", "Observation", "Activity-based", "Continuous assessment", "Competency-based"] },
 ];
 
 const AcademicsCurriculum = () => {
@@ -184,6 +205,53 @@ const AcademicsCurriculum = () => {
                         </div>
                       ))}
                     </div>
+                    {i === 0 && (
+                      <div className="mt-6">
+                        <h4 className="font-serif font-bold text-primary mb-3">Curriculum Matrix: Foundational Stage (Pre-KG – II STD)</h4>
+          <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[960px] text-sm border-separate border-spacing-0">
+                <thead>
+                  <tr>
+                    <th className="sticky left-0 z-20 w-14 bg-primary text-primary-foreground px-3 py-4 text-center font-semibold">
+                      S.No.
+                    </th>
+                    <th className="sticky left-14 z-20 bg-primary text-primary-foreground px-4 py-4 text-left font-semibold min-w-[190px]">
+                      Curriculum Areas
+                    </th>
+                    {foundationalColumns.map((col) => (
+                      <th key={col.key} className="bg-primary text-primary-foreground px-4 py-4 text-left font-semibold min-w-[150px]">
+                        <span className="block">{col.label}</span>
+                        <span className="block text-xs font-normal text-primary-foreground/75">{col.sub}</span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {foundationalRows.map((row, i) => {
+                    const rowBg = i % 2 === 0 ? "bg-card" : "bg-secondary";
+                    return (
+                      <tr key={row.area} className={rowBg}>
+                        <td className={`sticky left-0 z-10 px-3 py-3 text-center font-semibold text-accent border-b border-border ${rowBg}`}>
+                          {i + 1}
+                        </td>
+                        <td className={`sticky left-14 z-10 px-4 py-3 font-semibold text-foreground border-b border-border ${rowBg}`}>
+                          {row.area}
+                        </td>
+                        {row.values.map((val, j) => (
+                          <td key={j} className="px-4 py-3 text-muted-foreground align-top border-b border-border">
+                            {val}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
