@@ -61,7 +61,7 @@ const navItems = [
   { label: "Contact Us", path: "/contact" },
 ];
 
-const Header = () => {
+const Header = ({ hideNav = false }: { hideNav?: boolean }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -128,8 +128,44 @@ const Header = () => {
             </Link>
           </div>
 
+
+          {/* CTA Button & Mobile Menu Toggle */}
+          <div className="flex items-center gap-3">
+            {/* Phone icon only on mobile/tablet */}
+            <a
+              href="tel:+919841594945"
+              className="flex md:hidden items-center justify-center w-10 h-10 bg-accent text-accent-foreground rounded-lg shadow-md hover:bg-accent/90 hover:shadow-lg hover:scale-105 transition-all duration-200 border border-accent-foreground/10"
+              aria-label="Call Us"
+            >
+              <Phone className="h-4 w-4" />
+            </a>
+            {/* Full Call Us button on desktop */}
+            <a
+              href="tel:+919841594945"
+              className="hidden md:flex items-center gap-2 bg-accent text-accent-foreground px-4 py-2 rounded-md font-bold hover:bg-accent/90 transition-colors"
+            >
+              <Phone className="h-4 w-4" />
+              <span>Call Us</span>
+            </a>
+
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={cn(
+                "lg:hidden p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-all duration-300",
+                isMobileMenuOpen && "opacity-0 translate-x-8 pointer-events-none",
+              )}
+              aria-label="Open menu"
+              aria-hidden={isMobileMenuOpen}
+              tabIndex={isMobileMenuOpen ? -1 : 0}
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className={cn("hidden lg:block border-t border-primary-foreground/10 transition-all duration-300", hideNav ? "max-h-0 overflow-hidden opacity-0" : "max-h-[40px] overflow-visible opacity-100")}>
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center justify-center flex-1 mx-2 min-w-0 overflow-visible">
+          <nav className="flex items-center justify-center w-full h-[40px]">
             <div className="flex items-center gap-0.5 flex-nowrap">
               {navItems.map((item) => (
                 <div
@@ -180,40 +216,6 @@ const Header = () => {
               ))}
             </div>
           </nav>
-
-          {/* CTA Button & Mobile Menu Toggle */}
-          <div className="flex items-center gap-3">
-            {/* Phone icon only on mobile/tablet */}
-            <a
-              href="tel:+919841594945"
-              className="flex md:hidden items-center justify-center w-10 h-10 bg-accent text-accent-foreground rounded-lg shadow-md hover:bg-accent/90 hover:shadow-lg hover:scale-105 transition-all duration-200 border border-accent-foreground/10"
-              aria-label="Call Us"
-            >
-              <Phone className="h-4 w-4" />
-            </a>
-            {/* Full Call Us button on desktop */}
-            <a
-              href="tel:+919841594945"
-              className="hidden md:flex items-center gap-2 bg-accent text-accent-foreground px-4 py-2 rounded-md font-bold hover:bg-accent/90 transition-colors"
-            >
-              <Phone className="h-4 w-4" />
-              <span>Call Us</span>
-            </a>
-
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={cn(
-                "lg:hidden p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-all duration-300",
-                isMobileMenuOpen && "opacity-0 translate-x-8 pointer-events-none",
-              )}
-              aria-label="Open menu"
-              aria-hidden={isMobileMenuOpen}
-              tabIndex={isMobileMenuOpen ? -1 : 0}
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-          </div>
-        </div>
       </div>
 
     </header>

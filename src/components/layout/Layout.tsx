@@ -48,9 +48,9 @@ const Layout = ({ children }: LayoutProps) => {
             </span>
           </button>
         </div>
-        <Header />
+        <Header hideNav={shouldHide} />
       </div>
-      <main className="flex-1 mt-[60px] md:mt-[100px]">{children}</main>
+      <main className="flex-1 mt-[60px] md:mt-[100px] lg:mt-[140px]">{children}</main>
       <Footer />
       <ChatWidget />
       <SocialSidebar />
