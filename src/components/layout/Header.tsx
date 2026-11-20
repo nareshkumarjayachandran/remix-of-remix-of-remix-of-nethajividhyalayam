@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { createPortal } from "react-dom";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { setMobileMenuOpen } from "@/lib/mobileMenuStore";
@@ -89,6 +90,7 @@ const Header = () => {
   };
 
   return (
+    <>
     <header
       className={cn(
         "w-full transition-all duration-500",
@@ -214,14 +216,15 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+    </header>
+    {createPortal(
       <div
         className={cn(
-          "lg:hidden fixed right-0 top-16 bottom-0 z-50 w-1/4 min-w-[260px] bg-background border-t border-l shadow-lg transition-transform duration-300 overscroll-contain overflow-y-auto",
+          "lg:hidden fixed right-0 top-0 bottom-0 z-[70] w-1/4 min-w-[260px] bg-background border-l shadow-2xl transition-transform duration-300 overscroll-contain overflow-y-auto",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <div className="flex justify-end px-3 pt-3">
+        <div className="sticky top-0 z-10 flex justify-end bg-background px-3 pt-3 pb-2">
           <button
             onClick={() => setIsMobileMenuOpen(false)}
             className="p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-colors"
@@ -291,8 +294,10 @@ const Header = () => {
             </a>
           </div>
         </nav>
-      </div>
-    </header>
+      </div>,
+      document.body,
+    )}
+    </>
   );
 };
 
