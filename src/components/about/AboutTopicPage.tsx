@@ -90,7 +90,7 @@ const StoryContent = () => (
             <p className="text-sm text-muted-foreground">Years of Service</p>
           </div>
           <div className="border-l-4 border-accent pl-4">
-            <p className="text-3xl font-bold text-primary">2000+</p>
+            <p className="text-3xl font-bold text-primary">5000+</p>
             <p className="text-sm text-muted-foreground">Alumni Network</p>
           </div>
         </div>

@@ -68,7 +68,7 @@ const About = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { number: `${getYearsOfExcellence()}+`, label: "Years of Excellence" },
-              { number: "2000+", label: "Alumni Network" },
+              { number: "5000+", label: "Alumni Network" },
               { number: "12+", label: "Qualified Teaching Staff" },
               { number: "100%", label: "Pass Rate" },
             ].map((stat) => (

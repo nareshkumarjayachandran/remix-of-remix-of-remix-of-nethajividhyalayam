@@ -6,7 +6,7 @@ import { getYearsOfExcellence } from "@/lib/schoolDates";
 const AboutSection = () => {
   const stats = [
     { icon: Award, value: `${getYearsOfExcellence()}+`, label: "Years of Excellence" },
-    { icon: Users, value: "2000+", label: "Happy Alumni" },
+    { icon: Users, value: "5000+", label: "Happy Alumni" },
     { icon: BookOpen, value: "50+", label: "Expert Teachers" },
   ];
 

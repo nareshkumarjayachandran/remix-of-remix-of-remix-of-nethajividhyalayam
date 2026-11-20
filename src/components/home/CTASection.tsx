@@ -57,7 +57,7 @@ const CTASection = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-accent rounded-full" />
-              <span>2000+ Happy Alumni</span>
+              <span>5000+ Happy Alumni</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-accent rounded-full" />
