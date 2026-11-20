@@ -333,19 +333,19 @@
 @keyframes logoPulseFooter {
   0%,
   100% {
-    transform: scale(1);
+    transform: scale(1.25);
     filter: drop-shadow(0 0 0px hsl(var(--accent) / 0));
   }
   25% {
-    transform: scale(1.2);
+    transform: scale(1.375);
     filter: drop-shadow(0 0 8px hsl(var(--accent) / 0.3));
   }
   50% {
-    transform: scale(1.4);
+    transform: scale(1.5);
     filter: drop-shadow(0 0 18px hsl(var(--accent) / 0.55));
   }
   75% {
-    transform: scale(1.2);
+    transform: scale(1.25);
     filter: drop-shadow(0 0 8px hsl(var(--accent) / 0.3));
   }
 }
@@ -385,6 +385,6 @@
 
 .animate-logo-pulse-footer:hover {
   animation-play-state: paused;
-  transform: scale(1.4);
+  transform: scale(1.25);
   filter: drop-shadow(0 0 18px hsl(var(--accent) / 0.6));
 }
