@@ -1376,6 +1376,7 @@ export default function WorksheetMaker() {
                 {formData.curriculum === "Oxford Merry Birds (Integrated Term Course)"
                   ? `💡 Enter topic/chapter name from your Merry Birds book (e.g., "The Little Red Hen" for stories, "Phonics - Short 'a'" for phonics, "My Family" for EVS).`
                   : `💡 Enter topic/chapter name from your book (e.g., "Addition" for Maths, "Parts of Plant" for EVS, "எழுத்துக்கள்" for Tamil).`}
+                {" "}✅ You can select <b>multiple topics</b> — tap several hints below or type topics separated by commas.
               </p>
               {/* Topic suggestions */}
               {suggestions.length > 0 && (
@@ -1387,7 +1388,7 @@ export default function WorksheetMaker() {
                       className="flex items-center gap-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 transition"
                     >
                       <Sparkles className="h-3.5 w-3.5" />
-                      {showHints ? "Hide" : "Show"} Topic Hints ({suggestions.length})
+                      {showHints ? "Hide" : "Show"} Topic Hints ({suggestions.length}) — tap to select multiple
                       <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showHints ? "rotate-180" : ""}`} />
                     </button>
                     <div className="flex items-center gap-1.5">
@@ -1397,12 +1398,28 @@ export default function WorksheetMaker() {
                   </div>
                   {showHints && (
                     <div className="flex flex-wrap gap-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
-                      {suggestions.map((s) => (
-                        <button key={s} onClick={() => setFormData({ ...formData, topic: s })}
-                          className="text-xs px-2.5 py-1 bg-sky-100 text-sky-700 rounded-full border border-sky-200 hover:bg-sky-200 transition tamil-font">
-                          {s}
-                        </button>
-                      ))}
+                      {suggestions.map((s) => {
+                        const selectedTopics = formData.topic.split(",").map((t) => t.trim().toLowerCase()).filter(Boolean);
+                        const isSelected = selectedTopics.includes(s.trim().toLowerCase());
+                        return (
+                          <button
+                            key={s}
+                            onClick={() => {
+                              const parts = formData.topic.split(",").map((t) => t.trim()).filter(Boolean);
+                              const idx = parts.findIndex((p) => p.toLowerCase() === s.trim().toLowerCase());
+                              const next = idx >= 0 ? parts.filter((_, i) => i !== idx) : [...parts, s];
+                              setFormData({ ...formData, topic: next.join(", ") });
+                            }}
+                            className={`text-xs px-2.5 py-1 rounded-full border transition tamil-font ${
+                              isSelected
+                                ? "bg-sky-600 text-white border-sky-600 font-semibold shadow-sm"
+                                : "bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-200"
+                            }`}
+                          >
+                            {isSelected ? "✓ " : "+ "}{s}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
