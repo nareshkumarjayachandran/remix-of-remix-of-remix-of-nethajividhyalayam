@@ -104,12 +104,12 @@ const Header = ({ hideNav = false }: { hideNav?: boolean }) => {
           {/* Logo - moves independently */}
           <Link to="/" className="shrink-0" style={{ overflow: "visible" }}>
             <div
-              className="w-auto h-[110px] shrink-0 flex items-start justify-start pl-1 pt-1"
+              className="w-auto h-[60px] md:h-[110px] shrink-0 flex items-center md:items-start justify-start pl-1 pt-0 md:pt-1"
               style={{ overflow: "visible", position: "relative", zIndex: 10 }}
             >
               <img
                 alt="Nethaji Vidhyalayam Logo"
-                className="w-[130px] h-[130px] object-contain drop-shadow-lg brightness-110 contrast-105 animate-logo-pulse-header"
+                className="w-[46px] h-[46px] md:w-[65px] md:h-[65px] lg:w-[130px] lg:h-[130px] object-contain drop-shadow-lg brightness-110 contrast-105 animate-logo-pulse-header"
                 style={{ imageRendering: "-webkit-optimize-contrast", position: "relative" }}
                 src={logo}
                 fetchPriority="high"
