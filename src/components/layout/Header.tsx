@@ -207,11 +207,11 @@ const Header = () => {
       {/* Mobile Navigation */}
       <div
         className={cn(
-          "lg:hidden fixed inset-x-0 top-16 bg-background border-t shadow-lg transition-all duration-300 overscroll-contain",
-          isMobileMenuOpen ? "max-h-[calc(100dvh-4rem)] overflow-y-auto" : "max-h-0 overflow-hidden",
+          "lg:hidden fixed left-0 top-16 bottom-0 z-50 w-1/4 min-w-[260px] bg-background border-t border-r shadow-lg transition-transform duration-300 overscroll-contain overflow-y-auto",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <nav className="container-custom py-4 space-y-2">
+        <nav className="px-3 py-4 space-y-2">
           {navItems.map((item) => (
             <div key={item.label}>
               {item.children ? (
