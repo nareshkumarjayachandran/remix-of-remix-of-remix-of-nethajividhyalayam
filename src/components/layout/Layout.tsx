@@ -50,7 +50,8 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
         <Header hideNav={shouldHide} />
       </div>
-      <main className="flex-1 mt-[60px] md:mt-[100px] lg:mt-[140px]">{children}</main>
+      <div aria-hidden="true" className="h-[60px] md:h-[100px] lg:h-[140px] shrink-0 bg-primary" />
+      <main className="flex-1">{children}</main>
       <Footer />
       <ChatWidget />
       <SocialSidebar />
