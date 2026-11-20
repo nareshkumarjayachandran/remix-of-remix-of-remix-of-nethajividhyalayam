@@ -74,12 +74,15 @@ const StoryContent = () => (
     <div className="container-custom grid md:grid-cols-2 gap-12 items-center">
       <div>
         <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">Our Story</p>
-        <h2 className="section-title">From Humble Beginnings to Educational Excellence</h2>
+        <h2 className="section-title">From a Small Seed to a Beautiful Garden</h2>
         <p className="text-muted-foreground leading-relaxed mb-4">
-          Nethaji Vidhyalayam was established on 8th June 2002 with the vision of providing wholesome education through the English medium. The school aims to offer a strong academic foundation while nurturing values rooted in Bharat culture, with special emphasis on Bharath cultural traditions.
+          <em>"A school is not built with bricks. It is built with dreams, values and the smiles of children."</em>
         </p>
         <p className="text-muted-foreground leading-relaxed mb-4">
-          Our mission is to provide modern, value-based education that supports the overall development of every child. From <strong>Pre KG</strong> to <strong>5th Grade</strong>, the aim of the school is to lay emphasis on experiential learning and grooming of young children thereby making them responsible citizens and leaders with a difference.
+          Nethaji Vidhyalayam was born on 8th June 2002 with a simple and meaningful dream - to give every child a joyful education filled with knowledge and values. We started small, but with a big heart. Rooted in Bharatiya culture and guided by modern learning, we grew step by step, child by child.
+        </p>
+        <p className="text-muted-foreground leading-relaxed mb-4">
+          Today, from <strong>Pre-KG</strong> to <strong>5th Grade</strong>, Nethaji Vidhyalayam is a warm and vibrant place where children learn by doing, grow with love, and lead with kindness.
         </p>
         <div className="flex gap-8 mt-6">
           <div className="border-l-4 border-accent pl-4">
