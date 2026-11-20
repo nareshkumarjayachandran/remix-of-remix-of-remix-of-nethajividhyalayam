@@ -41,7 +41,7 @@ const HeroSection = () => {
             loop
             playsInline
             className="w-full h-full object-cover"
-            poster="/placeholder.svg"
+            poster="/videos/thumbnails/campus-tour.jpg"
           >
             <source src="/videos/hero-background.mp4" type="video/mp4" />
           </video>
@@ -130,15 +130,28 @@ const HeroSection = () => {
 
           {/* Video Player */}
           <div className="relative w-full max-w-4xl aspect-video mx-4">
-            <iframe
-              ref={iframeRef}
-              key={currentVideo}
-              src={`${heroVideos[currentVideo].url}?autoplay=1&rel=0&enablejsapi=1&origin=${window.location.origin}`}
-              title={heroVideos[currentVideo].title}
-              className="w-full h-full rounded-xl shadow-2xl"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            {/youtube\.com|youtu\.be/.test(heroVideos[currentVideo].url) ? (
+              <iframe
+                ref={iframeRef}
+                key={currentVideo}
+                src={`${heroVideos[currentVideo].url}?autoplay=1&rel=0&enablejsapi=1&origin=${window.location.origin}`}
+                title={heroVideos[currentVideo].title}
+                className="w-full h-full rounded-xl shadow-2xl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                key={currentVideo}
+                src={heroVideos[currentVideo].url}
+                poster={heroVideos[currentVideo].thumbnail}
+                className="w-full h-full rounded-xl shadow-2xl bg-black"
+                autoPlay
+                controls
+                playsInline
+                onEnded={() => { if (isAutoPlay) nextVideo(); }}
+              />
+            )}
 
             {/* Nav Arrows */}
             <button
