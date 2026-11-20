@@ -207,8 +207,8 @@ const Header = () => {
       {/* Mobile Navigation */}
       <div
         className={cn(
-          "lg:hidden fixed left-0 top-16 bottom-0 z-50 w-1/4 min-w-[260px] bg-background border-t border-r shadow-lg transition-transform duration-300 overscroll-contain overflow-y-auto",
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+          "lg:hidden fixed right-0 top-16 bottom-0 z-50 w-1/4 min-w-[260px] bg-background border-t border-l shadow-lg transition-transform duration-300 overscroll-contain overflow-y-auto",
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
         <nav className="px-3 py-4 space-y-2">
