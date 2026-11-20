@@ -29,6 +29,7 @@ import {
   Share2,
 } from "lucide-react";
 import VoiceReader from "@/components/ui/VoiceReader";
+import { parseWorksheetTopics, toggleWorksheetTopic } from "@/lib/worksheetTopics";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1399,25 +1400,24 @@ export default function WorksheetMaker() {
                   {showHints && (
                     <div className="flex flex-wrap gap-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
                       {suggestions.map((s) => {
-                        const selectedTopics = formData.topic.split(",").map((t) => t.trim().toLowerCase()).filter(Boolean);
+                        const selectedTopics = parseWorksheetTopics(formData.topic, suggestions).map((t) => t.toLowerCase());
                         const isSelected = selectedTopics.includes(s.trim().toLowerCase());
                         return (
-                          <button
+                          <Button
                             key={s}
+                            type="button"
+                            variant={isSelected ? "default" : "outline"}
+                            aria-pressed={isSelected}
                             onClick={() => {
-                              const parts = formData.topic.split(",").map((t) => t.trim()).filter(Boolean);
-                              const idx = parts.findIndex((p) => p.toLowerCase() === s.trim().toLowerCase());
-                              const next = idx >= 0 ? parts.filter((_, i) => i !== idx) : [...parts, s];
-                              setFormData({ ...formData, topic: next.join(", ") });
+                              setFormData((prev) => ({
+                                ...prev,
+                                topic: toggleWorksheetTopic(prev.topic, s, suggestions),
+                              }));
                             }}
-                            className={`text-xs px-2.5 py-1 rounded-full border transition tamil-font ${
-                              isSelected
-                                ? "bg-sky-600 text-white border-sky-600 font-semibold shadow-sm"
-                                : "bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-200"
-                            }`}
+                            className="h-auto whitespace-normal text-left text-xs px-2.5 py-1 rounded-full tamil-font"
                           >
                             {isSelected ? "✓ " : "+ "}{s}
-                          </button>
+                          </Button>
                         );
                       })}
                     </div>
