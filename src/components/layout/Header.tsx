@@ -98,13 +98,13 @@ const Header = ({ hideNav = false }: { hideNav?: boolean }) => {
       )}
       style={{ overflow: "visible" }}
     >
-      <div className="w-full px-4 lg:px-6" style={{ overflow: "visible" }}>
+      <div className="w-full pl-0 pr-4 lg:pl-0 lg:pr-6" style={{ overflow: "visible" }}>
         <div className="flex items-center justify-between h-[60px] flex-nowrap" style={{ overflow: "visible" }}>
           {/* Logo */}
           {/* Logo - moves independently */}
           <Link to="/" className="shrink-0" style={{ overflow: "visible" }}>
             <div
-              className="w-[160px] h-[110px] shrink-0 flex items-start justify-center pt-1"
+              className="w-auto h-[110px] shrink-0 flex items-start justify-start pl-1 pt-1"
               style={{ overflow: "visible", position: "relative", zIndex: 10 }}
             >
               <img
