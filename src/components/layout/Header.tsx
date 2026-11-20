@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { setMobileMenuOpen } from "@/lib/mobileMenuStore";
 const logo = "/nethaji_logo2_circle.webp";
 
 const navItems = [
@@ -77,6 +78,10 @@ const Header = () => {
     setIsMobileMenuOpen(false);
     setOpenDropdown(null);
   }, [location]);
+
+  useEffect(() => {
+    setMobileMenuOpen(isMobileMenuOpen);
+  }, [isMobileMenuOpen]);
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";

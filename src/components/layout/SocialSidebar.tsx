@@ -1,6 +1,7 @@
 import { Facebook, Youtube, Instagram } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getAcademicYear } from "@/lib/schoolDates";
+import { useMobileMenuOpen } from "@/lib/mobileMenuStore";
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -44,6 +45,7 @@ const socials = [
 ];
 
 const SocialSidebar = () => {
+  const menuOpen = useMobileMenuOpen();
   const [now, setNow] = useState(new Date());
   const [expanded, setExpanded] = useState(false);
   const [activeSocial, setActiveSocial] = useState<string | null>(null);
@@ -166,6 +168,7 @@ const SocialSidebar = () => {
       </div>
 
       {/* Floating Social - Right Side */}
+      {!menuOpen && (
       <div ref={socialRef} className="fixed right-0 top-1/3 -translate-y-1/2 z-50 flex flex-col gap-1.5">
         {socials.map(({ icon: Icon, href, label, bg, activeShadow }, index) => {
           const isActive = activeSocial === label;
@@ -193,6 +196,7 @@ const SocialSidebar = () => {
           );
         })}
       </div>
+      )}
     </>
   );
 };

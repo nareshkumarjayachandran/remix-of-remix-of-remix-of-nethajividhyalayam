@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { MessageCircle, X, Send, Mic, MicOff, ChevronDown, Volume2, VolumeX, Trash2, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import { useMobileMenuOpen } from "@/lib/mobileMenuStore";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -350,12 +351,13 @@ const ChatWidget = () => {
     }
   }, [isRecording, startRecording, stopRecordingAndTranscribe]);
 
+  const menuOpen = useMobileMenuOpen();
   const isMicBusy = isTranscribing || isLoading;
 
   return (
     <>
       {/* Floating button */}
-      {!open && (
+      {!open && !menuOpen && (
         <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-center gap-2">
           <button
             onClick={() => {
@@ -374,7 +376,7 @@ const ChatWidget = () => {
       )}
 
       {/* Minimized bar */}
-      {open && minimized && (
+      {open && minimized && !menuOpen && (
         <div className="fixed bottom-4 right-4 z-[60] flex items-center gap-2">
           <button
             onClick={() => setMinimized(false)}
