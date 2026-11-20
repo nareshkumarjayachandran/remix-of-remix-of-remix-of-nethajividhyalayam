@@ -4,10 +4,10 @@ import AnimatedEmailScroller from "@/components/ui/AnimatedEmailScroller";
 
 const TopBar = () => {
   return (
-    <div className="bg-primary text-primary-foreground py-2 text-sm hidden md:block">
-      <div className="container-custom flex justify-between items-center">
+    <div className="bg-primary text-primary-foreground py-2 text-sm hidden md:block relative">
+      <div className="container-custom flex justify-between items-center lg:justify-end">
         {/* Contact Info */}
-        <div className="flex items-center gap-6 pl-[110px] lg:pl-[140px]">
+        <div className="flex items-center gap-6 pl-[110px] lg:absolute lg:left-[150px] lg:top-1/2 lg:-translate-y-1/2 lg:pl-0">
           <a 
             href="tel:+919841594945" 
             className="flex items-center gap-2 hover:text-accent transition-colors"
