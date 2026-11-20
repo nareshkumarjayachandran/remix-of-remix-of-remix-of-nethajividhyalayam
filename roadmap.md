@@ -6,3 +6,6 @@
 # Mobile menu visibility
 
 - [x] Keep the open phone menu panel and its close button visible while scrolling up or down.
+# Phone numbers and mail id
+- [x] Show +91 6380967675 everywhere; each phone number dials its own number.
+- [ ] Decide whether the mail id returns in the top bar on tablet widths (768-1000px).
