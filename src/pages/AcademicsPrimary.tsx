@@ -104,7 +104,7 @@ const AcademicsPrimary = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1 relative">
               <img
-                src="https://nethajividhyalayam.com/assets/C0465T01-y334_brG.JPG"
+                src="/photos/academics/primary-classroom.jpg"
                 alt="Primary Classroom"
                 className="rounded-2xl shadow-xl w-full object-cover"
                 style={{ maxHeight: 420 }}
