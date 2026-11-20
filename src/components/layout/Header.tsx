@@ -102,7 +102,7 @@ const Header = ({ hideNav = false }: { hideNav?: boolean }) => {
         <div className="flex items-center justify-between h-[60px] flex-nowrap" style={{ overflow: "visible" }}>
           {/* Logo */}
           {/* Logo - moves independently */}
-          <Link to="/" className="shrink-0 self-start" style={{ overflow: "visible" }}>
+          <Link to="/" className="shrink-0" style={{ overflow: "visible" }}>
             <div
               className="w-[160px] h-[110px] shrink-0 flex items-start justify-center pt-1"
               style={{ overflow: "visible", position: "relative", zIndex: 10 }}
