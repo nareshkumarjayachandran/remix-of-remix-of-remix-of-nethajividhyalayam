@@ -388,3 +388,15 @@
   transform: scale(1.25);
   filter: drop-shadow(0 0 4px hsl(var(--accent) / 0.2));
 }
+
+/* Footer brand block: pull the logo + name flush to the window's left edge.
+   Cancels container-custom's auto centering margin and the footer's 16px padding.
+   The 10px allowance keeps 100vw's scrollbar width from pushing it off-screen. */
+.footer-brand-flush {
+  margin-left: calc(-1 * (max(0px, (100vw - 80rem) / 2 - 10px) + 1rem));
+}
+
+/* Keep the pulse growing rightward so the flush left edge never gets clipped. */
+.footer-brand-flush .animate-logo-pulse-footer {
+  transform-origin: left center;
+}
