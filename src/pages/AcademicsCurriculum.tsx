@@ -5,7 +5,7 @@ import useScrollToHash from "@/hooks/useScrollToHash";
 
 const stagesData = [
   {
-    title: "Foundational Stage (Pre-KG)",
+    title: "Foundational Stage (Pre-KG - II STD)",
     summary: "Play-based Learning, Phonics, Basic Numeracy, Motor Skills",
     link: "/academics/nursery",
     subjects: [] as { name: string; detail: string }[],
