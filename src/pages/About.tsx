@@ -46,10 +46,10 @@ const About = () => {
           </div>
           <div className="grid md:grid-cols-4 gap-6">
             {[
-              { icon: Shield, title: "Integrity", desc: "We uphold the highest standards of honesty and ethics in all our actions." },
-              { icon: Lightbulb, title: "Innovation", desc: "We embrace change and constantly seek better ways to teach and learn." },
-              { icon: Users, title: "Inclusivity", desc: "We celebrate diversity and ensure every voice is heard and valued." },
-              { icon: BookOpen, title: "Excellence", desc: "We strive for the highest quality in everything we do." },
+              { icon: Shield, title: "Integrity", desc: "Truthful in thought. Sincere in speech. Principled in conduct." },
+              { icon: Lightbulb, title: "Innovation", desc: "Imaginative in ideas. Adventurous in methods. Curious in exploration." },
+              { icon: Users, title: "Inclusivity", desc: "Warm in welcome. Respectful in difference. Equal in opportunity." },
+              { icon: BookOpen, title: "Excellence", desc: "Dedicated in effort. Graceful in work. Committed in pursuit." },
             ].map((value, i) => (
               <div key={i} className="bg-card p-6 rounded-2xl shadow-lg text-center card-hover">
                 <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
