@@ -8,15 +8,7 @@ const stagesData = [
     title: "Foundational Stage (Pre-KG)",
     summary: "Play-based Learning, Phonics, Basic Numeracy, Motor Skills",
     link: "/academics/nursery",
-    subjects: [
-      { name: "Language", detail: "Listening skills, action songs, rhymes, vocabulary" },
-      { name: "Numbers", detail: "Number recognition, counting (1–10)" },
-      { name: "Environmental Awareness", detail: "Self, family, colours, fruits, animals" },
-      { name: "Motor Skills", detail: "Scribbling, finger movements, play activities" },
-      { name: "Art & Craft", detail: "Colouring, tearing & pasting" },
-      { name: "Physical Activities", detail: "Free play, music & movement" },
-      { name: "Social Skills", detail: "Sharing, following instructions" },
-    ],
+    subjects: [] as { name: string; detail: string }[],
   },
   {
     title: "Preparatory Stage (LKG)",
