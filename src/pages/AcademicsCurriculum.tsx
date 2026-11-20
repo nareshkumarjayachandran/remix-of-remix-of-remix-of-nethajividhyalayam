@@ -205,25 +205,9 @@ const AcademicsCurriculum = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Foundational Stage Curriculum Matrix */}
-      <section className="section-padding bg-background">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">Curriculum Matrix</p>
-            <h2 className="section-title">Foundational Stage (Pre-KG – II STD)</h2>
-            <p className="text-muted-foreground">
-              Curriculum areas and learning focus from Aruna (Pre-KG) to Std. II.
-            </p>
-          </div>
-
+                    {i === 0 && (
+                      <div className="mt-6">
+                        <h4 className="font-serif font-bold text-primary mb-3">Curriculum Matrix: Foundational Stage (Pre-KG – II STD)</h4>
           <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[960px] text-sm border-separate border-spacing-0">
@@ -265,6 +249,13 @@ const AcademicsCurriculum = () => {
                 </tbody>
               </table>
             </div>
+          </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
