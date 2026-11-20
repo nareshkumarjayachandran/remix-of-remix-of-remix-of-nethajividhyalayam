@@ -149,7 +149,7 @@ const AcademicsCurriculum = () => {
 
       {/* Curriculum Structure */}
       <section className="section-padding bg-background">
-        <div className="container-custom max-w-4xl">
+        <div className="container-custom max-w-4xl lg:max-w-none">
           <div className="text-center mb-12">
             <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">Structure</p>
             <h2 className="section-title">Curriculum Structure</h2>
@@ -202,17 +202,17 @@ const AcademicsCurriculum = () => {
                         <h4 className="font-serif font-bold text-primary mb-3">Curriculum Matrix: Foundational Stage (Pre-KG – II STD)</h4>
           <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[960px] text-sm border-separate border-spacing-0">
+              <table className="w-full min-w-[960px] lg:min-w-0 text-sm border-separate border-spacing-0">
                 <thead>
                   <tr>
                     <th className="sticky left-0 z-20 w-14 bg-primary text-primary-foreground px-3 py-4 text-center font-semibold">
                       S.No.
                     </th>
-                    <th className="sticky left-14 z-20 bg-primary text-primary-foreground px-4 py-4 text-left font-semibold min-w-[190px]">
+                    <th className="sticky left-14 z-20 bg-primary text-primary-foreground px-4 py-4 text-left font-semibold min-w-[190px] lg:min-w-0">
                       Curriculum Areas
                     </th>
                     {foundationalColumns.map((col) => (
-                      <th key={col.key} className="bg-primary text-primary-foreground px-4 py-4 text-left font-semibold min-w-[150px]">
+                      <th key={col.key} className="bg-primary text-primary-foreground px-4 py-4 text-left font-semibold min-w-[150px] lg:min-w-0">
                         <span className="block">{col.label}</span>
                         <span className="block text-xs font-normal text-primary-foreground/75">{col.sub}</span>
                       </th>
