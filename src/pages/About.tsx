@@ -18,10 +18,10 @@ const About = () => {
         <div className="container-custom text-center relative z-10">
           <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">Who We Are</p>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-            A Legacy of <span className="text-accent">Excellence</span>
+            A Legacy of <span className="text-accent">Wisdom</span>
           </h1>
           <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
-            Since 2002, Nethaji Vidhyalayam has been a beacon of knowledge, shaping young minds into global leaders.
+            Since 2002, we are a devoted family of mentors and dreamers. Our heritage is trust, our path is enlightenment, our joy is watching children flourish.
           </p>
         </div>
       </section>
