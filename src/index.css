@@ -371,7 +371,7 @@
 
 .animate-logo-pulse-header:hover {
   animation-play-state: paused;
-  transform: scale(1.154);
+  transform: scale(1.254);
   filter: drop-shadow(0 0 14px hsl(var(--accent) / 0.6));
 }
 
@@ -385,6 +385,6 @@
 
 .animate-logo-pulse-footer:hover {
   animation-play-state: paused;
-  transform: scale(1.5);
+  transform: scale(1.4);
   filter: drop-shadow(0 0 18px hsl(var(--accent) / 0.6));
 }
