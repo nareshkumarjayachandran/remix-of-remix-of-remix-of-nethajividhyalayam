@@ -17,7 +17,11 @@ const corsHeaders = {
 const SCHOOL_EMAIL = "nethajividhyalayam@gmail.com";
 const SCHOOL_NAME = "Nethaji Vidhyalayam";
 const SCHOOL_ADDRESS = "5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129";
-const SCHOOL_PHONE = "+91 9841594945 / 6380967675";
+const SCHOOL_PHONE = "+91 9841594945 / +91 6380967675";
+const SCHOOL_PHONE_LINKS =
+  '<a href="tel:+919841594945" style="color:#1e40af;text-decoration:underline;">+91 9841594945</a>' +
+  ' / ' +
+  '<a href="tel:+916380967675" style="color:#1e40af;text-decoration:underline;">+91 6380967675</a>';
 
 interface FieldGroup {
   heading: string;
@@ -187,7 +191,7 @@ function buildParentEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
       
       <div style="margin-top:24px;padding:16px;background:#eff6ff;border-radius:8px;border:1px solid #bfdbfe;">
         <p style="font-size:13px;color:#1e40af;margin:0;"><strong>📞 Need Help?</strong></p>
-        <p style="font-size:12px;color:#1e40af;margin:4px 0 0;">Call us at ${SCHOOL_PHONE} or email ${SCHOOL_EMAIL}</p>
+        <p style="font-size:12px;color:#1e40af;margin:4px 0 0;">Call us at ${SCHOOL_PHONE_LINKS} or email ${SCHOOL_EMAIL}</p>
       </div>
     </div>
     <div style="background:#1a3a5c;color:#fff;padding:16px 24px;text-align:center;font-size:11px;">

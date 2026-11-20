@@ -7,15 +7,26 @@ const TopBar = () => {
     <div className="bg-primary text-primary-foreground py-2 text-sm hidden md:block relative">
       <div className="container-custom flex justify-between items-center lg:justify-end">
         {/* Contact Info */}
-        <div className="flex items-center gap-6 pl-[110px] lg:absolute lg:left-[170px] lg:top-1/2 lg:-translate-y-1/2 lg:pl-0">
-          <a 
-            href="tel:+919841594945" 
-            className="flex items-center gap-2 hover:text-accent transition-colors"
-          >
+        <div className="flex items-center gap-6 pl-[150px] lg:absolute lg:left-[170px] lg:top-1/2 lg:-translate-y-1/2 lg:pl-0">
+          <div className="flex items-center gap-2">
             <Phone className="h-4 w-4" />
-            <span>+91 9841594945 / 6380967675</span>
-          </a>
-          <div className="flex items-center gap-2 hover:text-accent transition-colors">
+            <span className="flex items-center gap-1 whitespace-nowrap">
+              <a
+                href="tel:+919841594945"
+                className="hover:text-accent hover:underline transition-colors"
+              >
+                +91 9841594945
+              </a>
+              <span className="text-primary-foreground/50">/</span>
+              <a
+                href="tel:+916380967675"
+                className="hover:text-accent hover:underline transition-colors"
+              >
+                +91 6380967675
+              </a>
+            </span>
+          </div>
+          <div className="hidden lg:flex items-center gap-2 hover:text-accent transition-colors">
             <Mail className="h-4 w-4" />
             <AnimatedEmailScroller />
           </div>
@@ -23,8 +34,8 @@ const TopBar = () => {
 
         {/* Quick Links */}
         <div className="flex items-center gap-4 pr-10">
-          <a 
-            href="https://mail.google.com/mail/u/nethajividhyalayam@gmail.com" 
+          <a
+            href="https://mail.google.com/mail/u/nethajividhyalayam@gmail.com"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-accent transition-colors font-semibold"
@@ -32,7 +43,7 @@ const TopBar = () => {
             Login
           </a>
           <span className="text-primary-foreground/50">|</span>
-          <Link 
+          <Link
             to="/feedesk"
             className="flex items-center gap-1 bg-accent text-accent-foreground px-3 py-1 rounded font-bold hover:bg-accent/90 transition-colors"
           >

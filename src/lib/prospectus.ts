@@ -318,7 +318,7 @@ export async function generateProspectusPDF() {
   doc.text("5/325, Rajiv Nagar, S.Kolathur Main Road, Chennai - 600129", PW / 2, 252, { align: "center" });
   doc.setFontSize(10);
   setColor(doc, GOLD);
-  doc.text("Phone: 9841594945 / 6380967675  |  info@nethajividhyalayam.org", PW / 2, 262, { align: "center" });
+  doc.text("Phone: +91 9841594945 / +91 6380967675  |  info@nethajividhyalayam.org", PW / 2, 262, { align: "center" });
 
   // ═══════════════════════════════════════
   // PAGE 2 — CHAIRMAN'S MESSAGE
@@ -829,7 +829,7 @@ export async function generateProspectusPDF() {
 
   const contacts = [
     { title: "Visit Us", detail: "5/325, Rajiv Nagar, S.Kolathur Main Road,\nS.Kolathur, Kovilambakkam Post,\nChennai - 600129, Tamil Nadu, India", bg: LIGHT_BLUE },
-    { title: "Call Us", detail: "Primary: 9841594945\nAlternate: 6380967675\nMon-Sat: 8:50 AM - 3:30 PM", bg: LIGHT_GREEN },
+    { title: "Call Us", detail: "Primary: +91 9841594945\nAlternate: +91 6380967675\nMon-Sat: 8:50 AM - 3:30 PM", bg: LIGHT_GREEN },
     { title: "Email Us", detail: "info@nethajividhyalayam.org\nnethajividhyalayam@gmail.com", bg: LIGHT_ORANGE },
     { title: "Website", detail: "nethajividhyalayam.org\nFollow us on social media for updates", bg: LIGHT_PURPLE },
   ];

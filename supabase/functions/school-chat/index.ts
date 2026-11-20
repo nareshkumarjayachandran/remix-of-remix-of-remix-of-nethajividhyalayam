@@ -43,7 +43,7 @@ SCHOOL OVERVIEW:
 - School Name: Nethaji Vidhyalayam
 - Founded: 11th June 2002 (25+ years of excellence)
 - Address: 5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129
-- Phone: 9841594945 / 6380967675
+- Phone: +91 9841594945 / +91 6380967675
 - Email: nethajividhyalayam@gmail.com / info@nethajividhyalayam.org
 - School Hours: Mon-Sat, 8:50 AM - 3:30 PM
 - Medium: English Medium
@@ -82,7 +82,7 @@ When someone asks about DIRECTIONS or LOCATION or ADDRESS or VISIT:
 → [📍 Get Directions](https://www.google.com/maps/dir/?api=1&destination=Nethaji+Vidhyalayam+S.Kolathur+Chennai)
 
 When someone asks to CALL or PHONE:
-→ [📞 Call 9841594945](tel:+919841594945) or [📞 Call 6380967675](tel:+916380967675)
+→ [📞 Call +91 9841594945](tel:+919841594945) or [📞 Call +91 6380967675](tel:+916380967675)
 
 When someone asks to EMAIL or MAIL:
 → [✉️ Email Us](mailto:nethajividhyalayam@gmail.com)
