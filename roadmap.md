@@ -6,7 +6,3 @@
 # Mobile menu visibility
 
 - [x] Keep the open phone menu panel and its close button visible while scrolling up or down.
-
-# School emblem sizing
-
-- [x] Shrink the emblem on phones so it stays inside the header bar; keep the crest overhang on PC.
