@@ -152,7 +152,6 @@ const Header = ({ hideNav = false }: { hideNav?: boolean }) => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={cn(
                 "p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-all duration-300",
-                !hideNav && "lg:hidden",
                 isMobileMenuOpen && "opacity-0 translate-x-8 pointer-events-none",
               )}
               aria-label="Open menu"
