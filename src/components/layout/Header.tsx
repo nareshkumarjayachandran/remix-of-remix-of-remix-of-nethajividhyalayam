@@ -151,7 +151,8 @@ const Header = ({ hideNav = false }: { hideNav?: boolean }) => {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={cn(
-                "lg:hidden p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-all duration-300",
+                "p-2 text-accent bg-accent/15 rounded-md hover:bg-accent/25 transition-all duration-300",
+                !hideNav && "lg:hidden",
                 isMobileMenuOpen && "opacity-0 translate-x-8 pointer-events-none",
               )}
               aria-label="Open menu"
@@ -222,7 +223,7 @@ const Header = ({ hideNav = false }: { hideNav?: boolean }) => {
     {createPortal(
       <div
         className={cn(
-          "lg:hidden fixed right-0 top-0 bottom-0 z-[70] w-1/4 min-w-[260px] bg-background border-l shadow-2xl transition-transform duration-300 overscroll-contain overflow-y-auto",
+          "fixed right-0 top-0 bottom-0 z-[70] w-1/4 min-w-[260px] lg:min-w-[300px] bg-background border-l shadow-2xl transition-transform duration-300 overscroll-contain overflow-y-auto",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
