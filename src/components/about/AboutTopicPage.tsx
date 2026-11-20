@@ -120,15 +120,15 @@ const VisionContent = () => (
       <div className="bg-card p-8 rounded-xl shadow-lg">
         <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mb-6"><Eye className="h-8 w-8 text-accent" /></div>
         <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Vision</h2>
-        <p className="text-muted-foreground leading-relaxed">Holistic development of the student into a responsible, morally upright citizen capable of thinking, learning and striving for national development.</p>
+        <p className="text-muted-foreground leading-relaxed">To nurture every child into a wise, kind, disciplined and responsible citizen, who thinks clearly, learns joyfully and works selflessly for the growth of our nation.</p>
       </div>
       <div className="bg-card p-8 rounded-xl shadow-lg">
         <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6"><Target className="h-8 w-8 text-primary" /></div>
         <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Mission</h2>
         <ul className="text-muted-foreground space-y-3">
-          <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />Establish a self-reliant center of excellence dedicated to imparting knowledge.</li>
-          <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />Foster quality consciousness and holistic development among learners.</li>
-          <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />Develop ideal citizens who actively contribute to nation-building.</li>
+          <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To build a strong, self-reliant and caring centre of excellence.</li>
+          <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To give joyful, quality and value-based education.</li>
+          <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To shape confident, compassionate and courageous citizens who serve the nation with love and pride.</li>
         </ul>
       </div>
     </div>
