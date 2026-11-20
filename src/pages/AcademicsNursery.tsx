@@ -1,6 +1,6 @@
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { Sprout, Music, Users, BookOpen, Clock, CheckCircle } from "lucide-react";
-import nurseryClassroomImg from "@/assets/nursery-classroom.jpg";
+const nurseryClassroomImg = "/photos/academics/nursery-classroom.jpg";
 
 const AcademicsNursery = () => {
   useScrollToHash();
