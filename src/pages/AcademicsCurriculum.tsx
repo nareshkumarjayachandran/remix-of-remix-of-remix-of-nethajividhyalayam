@@ -56,10 +56,10 @@ const stagesData = [
 ];
 
 const pillars = [
-  { icon: BookOpen, title: "Academic Rigor", desc: "Challenging, research-based curriculum aligned with CBSE standards." },
-  { icon: Heart, title: "Character Development", desc: "Emphasis on values, ethics, and social responsibility." },
-  { icon: Globe, title: "Global Perspective", desc: "Exposure to diverse cultures, languages, and worldviews." },
-  { icon: Zap, title: "Skill-Based Learning", desc: "Focus on critical thinking, creativity, and problem-solving." },
+  { icon: BookOpen, title: "Academic Rigor", desc: "A challenging and research-based curriculum, aligned with CBSE standards, that encourages deep understanding and a love for learning." },
+  { icon: Heart, title: "Character Development", desc: "A strong focus on values, ethics, and social responsibility, shaping children into kind, honest, and responsible individuals." },
+  { icon: Globe, title: "Global Perspective", desc: "Meaningful exposure to diverse cultures, languages, and worldviews, helping children think beyond boundaries while staying rooted in values." },
+  { icon: Zap, title: "Skill-Based Learning", desc: "A joyful focus on critical thinking, creativity, and problem-solving, preparing children to learn, adapt, and succeed in life." },
 ];
 
 const foundationalColumns = [
