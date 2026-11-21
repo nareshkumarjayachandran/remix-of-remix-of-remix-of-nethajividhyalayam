@@ -100,8 +100,8 @@ const Contact = () => {
               </div>
               <h3 className="font-serif text-lg font-bold text-primary mb-2">Call Us Directly</h3>
               <div className="mb-1 space-y-1">
-                <a href="tel:+919841594945" className="text-muted-foreground hover:text-accent transition-colors block">9841594945</a>
-                <a href="tel:+916380967675" className="text-muted-foreground hover:text-accent transition-colors block">+91 6380967675</a>
+                <a href="tel:+919841594945" className="text-muted-foreground hover:text-accent transition-colors block">+91 9841594945</a>
+                <a href="tel:+916380967675" className="text-muted-foreground hover:text-accent transition-colors block">6380967675</a>
               </div>
               <p className="text-sm text-muted-foreground mb-4">Mon-Sat, 8:50 AM - 3:30 PM</p>
               <a href="tel:+919841594945" className="inline-flex items-center gap-1 bg-accent text-accent-foreground px-4 py-2 rounded-md font-semibold text-sm hover:bg-accent/90 transition-colors">

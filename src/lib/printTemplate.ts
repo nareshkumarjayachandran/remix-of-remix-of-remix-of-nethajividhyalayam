@@ -95,7 +95,7 @@ const generateHTML = (options: PrintTemplateOptions, logoDataUri: string): strin
       <div style="flex:1;">
         <h1 style="margin:0;font-size:22px;letter-spacing:1px;">${schoolName}</h1>
         <p style="margin:4px 0 0;font-size:12px;opacity:0.85;">${schoolAddress}</p>
-        <p style="margin:4px 0 0;font-size:12px;opacity:0.85;">Phone: +91 9841594945 / +91 6380967675 | Email: nethajividhyalayam@gmail.com</p>
+        <p style="margin:4px 0 0;font-size:12px;opacity:0.85;">Phone: +91 9841594945 / 6380967675 | Email: nethajividhyalayam@gmail.com</p>
       </div>
     </div>
 

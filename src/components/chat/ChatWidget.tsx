@@ -217,7 +217,7 @@ const ChatWidget = () => {
 
     // Contact
     if (/phone|call|contact|number|reach/.test(q))
-      return "📞 **Contact Nethaji Vidhyalayam:**\n- [📞 Call +91 9841594945](tel:+919841594945)\n- [📞 Call +91 6380967675](tel:+916380967675)\n- ✉️ nethajividhyalayam@gmail.com\n- 📍 5/325, Rajiv Nagar, S.Kolathur Main Road, Chennai - 600129";
+      return "📞 **Contact Nethaji Vidhyalayam:**\n- [📞 Call +91 9841594945](tel:+919841594945)\n- [📞 Call 6380967675](tel:+916380967675)\n- ✉️ nethajividhyalayam@gmail.com\n- 📍 5/325, Rajiv Nagar, S.Kolathur Main Road, Chennai - 600129";
 
     // Address / directions
     if (/address|location|direction|where|map|visit/.test(q))

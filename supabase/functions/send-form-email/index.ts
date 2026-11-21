@@ -17,11 +17,11 @@ const corsHeaders = {
 const SCHOOL_EMAIL = "nethajividhyalayam@gmail.com";
 const SCHOOL_NAME = "Nethaji Vidhyalayam";
 const SCHOOL_ADDRESS = "5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129";
-const SCHOOL_PHONE = "+91 9841594945 / +91 6380967675";
+const SCHOOL_PHONE = "+91 9841594945 / 6380967675";
 const SCHOOL_PHONE_LINKS =
   '<a href="tel:+919841594945" style="color:#1e40af;text-decoration:underline;">+91 9841594945</a>' +
   ' / ' +
-  '<a href="tel:+916380967675" style="color:#1e40af;text-decoration:underline;">+91 6380967675</a>';
+  '<a href="tel:+916380967675" style="color:#1e40af;text-decoration:underline;">6380967675</a>';
 
 interface FieldGroup {
   heading: string;

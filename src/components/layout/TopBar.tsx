@@ -22,7 +22,7 @@ const TopBar = () => {
                 href="tel:+916380967675"
                 className="hover:text-accent hover:underline transition-colors"
               >
-                +91 6380967675
+                6380967675
               </a>
             </span>
           </div>
