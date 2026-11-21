@@ -115,12 +115,12 @@ const AcademicsCurriculum = () => {
           </div>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6">Learning for Life</h2>
           <p className="text-muted-foreground leading-relaxed mb-4">
-            Our curriculum is designed to foster critical thinking, creativity, and a global mindset through
-            innovative teaching methodologies and value-based education.
+            Our curriculum is thoughtfully designed to nurture curious minds, creative hearts, and a broad worldview,
+            through modern teaching methods grounded in strong values.
           </p>
           <p className="text-muted-foreground leading-relaxed">
-            Our approach is student-centered, inquiry-based, and rooted in the principles of constructivism.
-            We aim to cultivate lifelong learners who are curious, compassionate, and confident.
+            Our learning journey is child-centred, question-driven, and built on the joy of discovering by doing.
+            We strive to shape lifelong learners who are thoughtful, kind-hearted, and self-confident.
           </p>
         </div>
       </section>
