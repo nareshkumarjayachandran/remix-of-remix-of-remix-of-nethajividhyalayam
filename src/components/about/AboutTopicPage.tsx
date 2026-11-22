@@ -198,21 +198,25 @@ const AboutTopicPage = ({ topic }: { topic: AboutTopic }) => {
       <TopicBanner topic={topic} />
       <Content />
       {topic === "history" ? (
-      <section className="bg-background border-t">
-        <div className="container-custom py-8 flex flex-nowrap justify-center items-center gap-x-4 overflow-x-auto">
-          {[
-            { to: "/about/story", Icon: Award, label: `${getYearsOfExcellence()}+ Years of Excellence`, color: "bg-amber-100 text-amber-600" },
-            { to: "/about/story", Icon: GraduationCap, label: "5000+ Happy Alumni", color: "bg-sky-100 text-sky-600" },
-            { to: "/facilities", Icon: ShieldCheck, label: "100% Child Safety", color: "bg-emerald-100 text-emerald-600" },
-            { to: "/facilities", Icon: Monitor, label: "Smart Classrooms", color: "bg-violet-100 text-violet-600" },
-            { to: "/about/leadership", Icon: UserCheck, label: "Expert Faculty", color: "bg-rose-100 text-rose-600" },
-          ].map(({ to, Icon, label, color }) => (
-            <Link key={label} to={to} className="flex items-center gap-2 text-xs lg:text-sm font-semibold text-primary hover:text-accent transition-colors whitespace-nowrap shrink-0">
-              <span className={`w-8 h-8 lg:w-9 lg:h-9 rounded-full flex items-center justify-center ${color}`}><Icon className="w-4 h-4 lg:w-5 lg:h-5" /></span>
-              {label}
-            </Link>
+      <section className="bg-background border-t overflow-hidden">
+        <div className="py-8 flex animate-marquee w-max">
+          {[0, 1].map((copy) => (
+            <div key={copy} className="flex flex-nowrap items-center gap-x-8 pr-8" aria-hidden={copy === 1}>
+              {[
+                { to: "/about/story", Icon: Award, label: `${getYearsOfExcellence()}+ Years of Excellence`, color: "bg-amber-100 text-amber-600" },
+                { to: "/about/story", Icon: GraduationCap, label: "5000+ Happy Alumni", color: "bg-sky-100 text-sky-600" },
+                { to: "/facilities", Icon: ShieldCheck, label: "100% Child Safety", color: "bg-emerald-100 text-emerald-600" },
+                { to: "/facilities", Icon: Monitor, label: "Smart Classrooms", color: "bg-violet-100 text-violet-600" },
+                { to: "/about/leadership", Icon: UserCheck, label: "Expert Faculty", color: "bg-rose-100 text-rose-600" },
+              ].map(({ to, Icon, label, color }) => (
+                <Link key={label} to={to} className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors whitespace-nowrap shrink-0">
+                  <span className={`w-9 h-9 rounded-full flex items-center justify-center ${color}`}><Icon className="w-5 h-5" /></span>
+                  {label}
+                </Link>
+              ))}
+              <button type="button" onClick={() => { import("@/lib/prospectus").then((m) => m.generateProspectusPDF()); }} className="flex items-center gap-2 text-sm font-semibold bg-accent text-accent-foreground px-4 py-2 rounded-full hover:bg-accent/90 transition-colors whitespace-nowrap shrink-0"><Download className="w-4 h-4" />Download Brochure</button>
+            </div>
           ))}
-          <button type="button" onClick={() => { import("@/lib/prospectus").then((m) => m.generateProspectusPDF()); }} className="flex items-center gap-2 text-xs lg:text-sm font-semibold bg-accent text-accent-foreground px-4 py-2 rounded-full hover:bg-accent/90 transition-colors whitespace-nowrap shrink-0"><Download className="w-4 h-4" />Download Brochure</button>
         </div>
       </section>
       ) : (
