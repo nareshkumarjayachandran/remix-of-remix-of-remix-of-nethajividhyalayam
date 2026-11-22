@@ -71,7 +71,6 @@ const LeadershipSection = () => {
                     {/* Image */}
                     <div className="relative h-64 md:h-96">
                       <img src={member.image} alt={member.name} className="w-full h-full object-cover brightness-110 contrast-105 saturate-110" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/25 via-transparent to-transparent md:bg-gradient-to-r" />
                     </div>
 
                     {/* Content */}
