@@ -60,7 +60,7 @@ const LeadershipSection = () => {
 
         {/* Carousel */}
         <div className="relative max-w-4xl mx-auto">
-          <div className="overflow-hidden rounded-2xl bg-background shadow-2xl shadow-primary/10 border border-border/50">
+          <div className="overflow-hidden rounded-2xl bg-background shadow-xl">
             <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -69,12 +69,9 @@ const LeadershipSection = () => {
                 <div key={member.name} className="w-full flex-shrink-0">
                   <div className="grid md:grid-cols-2">
                     {/* Image */}
-                    <div className="group relative h-64 md:h-96 overflow-hidden bg-muted/60 md:border-r border-border/50">
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        className="w-full h-full object-contain brightness-105 contrast-[1.03] transition-transform duration-500 group-hover:scale-[1.02]"
-                      />
+                    <div className="relative h-64 md:h-96">
+                      <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent md:bg-gradient-to-r" />
                     </div>
 
                     {/* Content */}
