@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import { Link } from "react-router-dom";
 import { GraduationCap, CreditCard, Calendar, Phone } from "lucide-react";
 
@@ -44,9 +45,7 @@ const QuickLinksSection = () => {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                    <item.icon className="h-6 w-6" />
-                  </div>
+                  <DuotoneIcon icon={item.icon} tone={toneAt(index)} size="sm" />
                   <div>
                     <h3 className="font-semibold text-lg mb-1">{item.title}</h3>
                     <p className="text-sm text-white/80">{item.description}</p>

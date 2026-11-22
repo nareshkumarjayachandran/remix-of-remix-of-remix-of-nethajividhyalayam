@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Award, Users, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -84,11 +85,9 @@ const AboutSection = () => {
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 py-6">
-              {stats.map((stat) => (
+              {stats.map((stat, i) => (
                 <div key={stat.label} className="text-center">
-                  <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <stat.icon className="h-6 w-6 text-accent" />
-                  </div>
+                  <DuotoneIcon icon={stat.icon} tone={toneAt(i)} size="sm" className="mx-auto mb-2" />
                   <p className="text-2xl md:text-3xl font-bold text-primary font-serif">
                     {stat.value}
                   </p>

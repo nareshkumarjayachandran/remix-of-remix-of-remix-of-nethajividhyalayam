@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Users, BadgeCheck, Heart } from "lucide-react";
@@ -366,9 +367,9 @@ const Admissions = () => {
                   { step: "03", icon: Users, title: "Interaction Round", desc: "A brief interaction with the student and parents to understand the child's needs and expectations." },
                   { step: "04", icon: BadgeCheck, title: "Admission Confirmation", desc: "Upon successful evaluation, admission is confirmed and fee payment details are shared." },
                   { step: "05", icon: Heart, title: "Welcome to the Family", desc: "Collect the admission kit, uniform details, and join the Nethaji Vidhyalayam family!" },
-                ].map((item) => (
+                ].map((item, i) => (
                   <div key={item.step} className="bg-card border border-border rounded-xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                    <div className="w-14 h-14 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4"><item.icon className="h-7 w-7 text-accent" /></div>
+                    <DuotoneIcon icon={item.icon} tone={toneAt(i)} size="md" className="mx-auto mb-4" />
                     <h3 className="font-serif text-lg font-bold text-primary mb-2">{item.title}</h3>
                     <p className="text-sm text-muted-foreground">{item.desc}</p>
                   </div>

@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -180,9 +181,7 @@ const Career = () => {
               { icon: Heart, title: "Work-Life Balance", desc: "Supportive policies for a healthy work-life balance" },
             ].map((item, i) => (
               <div key={i} className="bg-card p-6 rounded-2xl shadow-lg text-center card-hover">
-                <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="h-7 w-7 text-accent" />
-                </div>
+                <DuotoneIcon icon={item.icon} tone={toneAt(i)} size="md" className="mx-auto mb-4" />
                 <h3 className="font-serif font-bold text-primary mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </div>

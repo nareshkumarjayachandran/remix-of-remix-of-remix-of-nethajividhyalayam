@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, Heart, Globe, Zap, ChevronDown, ChevronUp } from "lucide-react";
@@ -136,9 +137,7 @@ const AcademicsCurriculum = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {pillars.map((p, i) => (
               <div key={i} className="bg-card rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow text-center">
-                <div className="w-14 h-14 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <p.icon className="h-7 w-7 text-accent" />
-                </div>
+                <DuotoneIcon icon={p.icon} tone={toneAt(i)} size="md" className="mx-auto mb-4" />
                 <h3 className="font-serif font-bold text-primary mb-2">{p.title}</h3>
                 <p className="text-sm text-muted-foreground">{p.desc}</p>
               </div>

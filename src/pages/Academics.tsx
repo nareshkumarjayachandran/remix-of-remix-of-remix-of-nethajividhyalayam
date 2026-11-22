@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { BookOpen, GraduationCap, Palette, Award, Star } from "lucide-react";
 import { getYearsOfExcellence } from "@/lib/schoolDates";
@@ -83,9 +84,7 @@ const Academics = () => {
                   { icon: Award, title: "Social Skills", desc: "Group activities and value education for character development" },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 items-start">
-                    <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <item.icon className="h-5 w-5 text-accent" />
-                    </div>
+                    <DuotoneIcon icon={item.icon} tone={toneAt(i)} size="sm" />
                     <div>
                       <h4 className="font-serif font-bold text-primary">{item.title}</h4>
                       <p className="text-sm text-muted-foreground">{item.desc}</p>
@@ -119,9 +118,7 @@ const Academics = () => {
                   { icon: Award, title: "Assessments", desc: "Regular evaluations with unit tests, term exams, and continuous assessment" },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 items-start">
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <item.icon className="h-5 w-5 text-primary" />
-                    </div>
+                    <DuotoneIcon icon={item.icon} tone={toneAt(i)} size="sm" />
                     <div>
                       <h4 className="font-serif font-bold text-primary">{item.title}</h4>
                       <p className="text-sm text-muted-foreground">{item.desc}</p>

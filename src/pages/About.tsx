@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import { Link } from "react-router-dom";
 import { ArrowRight, BookOpen, Heart, Lightbulb, Shield, Target, Users } from "lucide-react";
 import { getYearsOfExcellence } from "@/lib/schoolDates";
@@ -28,11 +29,9 @@ const About = () => {
       <section className="section-padding bg-background">
         <div className="container-custom">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
-            {topics.map((topic) => (
+            {topics.map((topic, i) => (
               <Link key={topic.path} to={topic.path} className="group bg-card p-6 rounded-lg border shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
-                  <topic.icon className="h-6 w-6 text-accent" />
-                </div>
+                <DuotoneIcon icon={topic.icon} tone={toneAt(i)} size="sm" className="mb-4" />
                 <h2 className="font-serif text-xl font-bold text-primary mb-2">{topic.title}</h2>
                 <p className="text-sm text-muted-foreground mb-4">{topic.description}</p>
                 <span className="inline-flex items-center gap-2 text-sm font-semibold text-accent">Read more <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
@@ -51,9 +50,7 @@ const About = () => {
               { icon: BookOpen, title: "Excellence", desc: "Dedicated in effort. Graceful in work. Committed in pursuit." },
             ].map((value, i) => (
               <div key={i} className="bg-card p-6 rounded-2xl shadow-lg text-center card-hover">
-                <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <value.icon className="h-7 w-7 text-accent" />
-                </div>
+                <DuotoneIcon icon={value.icon} tone={toneAt(i)} size="md" className="mx-auto mb-4" />
                 <h3 className="font-serif font-bold text-primary mb-2">{value.title}</h3>
                 <p className="text-sm text-muted-foreground">{value.desc}</p>
               </div>
@@ -70,7 +67,7 @@ const About = () => {
               { number: "5000+", label: "Alumni Network" },
               { number: "12+", label: "Qualified Teaching Staff" },
               { number: "100%", label: "Pass Rate" },
-            ].map((stat) => (
+            ].map((stat, i) => (
               <div key={stat.label}>
                 <p className="text-4xl font-bold text-accent mb-2">{stat.number}</p>
                 <p className="text-primary-foreground/80">{stat.label}</p>

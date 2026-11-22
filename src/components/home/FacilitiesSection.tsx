@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Book, Dumbbell, Bus, Shield, Wifi, Users } from "lucide-react";
@@ -47,11 +48,9 @@ const FacilitiesSection = () => {
         {/* Stats Bar */}
         <div className="bg-primary text-primary-foreground rounded-2xl p-6 mb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature) => (
+            {features.map((feature, i) => (
               <div key={feature.label} className="flex items-center justify-center gap-3">
-                <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center">
-                  <feature.icon className="h-6 w-6 text-accent" />
-                </div>
+                <DuotoneIcon icon={feature.icon} tone={toneAt(i)} size="sm" />
                 <span className="font-medium">{feature.label}</span>
               </div>
             ))}
@@ -60,7 +59,7 @@ const FacilitiesSection = () => {
 
         {/* Facility Cards */}
         <div className="grid md:grid-cols-3 gap-8">
-          {facilities.map((facility, index) => (
+          {facilities.map((facility, i) => (
             <div
               key={facility.title}
               className="group bg-card rounded-2xl overflow-hidden shadow-lg card-hover"
@@ -74,9 +73,7 @@ const FacilitiesSection = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent" />
                 <div className="absolute bottom-4 left-4">
-                  <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center">
-                    <facility.icon className="h-6 w-6 text-accent-foreground" />
-                  </div>
+                  <DuotoneIcon icon={facility.icon} tone={toneAt(i)} size="sm" />
                 </div>
               </div>
 

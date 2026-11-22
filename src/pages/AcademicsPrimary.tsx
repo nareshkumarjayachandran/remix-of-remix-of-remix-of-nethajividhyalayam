@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { BookOpen, Cpu, ClipboardList, FlaskConical, Globe, CheckCircle, Lightbulb, BarChart2 } from "lucide-react";
 
@@ -154,9 +155,7 @@ const AcademicsPrimary = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {subjects.map((s, i) => (
               <div key={i} className="bg-card rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-                  <s.icon className="h-6 w-6 text-primary" />
-                </div>
+                <DuotoneIcon icon={s.icon} tone={toneAt(i)} size="sm" className="mb-4" />
                 <h3 className="font-serif font-bold text-primary mb-1">{s.title}</h3>
                 {s.subtitle && <p className="text-xs text-muted-foreground mb-2 italic">{s.subtitle}</p>}
                 <ul className="space-y-1 mt-2">
@@ -183,9 +182,7 @@ const AcademicsPrimary = () => {
           <div className="grid md:grid-cols-3 gap-6">
             {teachingApproaches.map((t, i) => (
               <div key={i} className="flex gap-4 items-start bg-secondary rounded-2xl p-6 shadow-sm">
-                <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center shrink-0">
-                  <t.icon className="h-6 w-6 text-accent" />
-                </div>
+                <DuotoneIcon icon={t.icon} tone={toneAt(i)} size="sm" />
                 <div>
                   <h3 className="font-serif font-bold text-primary mb-1">{t.title}</h3>
                   <p className="text-sm text-muted-foreground">{t.desc}</p>

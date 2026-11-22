@@ -1,3 +1,4 @@
+import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { Sprout, Music, Users, BookOpen, Clock, CheckCircle } from "lucide-react";
 const nurseryClassroomImg = "/photos/academics/nursery-classroom.jpg";
@@ -118,9 +119,7 @@ const AcademicsNursery = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((f, i) =>
             <div key={i} className="bg-card rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow text-center">
-                <div className="w-14 h-14 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <f.icon className="h-7 w-7 text-accent" />
-                </div>
+                <DuotoneIcon icon={f.icon} tone={toneAt(i)} size="md" className="mx-auto mb-4" />
                 <h3 className="font-serif font-bold text-primary mb-2">{f.title}</h3>
                 <p className="text-sm text-muted-foreground">{f.desc}</p>
               </div>
