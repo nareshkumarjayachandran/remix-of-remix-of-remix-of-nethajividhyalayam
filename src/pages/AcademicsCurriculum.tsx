@@ -1,3 +1,4 @@
+import HighlightsMarquee from "@/components/common/HighlightsMarquee";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, Heart, Globe, Zap, ChevronDown, ChevronUp } from "lucide-react";
@@ -313,6 +314,7 @@ const AcademicsCurriculum = () => {
           </div>
         </div>
       </section>
+      <HighlightsMarquee />
     </>
   );
 };

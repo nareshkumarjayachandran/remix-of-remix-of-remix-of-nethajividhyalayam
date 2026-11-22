@@ -1,3 +1,4 @@
+import HighlightsMarquee from "@/components/common/HighlightsMarquee";
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Users, BadgeCheck, Heart } from "lucide-react";
@@ -660,6 +661,7 @@ const Admissions = () => {
           )}
         </div>
       </section>
+      <HighlightsMarquee />
     </>
   );
 };

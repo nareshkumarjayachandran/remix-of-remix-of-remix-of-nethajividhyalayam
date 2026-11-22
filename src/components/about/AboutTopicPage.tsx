@@ -1,3 +1,4 @@
+import HighlightsMarquee from "@/components/common/HighlightsMarquee";
 import { Award, GraduationCap, ShieldCheck, Monitor, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Eye, Target } from "lucide-react";
@@ -197,26 +198,7 @@ const AboutTopicPage = ({ topic }: { topic: AboutTopic }) => {
     <>
       <TopicBanner topic={topic} />
       <Content />
-      <section className="bg-background border-t overflow-hidden">
-        <div className="py-8 flex animate-marquee w-max">
-          {[0, 1].map((copy) => (
-            <div key={copy} className="flex flex-nowrap items-center gap-x-8 pr-8" aria-hidden={copy === 1}>
-              {[
-                { to: "/about/story", Icon: Award, label: `${getYearsOfExcellence()}+ Years of Excellence`, color: "bg-amber-100 text-amber-600" },
-                { to: "/about/story", Icon: GraduationCap, label: "5000+ Happy Alumni", color: "bg-sky-100 text-sky-600" },
-                { to: "/facilities", Icon: ShieldCheck, label: "100% Child Safety", color: "bg-emerald-100 text-emerald-600" },
-                { to: "/facilities", Icon: Monitor, label: "Smart Classrooms", color: "bg-violet-100 text-violet-600" },
-                { to: "/about/leadership", Icon: UserCheck, label: "Expert Faculty", color: "bg-rose-100 text-rose-600" },
-              ].map(({ to, Icon, label, color }) => (
-                <Link key={label} to={to} className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors whitespace-nowrap shrink-0">
-                  <span className={`w-9 h-9 rounded-full flex items-center justify-center ${color}`}><Icon className="w-5 h-5" /></span>
-                  {label}
-                </Link>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
+      <HighlightsMarquee />
     </>
   );
 };
