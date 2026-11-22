@@ -60,7 +60,7 @@ const LeadershipSection = () => {
 
         {/* Carousel */}
         <div className="relative max-w-4xl mx-auto">
-          <div className="overflow-hidden rounded-2xl bg-background shadow-xl">
+          <div className="overflow-hidden rounded-2xl bg-background shadow-2xl shadow-primary/10 border border-border/50">
             <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -69,17 +69,12 @@ const LeadershipSection = () => {
                 <div key={member.name} className="w-full flex-shrink-0">
                   <div className="grid md:grid-cols-2">
                     {/* Image */}
-                    <div className="relative h-64 md:h-96 overflow-hidden">
+                    <div className="group relative h-64 md:h-96 overflow-hidden bg-muted/60 md:border-r border-border/50">
                       <img
                         src={member.image}
                         alt={member.name}
-                        className="w-full h-full object-cover brightness-110 contrast-[1.05] saturate-[1.15]"
+                        className="w-full h-full object-contain brightness-105 contrast-[1.03] transition-transform duration-500 group-hover:scale-[1.02]"
                       />
-                      {/* Soft light sheen instead of a dark vignette */}
-                      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/25 pointer-events-none" />
-                      {/* Warm glow rim */}
-                      <div className="absolute inset-0 ring-1 ring-inset ring-accent/30 pointer-events-none" />
-                      <div className="absolute inset-0 shadow-[inset_0_0_45px_rgba(255,107,53,0.18)] pointer-events-none" />
                     </div>
 
                     {/* Content */}
