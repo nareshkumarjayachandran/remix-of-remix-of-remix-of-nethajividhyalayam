@@ -55,7 +55,7 @@ const Gallery = () => {
                 className={`px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 ${
                   selectedCategory === cat
                     ? "bg-accent text-accent-foreground shadow-md scale-105"
-                    : "bg-secondary text-foreground hover:bg-secondary/80"
+                    : "bg-primary text-primary-foreground hover:bg-primary/80"
                 }`}
               >
                 {cat}
