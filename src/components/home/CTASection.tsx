@@ -37,16 +37,16 @@ const CTASection = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <a href="tel:+919841594945">
+            <Link to="/contact">
               <Button 
                 size="lg" 
                 variant="outline"
                 className="border-2 border-accent text-white bg-accent/20 hover:bg-accent hover:text-accent-foreground font-medium px-8"
               >
                 <Phone className="mr-2 h-5 w-5" />
-                Call Us Now
+                Contact Us Today
               </Button>
-            </a>
+            </Link>
           </div>
 
           {/* Trust Badges */}
