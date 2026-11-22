@@ -394,3 +394,27 @@
   transform: scale(1.25);
   filter: drop-shadow(0 0 4px hsl(var(--accent) / 0.2));
 }
+
+/* Subtle hover pop for every clickable button site-wide */
+@layer components {
+  button:not(:disabled),
+  [role="button"],
+  a.rounded-full,
+  a.rounded-lg {
+    transition-property: transform, color, background-color, border-color, box-shadow, opacity;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+  }
+  button:not(:disabled):hover,
+  [role="button"]:hover,
+  a.rounded-full:hover,
+  a.rounded-lg:hover {
+    transform: scale(1.03);
+  }
+  button:not(:disabled):active,
+  [role="button"]:active,
+  a.rounded-full:active,
+  a.rounded-lg:active {
+    transform: scale(0.98);
+  }
+}
