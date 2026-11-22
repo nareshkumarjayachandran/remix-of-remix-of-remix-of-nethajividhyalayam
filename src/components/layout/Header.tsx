@@ -108,7 +108,7 @@ const Header = ({ hideNav = false }: { hideNav?: boolean }) => {
             >
               <img
                 alt="Nethaji Vidhyalayam Logo"
-                className="w-[130px] h-[130px] object-contain drop-shadow-lg brightness-110 contrast-105 animate-logo-pulse-header"
+                className="w-[130px] h-[130px] object-contain drop-shadow-lg animate-logo-pulse-header"
                 style={{ imageRendering: "-webkit-optimize-contrast", position: "relative" }}
                 src={logo}
                 fetchPriority="high"

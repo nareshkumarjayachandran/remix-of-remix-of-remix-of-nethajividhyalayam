@@ -35,7 +35,7 @@ const Footer = () => {
             <div className="flex items-center gap-3">
               <img
                 alt="Nethaji Vidhyalayam Logo"
-                className="w-[80px] h-[80px] object-contain brightness-110 contrast-105 animate-logo-pulse-footer"
+                className="w-[80px] h-[80px] object-contain animate-logo-pulse-footer"
                 style={{ imageRendering: "-webkit-optimize-contrast" }}
                 src={logo}
               />
