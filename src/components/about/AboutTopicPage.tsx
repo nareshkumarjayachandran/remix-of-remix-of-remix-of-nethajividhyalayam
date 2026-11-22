@@ -1,4 +1,3 @@
-import HighlightsMarquee from "@/components/common/HighlightsMarquee";
 import { Award, GraduationCap, ShieldCheck, Monitor, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Eye, Target } from "lucide-react";
@@ -198,7 +197,6 @@ const AboutTopicPage = ({ topic }: { topic: AboutTopic }) => {
     <>
       <TopicBanner topic={topic} />
       <Content />
-      <HighlightsMarquee />
     </>
   );
 };

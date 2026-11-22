@@ -1,10 +1,12 @@
 import { ReactNode, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import TopBar from "./TopBar";
 import Header from "./Header";
 import Footer from "./Footer";
 import ChatWidget from "@/components/chat/ChatWidget";
 import SocialSidebar from "./SocialSidebar";
 import ConnectivityBanner from "@/components/ui/ConnectivityBanner";
+import HighlightsMarquee from "@/components/common/HighlightsMarquee";
 
 interface LayoutProps {
   children: ReactNode;
@@ -21,6 +23,8 @@ const Layout = ({ children }: LayoutProps) => {
   }, []);
 
   const shouldHide = autoHide && isScrolled;
+  const { pathname } = useLocation();
+  const showHighlights = !["/career", "/contact"].includes(pathname);
 
   return (
     <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
@@ -52,6 +56,7 @@ const Layout = ({ children }: LayoutProps) => {
       </div>
       <div aria-hidden="true" className="h-[60px] md:h-[100px] lg:h-[140px] shrink-0 bg-primary" />
       <main className="flex-1">{children}</main>
+      {showHighlights && <HighlightsMarquee />}
       <Footer />
       <ChatWidget />
       <SocialSidebar />
