@@ -115,11 +115,23 @@ const HistoryContent = () => (
 const LeadershipContent = () => (
   <section className="section-padding bg-secondary">
     <div className="container-custom">
+      <div className="grid md:grid-cols-3 gap-8 mb-16">
+        {leadership.map((leader) => (
+          <article key={leader.name} className="bg-card rounded-xl overflow-hidden shadow-lg text-center">
+            <img src={leader.image} alt={leader.name} className="w-full h-auto aspect-[3/2] object-contain bg-muted" />
+            <div className="p-6">
+              <h2 className="font-serif text-xl font-bold text-primary">{leader.name}</h2>
+              <p className="text-accent font-semibold text-sm mb-3 uppercase">{leader.role}</p>
+              <p className="text-muted-foreground text-sm">{leader.description}</p>
+            </div>
+          </article>
+        ))}
+      </div>
       <div className="text-center mb-10">
         <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">Our Purpose</p>
         <h2 className="section-title">Vision &amp; Mission</h2>
       </div>
-      <div className="grid md:grid-cols-2 gap-8 mb-16">
+      <div className="grid md:grid-cols-2 gap-8">
         <div className="bg-card p-8 rounded-xl shadow-lg">
           <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mb-6"><Eye className="h-8 w-8 text-accent" /></div>
           <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Vision</h2>
@@ -134,18 +146,6 @@ const LeadershipContent = () => (
             <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To shape confident, compassionate and courageous citizens who serve the nation with love and pride.</li>
           </ul>
         </div>
-      </div>
-      <div className="grid md:grid-cols-3 gap-8">
-        {leadership.map((leader) => (
-          <article key={leader.name} className="bg-card rounded-xl overflow-hidden shadow-lg text-center">
-            <img src={leader.image} alt={leader.name} className="w-full h-auto aspect-[3/2] object-contain bg-muted" />
-            <div className="p-6">
-              <h2 className="font-serif text-xl font-bold text-primary">{leader.name}</h2>
-              <p className="text-accent font-semibold text-sm mb-3 uppercase">{leader.role}</p>
-              <p className="text-muted-foreground text-sm">{leader.description}</p>
-            </div>
-          </article>
-        ))}
       </div>
     </div>
   </section>
