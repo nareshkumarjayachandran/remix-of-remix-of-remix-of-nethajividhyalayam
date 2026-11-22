@@ -29,23 +29,6 @@ const Facilities = () => {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="bg-accent text-accent-foreground py-10">
-        <div className="container-custom grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {[
-            { value: "10+", label: "Transports" },
-            { value: "100%", label: "Child Safety Coverage" },
-            { value: "12+", label: "Qualified Teaching Staff" },
-            { value: "100%", label: "Hygiene & Cleanliness" },
-          ].map((stat) => (
-            <div key={stat.label}>
-              <p className="text-3xl font-bold">{stat.value}</p>
-              <p className="text-sm opacity-90">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Main Facilities */}
       <section className="section-padding bg-background">
         <div className="container-custom">
