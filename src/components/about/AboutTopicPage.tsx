@@ -1,4 +1,4 @@
-import { Award, GraduationCap, ShieldCheck, Monitor, UserCheck, Download } from "lucide-react";
+import { Award, GraduationCap, ShieldCheck, Monitor, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Eye, Target } from "lucide-react";
 import useScrollToHash from "@/hooks/useScrollToHash";
@@ -214,7 +214,6 @@ const AboutTopicPage = ({ topic }: { topic: AboutTopic }) => {
                   {label}
                 </Link>
               ))}
-              <button type="button" onClick={() => { import("@/lib/prospectus").then((m) => m.generateProspectusPDF()); }} className="flex items-center gap-2 text-sm font-semibold bg-accent text-accent-foreground px-4 py-2 rounded-full hover:bg-accent/90 transition-colors whitespace-nowrap shrink-0"><Download className="w-4 h-4" />Download Brochure</button>
             </div>
           ))}
         </div>
