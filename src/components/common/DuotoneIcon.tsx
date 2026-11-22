@@ -1,10 +1,10 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type DuotoneTone = "amber" | "emerald" | "sky" | "violet" | "cyan" | "rose" | "pink" | "red" | "indigo" | "orange";
+export type DuotoneTone = "teal" | "emerald" | "sky" | "violet" | "cyan" | "rose" | "pink" | "red" | "indigo" | "orange";
 
 const tones: Record<DuotoneTone, { plate: string; fill: string; stroke: string; glow: string }> = {
-  amber: { plate: "from-amber-100 to-amber-300", fill: "fill-amber-300", stroke: "text-amber-700", glow: "shadow-amber-500/40" },
+  teal: { plate: "from-teal-100 to-teal-300", fill: "fill-teal-300", stroke: "text-teal-700", glow: "shadow-teal-500/40" },
   emerald: { plate: "from-emerald-100 to-emerald-300", fill: "fill-emerald-300", stroke: "text-emerald-700", glow: "shadow-emerald-500/40" },
   sky: { plate: "from-sky-100 to-sky-300", fill: "fill-sky-300", stroke: "text-sky-700", glow: "shadow-sky-500/40" },
   violet: { plate: "from-violet-100 to-violet-300", fill: "fill-violet-300", stroke: "text-violet-700", glow: "shadow-violet-500/40" },
@@ -44,7 +44,7 @@ const DuotoneIcon = ({ icon: Icon, tone, size = "md", className }: Props) => {
   );
 };
 
-const cycle: DuotoneTone[] = ["amber", "emerald", "sky", "violet", "rose", "cyan", "orange", "pink"];
+const cycle: DuotoneTone[] = ["teal", "emerald", "sky", "violet", "rose", "cyan", "orange", "pink"];
 /** Pick a distinct tone for the nth item in a list. */
 export const toneAt = (i: number): DuotoneTone => cycle[i % cycle.length];
 

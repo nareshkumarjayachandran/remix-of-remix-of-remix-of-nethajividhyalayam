@@ -135,7 +135,7 @@ const LeadershipContent = () => (
       </div>
       <div className="grid md:grid-cols-2 gap-8">
         <div className="bg-card p-8 rounded-xl shadow-lg">
-          <DuotoneIcon icon={Eye} tone="amber" size="lg" className="mb-6" />
+          <DuotoneIcon icon={Eye} tone="teal" size="lg" className="mb-6" />
           <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Vision</h2>
           <p className="text-muted-foreground leading-relaxed">To nurture every child into a wise, kind, disciplined and responsible citizen, who thinks clearly, learns joyfully and works selflessly for the growth of our nation.</p>
         </div>

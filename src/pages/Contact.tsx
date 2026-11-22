@@ -128,7 +128,7 @@ const Contact = () => {
 
             {/* Location Card */}
             <div className="bg-card p-8 rounded-2xl shadow-lg text-center card-hover">
-              <DuotoneIcon icon={MapPin} tone="amber" size="lg" className="mx-auto mb-4" />
+              <DuotoneIcon icon={MapPin} tone="teal" size="lg" className="mx-auto mb-4" />
               <h3 className="font-serif text-lg font-bold text-primary mb-2">Visit Campus</h3>
               <p className="text-muted-foreground block mb-1">5/325, Rajiv Nagar, S.Kolathur Main Road</p>
               <p className="text-sm text-muted-foreground mb-4">S.Kolathur, Kovilambakkam Post, Chennai&nbsp;-&nbsp;600129</p>

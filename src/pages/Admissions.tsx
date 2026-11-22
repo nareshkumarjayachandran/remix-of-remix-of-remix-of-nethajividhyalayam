@@ -390,7 +390,7 @@ const Admissions = () => {
                       </tbody>
                     </table>
                   </div>
-                  <div className="mt-6 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm border border-yellow-100">* Age relaxation may be considered based on the child's readiness and Principal's discretion.</div>
+                  <div className="mt-6 p-4 bg-orange-50 text-orange-800 rounded-lg text-sm border border-orange-100">* Age relaxation may be considered based on the child's readiness and Principal's discretion.</div>
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-primary mb-6 flex items-center"><FileText className="mr-3 h-6 w-6 text-accent" /> Documents Required</h3>

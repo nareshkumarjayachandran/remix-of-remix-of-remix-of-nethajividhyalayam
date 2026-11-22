@@ -420,7 +420,7 @@ const ChatWidget = () => {
                     </>
                   ) : isTranscribing ? (
                     <>
-                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-300 animate-pulse inline-block" />{" "}
+                      <span className="w-1.5 h-1.5 rounded-full bg-sky-300 animate-pulse inline-block" />{" "}
                       Transcribing…
                     </>
                   ) : (
@@ -616,9 +616,9 @@ const ChatWidget = () => {
               </div>
             )}
             {isTranscribing && (
-              <div className="flex items-center gap-2 mb-2 px-2 py-1.5 bg-yellow-50 rounded-lg border border-yellow-200">
-                <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-                <span className="text-xs text-yellow-700 font-semibold">⏳ Transcribing your voice…</span>
+              <div className="flex items-center gap-2 mb-2 px-2 py-1.5 bg-sky-50 rounded-lg border border-sky-200">
+                <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+                <span className="text-xs text-sky-700 font-semibold">⏳ Transcribing your voice…</span>
               </div>
             )}
             <form

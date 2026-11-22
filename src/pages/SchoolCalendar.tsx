@@ -327,7 +327,7 @@ const SchoolCalendar = () => {
 
             {/* Kali Yugam & Year Info */}
             <div className="bg-gradient-to-br from-accent/30 to-primary/10 rounded-2xl p-8 text-center border">
-              <DuotoneIcon icon={Sun} tone="amber" size="lg" className="mx-auto mb-4" />
+              <DuotoneIcon icon={Sun} tone="teal" size="lg" className="mx-auto mb-4" />
               <h2 className="font-serif text-3xl font-bold text-foreground mb-2">கலி யுகம் {panchangamData.kaliYugam.year}</h2>
               <p className="text-lg text-foreground/80 mb-1">தமிழ் ஆண்டு: <strong>{panchangamData.kaliYugam.tamilYear}</strong></p>
               <p className="text-sm text-muted-foreground">{panchangamData.kaliYugam.ayanam}</p>

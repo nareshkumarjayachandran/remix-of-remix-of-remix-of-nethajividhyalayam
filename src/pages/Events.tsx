@@ -57,7 +57,7 @@ const Events = () => {
                   <h3 className="font-serif text-2xl font-bold text-primary mb-3 group-hover:text-accent transition-colors">{event.title}</h3>
                   <p className="text-muted-foreground mb-4 line-clamp-2">{event.description}</p>
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-2"><DuotoneIcon icon={Calendar} tone="amber" size="xs" /> {event.date}</span>
+                    <span className="flex items-center gap-2"><DuotoneIcon icon={Calendar} tone="teal" size="xs" /> {event.date}</span>
                     <span className="flex items-center gap-2"><DuotoneIcon icon={Clock} tone="sky" size="xs" /> {event.time}</span>
                     <span className="flex items-center gap-2"><DuotoneIcon icon={MapPin} tone="emerald" size="xs" /> {event.location}</span>
                   </div>
@@ -95,7 +95,7 @@ const Events = () => {
             </div>
             <div className="p-6 md:p-8 overflow-y-auto max-h-[40vh]">
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
-                <span className="flex items-center gap-2"><DuotoneIcon icon={Calendar} tone="amber" size="xs" /> {events[selectedEvent].date}</span>
+                <span className="flex items-center gap-2"><DuotoneIcon icon={Calendar} tone="teal" size="xs" /> {events[selectedEvent].date}</span>
                 <span className="flex items-center gap-2"><DuotoneIcon icon={Clock} tone="sky" size="xs" /> {events[selectedEvent].time}</span>
                 <span className="flex items-center gap-2"><DuotoneIcon icon={MapPin} tone="emerald" size="xs" /> {events[selectedEvent].location}</span>
               </div>

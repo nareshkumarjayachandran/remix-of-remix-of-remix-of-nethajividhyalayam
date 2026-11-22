@@ -8,7 +8,7 @@ const HighlightsMarquee = () => (
       {[0, 1].map((copy) => (
         <div key={copy} className="flex flex-nowrap items-center gap-x-8 pr-8" aria-hidden={copy === 1}>
           {[
-            { to: "/about/story", Icon: Award, label: `${getYearsOfExcellence()}+ Years of Excellence`, color: "bg-amber-100 text-amber-600" },
+            { to: "/about/story", Icon: Award, label: `${getYearsOfExcellence()}+ Years of Excellence`, color: "bg-orange-100 text-orange-600" },
             { to: "/about/story", Icon: GraduationCap, label: "5000+ Happy Alumni", color: "bg-sky-100 text-sky-600" },
             { to: "/facilities", Icon: ShieldCheck, label: "100% Child Safety", color: "bg-emerald-100 text-emerald-600" },
             { to: "/facilities", Icon: Monitor, label: "Smart Classrooms", color: "bg-violet-100 text-violet-600" },
