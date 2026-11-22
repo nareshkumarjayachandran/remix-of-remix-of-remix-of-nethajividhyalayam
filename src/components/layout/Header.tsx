@@ -53,6 +53,7 @@ const navItems = [
       { label: "Photo Gallery", path: "/gallery" },
       { label: "Video Gallery", path: "/video-gallery" },
       { label: "Events", path: "/events" },
+      { label: "Blog", path: "/blog" },
       { label: "School Calendar", path: "/calendar" },
     ],
   },

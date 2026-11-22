@@ -28,6 +28,8 @@ const FeeDesk = lazy(() => import("./pages/FeeDesk"));
 const VideoGallery = lazy(() => import("./pages/VideoGallery"));
 const WorksheetMaker = lazy(() => import("./pages/WorksheetMaker"));
 const SpokenEnglish = lazy(() => import("./pages/SpokenEnglish"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogDetail = lazy(() => import("./pages/BlogDetail"));
 const QuestionPaper = lazy(() => import("./pages/QuestionPaper"));
 
 const queryClient = new QueryClient();
@@ -60,6 +62,8 @@ const App = () => {
               <Route path="/admissions" element={<Admissions />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/events" element={<Events />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogDetail />} />
               <Route path="/calendar" element={<SchoolCalendar />} />
               <Route path="/academics" element={<Academics />} />
               <Route path="/academics/nursery" element={<AcademicsNursery />} />
