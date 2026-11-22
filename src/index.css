@@ -346,35 +346,24 @@
   }
 }
 
-/* Footer Logo Pulse: 80→120px = scale 1→1.5 over 120s */
+/* Footer Logo Pulse: 95px -> 100px -> 110px over 120s (base 80px) */
 @keyframes logoPulseFooter {
   0%,
   100% {
-    transform: scale(1.25);
+    transform: scale(1.1875);
     filter: drop-shadow(0 0 0px hsl(var(--accent) / 0));
   }
   25% {
-    transform: scale(1.375);
-    filter: drop-shadow(0 0 8px hsl(var(--accent) / 0.3));
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 6px hsl(var(--accent) / 0.25));
   }
   50% {
-    transform: scale(1.5);
-    filter: drop-shadow(0 0 18px hsl(var(--accent) / 0.55));
+    transform: scale(1.375);
+    filter: drop-shadow(0 0 14px hsl(var(--accent) / 0.5));
   }
   75% {
     transform: scale(1.25);
-    filter: drop-shadow(0 0 8px hsl(var(--accent) / 0.3));
-  }
-}
-
-/* Favicon Pulse: 80→120px = scale 1→1.5 over 120s */
-@keyframes logoPulseFavicon {
-  0%,
-  100% {
-    transform: scale(1.2);
-  }
-  50% {
-    transform: scale(1.4);
+    filter: drop-shadow(0 0 6px hsl(var(--accent) / 0.25));
   }
 }
 
