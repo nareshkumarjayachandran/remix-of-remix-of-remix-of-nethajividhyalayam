@@ -413,7 +413,7 @@ const Admissions = () => {
                 <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">Take the first step towards your child's bright future. Schedule a campus visit or contact our admissions office today.</p>
                 <div className="flex flex-col md:flex-row gap-4 justify-center">
                   <Link to="/contact" className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-4 rounded-full font-bold text-lg transition-all shadow-xl">Contact Admissions</Link>
-                  <button onClick={() => { import("@/lib/prospectus").then((m) => m.generateProspectusPDF()); }} className="bg-background border-2 border-border text-foreground/80 hover:border-accent hover:text-accent px-10 py-4 rounded-full font-bold text-lg transition-all">Download Brochure</button>
+                  <button onClick={() => { import("@/lib/prospectus").then((m) => m.generateProspectusPDF()); }} className="bg-primary border-2 border-border text-primary-foreground hover:border-accent hover:text-accent px-10 py-4 rounded-full font-bold text-lg transition-all">Download Brochure</button>
                 </div>
               </div>
             </div>
