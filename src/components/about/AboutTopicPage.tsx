@@ -197,7 +197,6 @@ const AboutTopicPage = ({ topic }: { topic: AboutTopic }) => {
     <>
       <TopicBanner topic={topic} />
       <Content />
-      {topic === "history" ? (
       <section className="bg-background border-t overflow-hidden">
         <div className="py-8 flex animate-marquee w-max">
           {[0, 1].map((copy) => (
@@ -218,15 +217,6 @@ const AboutTopicPage = ({ topic }: { topic: AboutTopic }) => {
           ))}
         </div>
       </section>
-      ) : (
-      <section className="bg-background border-t">
-        <div className="container-custom py-8 flex flex-wrap justify-center gap-x-8 gap-y-3">
-          {Object.entries(topics).map(([key, value]) => (
-            <Link key={key} to={`/about/${key}`} className="text-sm font-semibold text-primary hover:text-accent transition-colors">{value.title}</Link>
-          ))}
-        </div>
-      </section>
-      )}
     </>
   );
 };
