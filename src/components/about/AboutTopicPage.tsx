@@ -196,6 +196,16 @@ const AboutTopicPage = ({ topic }: { topic: AboutTopic }) => {
     <>
       <TopicBanner topic={topic} />
       <Content />
+      {topic === "history" ? (
+      <section className="bg-background border-t">
+        <div className="container-custom py-8 flex flex-wrap justify-center items-center gap-x-8 gap-y-3">
+          <Link to="/about/story" className="text-sm font-semibold text-primary hover:text-accent transition-colors">{getYearsOfExcellence()}+ Years of Excellence</Link>
+          <Link to="/about/story" className="text-sm font-semibold text-primary hover:text-accent transition-colors">5000+ Happy Alumni</Link>
+          <Link to="/facilities" className="text-sm font-semibold text-primary hover:text-accent transition-colors">100% Child Safety</Link>
+          <button type="button" onClick={() => { import("@/lib/prospectus").then((m) => m.generateProspectusPDF()); }} className="text-sm font-semibold bg-accent text-accent-foreground px-4 py-2 rounded-full hover:bg-accent/90 transition-colors">Download Brochure</button>
+        </div>
+      </section>
+      ) : (
       <section className="bg-background border-t">
         <div className="container-custom py-8 flex flex-wrap justify-center gap-x-8 gap-y-3">
           {Object.entries(topics).map(([key, value]) => (
@@ -203,6 +213,7 @@ const AboutTopicPage = ({ topic }: { topic: AboutTopic }) => {
           ))}
         </div>
       </section>
+      )}
     </>
   );
 };
