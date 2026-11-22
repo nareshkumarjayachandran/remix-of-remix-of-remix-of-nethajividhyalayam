@@ -377,7 +377,7 @@ const Admissions = () => {
               </div>
 
               {/* Age Criteria & Documents (matches main site) */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mt-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-16">
                 <div>
                   <h3 className="text-2xl font-bold text-primary mb-6 flex items-center"><CalendarDays className="mr-3 h-6 w-6 text-accent" /> Age Criteria (as of March 31st)</h3>
                   <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
