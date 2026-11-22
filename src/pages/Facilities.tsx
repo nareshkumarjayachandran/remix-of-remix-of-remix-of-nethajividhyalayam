@@ -1,22 +1,23 @@
 import { Book, Dumbbell, Bus, Shield, Wifi, Users, Monitor, Beaker, Music, Utensils, Camera, Heart, Eye, BadgeCheck, UserCheck } from "lucide-react";
+import DuotoneIcon, { type DuotoneTone } from "@/components/common/DuotoneIcon";
 
 const facilities = [
-  { icon: Book, title: "Library", description: "A vast collection of 500+ books, digital resources, magazines, and a quiet reading zone for students.", image: "/photos/facilities/library-overview.jpg", highlights: ["500+ books", "Reading programs", "Quiet study zones"] },
-  { icon: Dumbbell, title: "Sports Complex", description: "Regular sports activities are conducted in the complex. The complex helps students stay active and healthy. Trained coaches guide students during practice sessions.", image: "/photos/facilities/sports-complex-overview.jpg", highlights: ["Annual sports meet", "Art and craft activities"] },
-  { icon: Bus, title: "Transport", description: "Safe and reliable transport facility ensuring student safety. Provides convenient and supervised travel for students.", image: "/photos/facilities/school-transport.jpg", highlights: ["GPS tracking", "Trained staff", "Attender present", "5–10 km radius"] },
-  { icon: Monitor, title: "Smart Classrooms", description: "Digitally equipped classrooms with interactive boards, projectors, and audio-visual aids for engaging learning.", image: "/photos/facilities/smart-classrooms.jpg", highlights: ["Interactive boards", "Projectors", "Audio-visual aids"] },
-  { icon: Beaker, title: "Science Lab", description: "Well-equipped labs for hands-on experiments and scientific exploration.", image: "/photos/facilities/science-lab.jpg", highlights: ["Practical experiments", "Modern equipment"] },
-  { icon: Monitor, title: "Computer Lab", description: "Modern computer lab with latest hardware and software for developing digital skills.", image: "/photos/facilities/computer-lab.jpg", highlights: ["Latest hardware", "Digital literacy"] },
-  { icon: Music, title: "Music & Dance Room", description: "Dedicated space for music classes, dance practice, and cultural activity rehearsals.", image: "/photos/facilities/music-and-dance-room.jpg", highlights: ["Music training", "Dance practice"] },
-  { icon: Utensils, title: "Canteen & Cafeteria", description: "Hygienic canteen serving nutritious and delicious meals for students and staff.", image: "/photos/facilities/canteen-and-cafeteria.jpg", highlights: ["Hygienic food", "Nutritious meals"] },
-  { icon: Heart, title: "Medical Room", description: "First-aid facility with trained staff to handle medical emergencies.", image: "/photos/facilities/medical-room.jpg", highlights: ["First-aid", "Trained staff"] },
+  { icon: Book, title: "Library", tone: "amber" as DuotoneTone, description: "A vast collection of 500+ books, digital resources, magazines, and a quiet reading zone for students.", image: "/photos/facilities/library-overview.jpg", highlights: ["500+ books", "Reading programs", "Quiet study zones"] },
+  { icon: Dumbbell, title: "Sports Complex", tone: "emerald" as DuotoneTone, description: "Regular sports activities are conducted in the complex. The complex helps students stay active and healthy. Trained coaches guide students during practice sessions.", image: "/photos/facilities/sports-complex-overview.jpg", highlights: ["Annual sports meet", "Art and craft activities"] },
+  { icon: Bus, title: "Transport", tone: "sky" as DuotoneTone, description: "Safe and reliable transport facility ensuring student safety. Provides convenient and supervised travel for students.", image: "/photos/facilities/school-transport.jpg", highlights: ["GPS tracking", "Trained staff", "Attender present", "5–10 km radius"] },
+  { icon: Monitor, title: "Smart Classrooms", tone: "violet" as DuotoneTone, description: "Digitally equipped classrooms with interactive boards, projectors, and audio-visual aids for engaging learning.", image: "/photos/facilities/smart-classrooms.jpg", highlights: ["Interactive boards", "Projectors", "Audio-visual aids"] },
+  { icon: Beaker, title: "Science Lab", tone: "cyan" as DuotoneTone, description: "Well-equipped labs for hands-on experiments and scientific exploration.", image: "/photos/facilities/science-lab.jpg", highlights: ["Practical experiments", "Modern equipment"] },
+  { icon: Monitor, title: "Computer Lab", tone: "indigo" as DuotoneTone, description: "Modern computer lab with latest hardware and software for developing digital skills.", image: "/photos/facilities/computer-lab.jpg", highlights: ["Latest hardware", "Digital literacy"] },
+  { icon: Music, title: "Music & Dance Room", tone: "rose" as DuotoneTone, description: "Dedicated space for music classes, dance practice, and cultural activity rehearsals.", image: "/photos/facilities/music-and-dance-room.jpg", highlights: ["Music training", "Dance practice"] },
+  { icon: Utensils, title: "Canteen & Cafeteria", tone: "orange" as DuotoneTone, description: "Hygienic canteen serving nutritious and delicious meals for students and staff.", image: "/photos/facilities/canteen-and-cafeteria.jpg", highlights: ["Hygienic food", "Nutritious meals"] },
+  { icon: Heart, title: "Medical Room", tone: "pink" as DuotoneTone, description: "First-aid facility with trained staff to handle medical emergencies.", image: "/photos/facilities/medical-room.jpg", highlights: ["First-aid", "Trained staff"] },
 ];
 
 const safetyFeatures = [
-  { icon: Camera, title: "24/7 CCTV", desc: "Complete surveillance across campus" },
-  { icon: BadgeCheck, title: "Visitor ID Badges", desc: "Controlled campus access for all visitors" },
-  { icon: UserCheck, title: "Staff Verification", desc: "Thorough background checks for all staff" },
-  { icon: Shield, title: "Emergency Protocols", desc: "Regular drills and safety procedures" },
+  { icon: Camera, title: "24/7 CCTV", tone: "indigo" as DuotoneTone, desc: "Complete surveillance across campus" },
+  { icon: BadgeCheck, title: "Visitor ID Badges", tone: "emerald" as DuotoneTone, desc: "Controlled campus access for all visitors" },
+  { icon: UserCheck, title: "Staff Verification", tone: "sky" as DuotoneTone, desc: "Thorough background checks for all staff" },
+  { icon: Shield, title: "Emergency Protocols", tone: "red" as DuotoneTone, desc: "Regular drills and safety procedures" },
 ];
 
 const Facilities = () => {
@@ -59,9 +60,7 @@ const Facilities = () => {
                 </div>
                 <div className={index % 2 === 1 ? "md:[direction:ltr]" : ""}>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
-                      <facility.icon className="h-6 w-6 text-accent" />
-                    </div>
+                    <DuotoneIcon icon={facility.icon} tone={facility.tone} />
                     <h3 className="font-serif text-2xl font-bold text-primary">{facility.title}</h3>
                   </div>
                   <p className="text-muted-foreground mb-4">{facility.description}</p>
@@ -94,9 +93,7 @@ const Facilities = () => {
           <div className="grid md:grid-cols-4 gap-6">
             {safetyFeatures.map((item, i) => (
               <div key={i} className="bg-card p-6 rounded-2xl shadow-lg text-center card-hover">
-                <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="h-7 w-7 text-primary" />
-                </div>
+                <DuotoneIcon icon={item.icon} tone={item.tone} size="lg" className="mx-auto mb-4" />
                 <h3 className="font-serif font-bold text-primary mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </div>
