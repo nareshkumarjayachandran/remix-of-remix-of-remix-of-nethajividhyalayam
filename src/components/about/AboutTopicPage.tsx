@@ -120,7 +120,7 @@ const LeadershipContent = () => (
       <div className="grid md:grid-cols-3 gap-8 mb-16">
         {leadership.map((leader) => (
           <article key={leader.name} className="bg-card rounded-xl overflow-hidden shadow-lg text-center">
-            <img src={leader.image} alt={leader.name} className="w-full h-auto aspect-[3/2] object-contain bg-muted brightness-110 contrast-[1.05] saturate-[1.25]" />
+            <img src={leader.image} alt={leader.name} className="w-full h-auto aspect-[3/2] object-contain bg-muted" />
             <div className="p-6">
               <h2 className="font-serif text-xl font-bold text-primary">{leader.name}</h2>
               <p className="text-accent font-semibold text-sm mb-3 uppercase">{leader.role}</p>
@@ -156,7 +156,7 @@ const LeadershipContent = () => (
 const ChairmanContent = () => (
   <section className="section-padding bg-secondary">
     <div className="container-custom grid md:grid-cols-2 gap-12 items-center">
-      <img src="/photos/leadership/chairman.jpg" alt="Mr. J.J. NARESHKUMAR - Chairman" className="rounded-xl shadow-xl w-full brightness-110 contrast-[1.05] saturate-[1.25]" />
+      <img src="/photos/leadership/chairman.jpg" alt="Mr. J.J. NARESHKUMAR - Chairman" className="rounded-xl shadow-xl w-full" />
       <div>
         <blockquote className="text-muted-foreground leading-relaxed italic border-l-4 border-accent pl-6 mb-6">“Every child is a lamp waiting to be lit. Our duty is not just to teach, but to ignite.”</blockquote>
         <p className="text-muted-foreground leading-relaxed mb-4">Our commitment to providing world-class education remains unwavering. We believe every child deserves the opportunity to learn, grow, and excel in a supportive environment.</p>
@@ -177,7 +177,7 @@ const PrincipalContent = () => (
         <blockquote className="text-muted-foreground leading-relaxed italic border-l-4 border-accent pl-6 mb-6">“Every child who enters our school is unique. Our promise is to see that uniqueness, nurture it, and let it shine.”</blockquote>
         <p className="font-serif font-bold text-primary">— Mrs. P.S. JANANI, Principal</p>
       </div>
-      <img src="/photos/leadership/principal.jpg" alt="Mrs. P.S. JANANI - Principal" className="rounded-xl shadow-xl w-full brightness-110 contrast-[1.05] saturate-[1.25]" />
+      <img src="/photos/leadership/principal.jpg" alt="Mrs. P.S. JANANI - Principal" className="rounded-xl shadow-xl w-full" />
     </div>
   </section>
 );
