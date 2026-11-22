@@ -22,9 +22,9 @@ const topics: Record<AboutTopic, { title: string; eyebrow: string; intro: string
     intro: "The principles that guide how we help every student learn, grow, and contribute.",
   },
   leadership: {
-    title: "Leadership, Vision & Mission",
-    eyebrow: "Our Leaders & Purpose",
-    intro: "Meet the dedicated team guiding Nethaji Vidhyalayam, and the vision and mission that inspire everything we do.",
+    title: "Leadership Team",
+    eyebrow: "Our Leaders",
+    intro: "Meet the dedicated team guiding Nethaji Vidhyalayam and its students.",
   },
   principal: {
     title: "Principal's Message",
@@ -118,14 +118,8 @@ const HistoryContent = () => (
 );
 
 const VisionContent = () => (
-  <section id="vision" className="section-padding bg-background scroll-mt-24">
-    <div className="container-custom">
-      <div className="text-center mb-10">
-        <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">Our Purpose</p>
-        <h2 className="section-title">Vision &amp; Mission</h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">Guided by our leaders, these are the principles that shape how every child at Nethaji Vidhyalayam learns, grows and contributes.</p>
-      </div>
-    <div className="grid md:grid-cols-2 gap-8">
+  <section className="section-padding bg-secondary">
+    <div className="container-custom grid md:grid-cols-2 gap-8">
       <div className="bg-card p-8 rounded-xl shadow-lg">
         <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mb-6"><Eye className="h-8 w-8 text-accent" /></div>
         <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Vision</h2>
@@ -141,12 +135,10 @@ const VisionContent = () => (
         </ul>
       </div>
     </div>
-    </div>
   </section>
 );
 
 const LeadershipContent = () => (
-  <>
   <section className="section-padding bg-secondary">
     <div className="container-custom">
       <div className="grid md:grid-cols-3 gap-8">
@@ -163,8 +155,6 @@ const LeadershipContent = () => (
       </div>
     </div>
   </section>
-  <VisionContent />
-  </>
 );
 
 const ChairmanContent = () => (
@@ -215,7 +205,7 @@ const AboutTopicPage = ({ topic }: { topic: AboutTopic }) => {
       <Content />
       <section className="bg-background border-t">
         <div className="container-custom py-8 flex flex-wrap justify-center gap-x-8 gap-y-3">
-          {Object.entries(topics).filter(([key]) => key !== "vision").map(([key, value]) => (
+          {Object.entries(topics).map(([key, value]) => (
             <Link key={key} to={`/about/${key}`} className="text-sm font-semibold text-primary hover:text-accent transition-colors">{value.title}</Link>
           ))}
         </div>
