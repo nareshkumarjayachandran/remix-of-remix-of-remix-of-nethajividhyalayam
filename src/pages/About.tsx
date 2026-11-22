@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, Eye, Heart, Lightbulb, Shield, Target, Users } from "lucide-react";
+import { ArrowRight, BookOpen, Heart, Lightbulb, Shield, Target, Users } from "lucide-react";
 import { getYearsOfExcellence } from "@/lib/schoolDates";
 
 const About = () => {
   const topics = [
     { title: "History", description: "Explore the school’s founding and the milestones of its journey.", path: "/about/history", icon: BookOpen },
     { title: "Our Story", description: "Discover the beginnings and journey of Nethaji Vidhyalayam.", path: "/about/story", icon: BookOpen },
-    { title: "Vision & Mission", description: "Explore the purpose and principles guiding our school.", path: "/about/vision", icon: Eye },
     { title: "Leadership Team", description: "Meet the people who guide and support our students.", path: "/about/leadership", icon: Users },
     { title: "Chairman's Message", description: "Read a message from our Chairman, Mr. J.J. Nareshkumar.", path: "/about/chairman", icon: Target },
     { title: "Principal's Message", description: "Read a message from our Principal, Mrs. P.S. Janani.", path: "/about/principal", icon: Heart },

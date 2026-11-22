@@ -14,7 +14,6 @@ const navItems = [
     children: [
       { label: "History", path: "/about/history" },
       { label: "Our Story", path: "/about/story" },
-      { label: "Vision & Mission", path: "/about/vision" },
       { label: "Leadership Team", path: "/about/leadership" },
       { label: "Chairman's Message", path: "/about/chairman" },
       { label: "Principal's Message", path: "/about/principal" },

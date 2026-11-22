@@ -3,7 +3,7 @@ import { Eye, Target } from "lucide-react";
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { getYearsOfExcellence } from "@/lib/schoolDates";
 
-export type AboutTopic = "history" | "story" | "vision" | "leadership" | "principal" | "chairman";
+export type AboutTopic = "history" | "story" | "leadership" | "principal" | "chairman";
 
 const topics: Record<AboutTopic, { title: string; eyebrow: string; intro: string }> = {
   history: {
@@ -15,11 +15,6 @@ const topics: Record<AboutTopic, { title: string; eyebrow: string; intro: string
     title: "Our Story",
     eyebrow: "Who We Are",
     intro: "A legacy of learning, care, and opportunity for every child since 2002.",
-  },
-  vision: {
-    title: "Vision & Mission",
-    eyebrow: "Our Purpose",
-    intro: "The principles that guide how we help every student learn, grow, and contribute.",
   },
   leadership: {
     title: "Leadership Team",
@@ -117,30 +112,29 @@ const HistoryContent = () => (
   </section>
 );
 
-const VisionContent = () => (
-  <section className="section-padding bg-secondary">
-    <div className="container-custom grid md:grid-cols-2 gap-8">
-      <div className="bg-card p-8 rounded-xl shadow-lg">
-        <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mb-6"><Eye className="h-8 w-8 text-accent" /></div>
-        <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Vision</h2>
-        <p className="text-muted-foreground leading-relaxed">To nurture every child into a wise, kind, disciplined and responsible citizen, who thinks clearly, learns joyfully and works selflessly for the growth of our nation.</p>
-      </div>
-      <div className="bg-card p-8 rounded-xl shadow-lg">
-        <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6"><Target className="h-8 w-8 text-primary" /></div>
-        <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Mission</h2>
-        <ul className="text-muted-foreground space-y-3">
-          <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To build a strong, self-reliant and caring centre of excellence.</li>
-          <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To give joyful, quality and value-based education.</li>
-          <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To shape confident, compassionate and courageous citizens who serve the nation with love and pride.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-);
-
 const LeadershipContent = () => (
   <section className="section-padding bg-secondary">
     <div className="container-custom">
+      <div className="text-center mb-10">
+        <p className="text-accent font-semibold mb-2 uppercase tracking-wider text-sm">Our Purpose</p>
+        <h2 className="section-title">Vision &amp; Mission</h2>
+      </div>
+      <div className="grid md:grid-cols-2 gap-8 mb-16">
+        <div className="bg-card p-8 rounded-xl shadow-lg">
+          <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mb-6"><Eye className="h-8 w-8 text-accent" /></div>
+          <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Vision</h2>
+          <p className="text-muted-foreground leading-relaxed">To nurture every child into a wise, kind, disciplined and responsible citizen, who thinks clearly, learns joyfully and works selflessly for the growth of our nation.</p>
+        </div>
+        <div className="bg-card p-8 rounded-xl shadow-lg">
+          <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6"><Target className="h-8 w-8 text-primary" /></div>
+          <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Mission</h2>
+          <ul className="text-muted-foreground space-y-3">
+            <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To build a strong, self-reliant and caring centre of excellence.</li>
+            <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To give joyful, quality and value-based education.</li>
+            <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To shape confident, compassionate and courageous citizens who serve the nation with love and pride.</li>
+          </ul>
+        </div>
+      </div>
       <div className="grid md:grid-cols-3 gap-8">
         {leadership.map((leader) => (
           <article key={leader.name} className="bg-card rounded-xl overflow-hidden shadow-lg text-center">
@@ -189,7 +183,6 @@ const PrincipalContent = () => (
 const content: Record<AboutTopic, () => JSX.Element> = {
   history: HistoryContent,
   story: StoryContent,
-  vision: VisionContent,
   leadership: LeadershipContent,
   principal: PrincipalContent,
   chairman: ChairmanContent,
