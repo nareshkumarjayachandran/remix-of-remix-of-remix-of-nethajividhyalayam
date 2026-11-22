@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,13 @@ import { CheckCircle, FileText, CreditCard, ClipboardList, Printer, Loader2, Sea
 
 const standards = ["Pre-KG", "LKG", "UKG", "I", "II", "III", "IV", "V"];
 const sections = ["A", "B", "C", "D"];
+const docsRequired = [
+  "Birth Certificate (Original & Copy)",
+  "Transfer Certificate (from previous school)",
+  "Passport-size Photographs (2 Nos)",
+  "Aadhar Card Copy of Student & Parents ( Original & Copy)",
+  "Community Certificate (if applicable)",
+];
 
 const Admissions = () => {
   useScrollToHash();
@@ -367,6 +374,54 @@ const Admissions = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Age Criteria & Documents */}
+              <div className="grid md:grid-cols-2 gap-6 mt-12">
+                <div className="rounded-2xl overflow-hidden shadow-lg border-2 border-accent/40 bg-card">
+                  <div className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-4">
+                    <h3 className="font-serif text-xl font-bold">🎂 Age Criteria <span className="text-sm font-normal">(as of March 31st)</span></h3>
+                  </div>
+                  <table className="w-full text-sm">
+                    <thead><tr className="bg-accent/15 text-primary"><th className="text-left px-6 py-2">Class</th><th className="text-left px-6 py-2">Minimum Age</th></tr></thead>
+                    <tbody>
+                      {[["Pre-KG","3 Years"],["LKG","3-4 Years"],["UKG","4-5 Years"],["Grade 1","5-6 Years"],["Grade 2","6-7 Years"],["Grade 3","7-8 Years"],["Grade 4","8-9 Years"],["Grade 5","9-10 Years"]].map(([c,a],i)=>(
+                        <tr key={c} className={i%2?"bg-secondary/40":""}>
+                          <td className="px-6 py-2 font-semibold text-primary">{c}</td>
+                          <td className="px-6 py-2"><span className="inline-block px-3 py-0.5 rounded-full bg-accent/20 text-foreground font-medium">{a}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p className="text-xs text-muted-foreground px-6 py-3 bg-accent/10">* Age relaxation may be considered based on the child's readiness and Principal's discretion.</p>
+                </div>
+
+                <div className="rounded-2xl overflow-hidden shadow-lg border-2 border-primary/30 bg-card flex flex-col">
+                  <div className="bg-gradient-to-r from-accent to-primary text-primary-foreground px-6 py-4">
+                    <h3 className="font-serif text-xl font-bold">📄 Documents Required</h3>
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <p className="text-sm text-muted-foreground mb-4">(Please submit any one of the following, along with originals for verification :)</p>
+                    <ul className="space-y-3 flex-1">
+                      {docsRequired.map((d) => (
+                        <li key={d} className="flex gap-3 items-start"><CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" /><span>{d}</span></li>
+                      ))}
+                    </ul>
+                    <Button onClick={() => openPrintableTemplate({ title: "Admission Documents Checklist", subtitle: "Please submit along with originals for verification", fieldGroups: [{ heading: "Documents Required", fields: docsRequired.map((d) => ({ label: d, value: "☐" })) }] })} className="mt-6 gap-2 bg-accent hover:bg-accent/90 text-accent-foreground">
+                      <Printer className="h-4 w-4" /> Download Checklist
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ready to Join */}
+              <div className="mt-12 rounded-2xl p-8 md:p-10 text-center bg-gradient-to-br from-primary via-primary to-accent text-primary-foreground shadow-xl">
+                <h3 className="font-serif text-3xl font-bold mb-3">Ready to Join Us?</h3>
+                <p className="text-primary-foreground/85 max-w-xl mx-auto mb-6">Take the first step towards your child's bright future. Schedule a campus visit or contact our admissions office today.</p>
+                <div className="flex flex-wrap gap-3 justify-center">
+                  <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground"><Link to="/contact">Contact Admissions</Link></Button>
+                  <Button variant="outline" className="bg-background text-primary hover:bg-background/90" onClick={() => { import("@/lib/prospectus").then((m) => m.generateProspectusPDF()); }}>Download Brochure</Button>
+                </div>
               </div>
             </div>
           )}
