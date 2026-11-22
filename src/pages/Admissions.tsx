@@ -359,7 +359,7 @@ const Admissions = () => {
           {activeTab === "process" && (
             <div className="max-w-6xl mx-auto">
               <h2 className="section-title text-center mb-8">Admission Process</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
                 {[
                   { step: "01", icon: ClipboardList, title: "Enquiry & Registration", desc: "Visit the school or fill the online application form. Our team will guide you through the process." },
                   { step: "02", icon: FileText, title: "Document Submission", desc: "Submit the completed Application form and required documents including birth certificate, previous school records, Aadhaar card, and passport-size photos." },
