@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
+import { Users, BadgeCheck, Heart } from "lucide-react";
 import useScrollToHash from "@/hooks/useScrollToHash";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -360,14 +361,14 @@ const Admissions = () => {
               <h2 className="section-title text-center mb-8">Admission Process</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                 {[
-                  { step: "01", title: "Enquiry & Registration", desc: "Visit the school or fill the online application form. Our team will guide you through the process." },
-                  { step: "02", title: "Document Submission", desc: "Submit the completed Application form and required documents including birth certificate, previous school records, Aadhaar card, and passport-size photos." },
-                  { step: "03", title: "Interaction Round", desc: "A brief interaction with the student and parents to understand the child's needs and expectations." },
-                  { step: "04", title: "Admission Confirmation", desc: "Upon successful evaluation, admission is confirmed and fee payment details are shared." },
-                  { step: "05", title: "Welcome to the Family", desc: "Collect the admission kit, uniform details, and join the Nethaji Vidhyalayam family!" },
+                  { step: "01", icon: ClipboardList, title: "Enquiry & Registration", desc: "Visit the school or fill the online application form. Our team will guide you through the process." },
+                  { step: "02", icon: FileText, title: "Document Submission", desc: "Submit the completed Application form and required documents including birth certificate, previous school records, Aadhaar card, and passport-size photos." },
+                  { step: "03", icon: Users, title: "Interaction Round", desc: "A brief interaction with the student and parents to understand the child's needs and expectations." },
+                  { step: "04", icon: BadgeCheck, title: "Admission Confirmation", desc: "Upon successful evaluation, admission is confirmed and fee payment details are shared." },
+                  { step: "05", icon: Heart, title: "Welcome to the Family", desc: "Collect the admission kit, uniform details, and join the Nethaji Vidhyalayam family!" },
                 ].map((item) => (
                   <div key={item.step} className="bg-card border border-border rounded-xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                    <div className="w-14 h-14 bg-accent text-accent-foreground rounded-xl flex items-center justify-center font-bold text-lg mx-auto mb-4">{item.step}</div>
+                    <div className="w-14 h-14 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4"><item.icon className="h-7 w-7 text-accent" /></div>
                     <h3 className="font-serif text-lg font-bold text-primary mb-2">{item.title}</h3>
                     <p className="text-sm text-muted-foreground">{item.desc}</p>
                   </div>
