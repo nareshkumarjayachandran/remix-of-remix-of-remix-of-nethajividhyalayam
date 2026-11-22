@@ -144,7 +144,7 @@ const LeadershipContent = () => (
       <div className="grid md:grid-cols-3 gap-8">
         {leadership.map((leader) => (
           <article key={leader.name} className="bg-card rounded-xl overflow-hidden shadow-lg text-center">
-            <img src={leader.image} alt={leader.name} className="w-full h-64 object-cover" />
+            <img src={leader.image} alt={leader.name} className="w-full h-auto aspect-[3/2] object-contain bg-muted" />
             <div className="p-6">
               <h2 className="font-serif text-xl font-bold text-primary">{leader.name}</h2>
               <p className="text-accent font-semibold text-sm mb-3 uppercase">{leader.role}</p>
