@@ -1,3 +1,4 @@
+import DuotoneIcon from "@/components/common/DuotoneIcon";
 import { Award, GraduationCap, ShieldCheck, Monitor, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Eye, Target } from "lucide-react";
@@ -134,12 +135,12 @@ const LeadershipContent = () => (
       </div>
       <div className="grid md:grid-cols-2 gap-8">
         <div className="bg-card p-8 rounded-xl shadow-lg">
-          <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mb-6"><Eye className="h-8 w-8 text-accent" /></div>
+          <DuotoneIcon icon={Eye} tone="amber" size="lg" className="mb-6" />
           <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Vision</h2>
           <p className="text-muted-foreground leading-relaxed">To nurture every child into a wise, kind, disciplined and responsible citizen, who thinks clearly, learns joyfully and works selflessly for the growth of our nation.</p>
         </div>
         <div className="bg-card p-8 rounded-xl shadow-lg">
-          <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6"><Target className="h-8 w-8 text-primary" /></div>
+          <DuotoneIcon icon={Target} tone="violet" size="lg" className="mb-6" />
           <h2 className="font-serif text-2xl font-bold text-primary mb-4">Our Mission</h2>
           <ul className="text-muted-foreground space-y-3">
             <li className="flex items-start gap-2"><span className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />To build a strong, self-reliant and caring centre of excellence.</li>

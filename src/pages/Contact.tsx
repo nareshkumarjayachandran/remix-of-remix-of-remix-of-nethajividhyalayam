@@ -1,3 +1,4 @@
+import DuotoneIcon from "@/components/common/DuotoneIcon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -95,9 +96,7 @@ const Contact = () => {
           <div className="grid md:grid-cols-3 gap-6 mb-16">
             {/* Phone Card */}
             <div className="bg-card p-8 rounded-2xl shadow-lg text-center card-hover">
-              <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Phone className="h-8 w-8 text-accent" />
-              </div>
+              <DuotoneIcon icon={Phone} tone="emerald" size="lg" className="mx-auto mb-4" />
               <h3 className="font-serif text-lg font-bold text-primary mb-2">Call Us Directly</h3>
               <div className="mb-1 space-y-1">
                 <a href="tel:+919841594945" className="text-muted-foreground hover:text-accent transition-colors block">+91 9841594945</a>
@@ -111,9 +110,7 @@ const Contact = () => {
 
             {/* Email Card */}
             <div className="bg-card p-8 rounded-2xl shadow-lg text-center card-hover">
-              <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Mail className="h-8 w-8 text-accent" />
-              </div>
+              <DuotoneIcon icon={Mail} tone="sky" size="lg" className="mx-auto mb-4" />
               <h3 className="font-serif text-lg font-bold text-primary mb-2">Send an Email</h3>
               <div className="mb-1 space-y-1">
                 <a href="mailto:nethajividhyalayam@gmail.com" className="text-muted-foreground hover:text-accent transition-colors block">nethajividhyalayam@gmail.com</a>
@@ -131,9 +128,7 @@ const Contact = () => {
 
             {/* Location Card */}
             <div className="bg-card p-8 rounded-2xl shadow-lg text-center card-hover">
-              <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <MapPin className="h-8 w-8 text-accent" />
-              </div>
+              <DuotoneIcon icon={MapPin} tone="amber" size="lg" className="mx-auto mb-4" />
               <h3 className="font-serif text-lg font-bold text-primary mb-2">Visit Campus</h3>
               <p className="text-muted-foreground block mb-1">5/325, Rajiv Nagar, S.Kolathur Main Road</p>
               <p className="text-sm text-muted-foreground mb-4">S.Kolathur, Kovilambakkam Post, Chennai&nbsp;-&nbsp;600129</p>
@@ -150,7 +145,7 @@ const Contact = () => {
               <p className="text-muted-foreground mb-8">Fill out the form and our team will respond within 24 hours.</p>
               {submitted ? (
                 <div className="text-center bg-card p-12 rounded-2xl shadow-lg">
-                  <Send className="h-16 w-16 text-accent mx-auto mb-4" />
+                  <DuotoneIcon icon={Send} tone="emerald" size="lg" className="mx-auto mb-4" />
                   <h3 className="font-serif text-2xl font-bold text-primary mb-2">Message Sent!</h3>
                   <p className="text-muted-foreground">Thank you for reaching out. We will respond within 24 hours.</p>
                   <div className="flex gap-3 justify-center mt-6">

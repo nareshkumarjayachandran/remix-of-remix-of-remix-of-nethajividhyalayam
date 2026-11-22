@@ -1,3 +1,4 @@
+import DuotoneIcon from "@/components/common/DuotoneIcon";
 import { useState, useMemo } from "react";
 import { Sun, Moon, Star, Calendar, Clock, Award } from "lucide-react";
 import { calculateTodayPanchangam } from "@/lib/panchangam";
@@ -326,7 +327,7 @@ const SchoolCalendar = () => {
 
             {/* Kali Yugam & Year Info */}
             <div className="bg-gradient-to-br from-accent/30 to-primary/10 rounded-2xl p-8 text-center border">
-              <Sun className="w-12 h-12 text-primary mx-auto mb-4" />
+              <DuotoneIcon icon={Sun} tone="amber" size="lg" className="mx-auto mb-4" />
               <h2 className="font-serif text-3xl font-bold text-foreground mb-2">கலி யுகம் {panchangamData.kaliYugam.year}</h2>
               <p className="text-lg text-foreground/80 mb-1">தமிழ் ஆண்டு: <strong>{panchangamData.kaliYugam.tamilYear}</strong></p>
               <p className="text-sm text-muted-foreground">{panchangamData.kaliYugam.ayanam}</p>
@@ -335,7 +336,7 @@ const SchoolCalendar = () => {
             {/* Tamil Months */}
             <div>
               <h2 className="font-serif text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <Moon className="w-6 h-6 text-primary" /> தமிழ் மாதங்கள் (Tamil Months)
+                <DuotoneIcon icon={Moon} tone="indigo" size="xs" /> தமிழ் மாதங்கள் (Tamil Months)
               </h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {panchangamData.tamilMonths.map((m, i) => (
@@ -354,7 +355,7 @@ const SchoolCalendar = () => {
             {/* Ruthus */}
             <div>
               <h2 className="font-serif text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <Sun className="w-6 h-6 text-primary" /> ருதுக்கள் (Seasons)
+                <DuotoneIcon icon={Sun} tone="orange" size="xs" /> ருதுக்கள் (Seasons)
               </h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {panchangamData.ruthus.map((r, i) => (
@@ -369,7 +370,7 @@ const SchoolCalendar = () => {
             {/* Vaaram */}
             <div>
               <h2 className="font-serif text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <Calendar className="w-6 h-6 text-primary" /> வாரம் (Days of the Week)
+                <DuotoneIcon icon={Calendar} tone="rose" size="xs" /> வாரம் (Days of the Week)
               </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border rounded-xl overflow-hidden">
@@ -392,7 +393,7 @@ const SchoolCalendar = () => {
             {/* Rahu Kalam */}
             <div>
               <h2 className="font-serif text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <Clock className="w-6 h-6 text-primary" /> ராகு காலம் (Rahu Kalam)
+                <DuotoneIcon icon={Clock} tone="sky" size="xs" /> ராகு காலம் (Rahu Kalam)
               </h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {panchangamData.rahuKalam.map((r, i) => (
@@ -417,7 +418,7 @@ const SchoolCalendar = () => {
             {/* Nakshatras */}
             <div>
               <h2 className="font-serif text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <Star className="w-6 h-6 text-primary" /> நட்சத்திரங்கள் (27 Nakshatras)
+                <DuotoneIcon icon={Star} tone="violet" size="xs" /> நட்சத்திரங்கள் (27 Nakshatras)
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {panchangamData.nakshatras.map((n, i) => (
