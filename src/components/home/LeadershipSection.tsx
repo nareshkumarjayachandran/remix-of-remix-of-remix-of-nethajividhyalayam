@@ -70,7 +70,7 @@ const LeadershipSection = () => {
                   <div className="grid md:grid-cols-2">
                     {/* Image */}
                     <div className="relative h-64 md:h-96">
-                      <img src={member.image} alt={member.name} className="w-full h-full object-cover brightness-110 contrast-105 saturate-110" />
+                      <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
                     </div>
 
                     {/* Content */}
