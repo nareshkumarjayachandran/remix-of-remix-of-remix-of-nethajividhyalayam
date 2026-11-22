@@ -69,9 +69,17 @@ const LeadershipSection = () => {
                 <div key={member.name} className="w-full flex-shrink-0">
                   <div className="grid md:grid-cols-2">
                     {/* Image */}
-                    <div className="relative h-64 md:h-96">
-                      <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent md:bg-gradient-to-r" />
+                    <div className="relative h-64 md:h-96 overflow-hidden">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover brightness-110 contrast-[1.05] saturate-[1.15]"
+                      />
+                      {/* Soft light sheen instead of a dark vignette */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/25 pointer-events-none" />
+                      {/* Warm glow rim */}
+                      <div className="absolute inset-0 ring-1 ring-inset ring-accent/30 pointer-events-none" />
+                      <div className="absolute inset-0 shadow-[inset_0_0_45px_rgba(255,107,53,0.18)] pointer-events-none" />
                     </div>
 
                     {/* Content */}
