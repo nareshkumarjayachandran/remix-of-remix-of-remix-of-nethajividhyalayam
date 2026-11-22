@@ -11,7 +11,7 @@ import { toast } from "@/hooks/use-toast";
 import { sendEmail, sendParentCopy, sendFormEmail } from "@/lib/emailjs";
 import { openPrintableTemplate, buildEmailMessage } from "@/lib/printTemplate";
 import { QRCodeSVG } from "qrcode.react";
-import { CheckCircle, FileText, CreditCard, ClipboardList, Printer, Loader2, Search } from "lucide-react";
+import { CheckCircle, FileText, CreditCard, ClipboardList, Printer, Loader2, Search, CalendarDays, Download } from "lucide-react";
 
 const standards = ["Pre-KG", "LKG", "UKG", "I", "II", "III", "IV", "V"];
 const sections = ["A", "B", "C", "D"];
@@ -356,7 +356,7 @@ const Admissions = () => {
 
           {/* Admission Process */}
           {activeTab === "process" && (
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <h2 className="section-title text-center mb-8">Admission Process</h2>
               <div className="space-y-8">
                 {[
@@ -376,51 +376,45 @@ const Admissions = () => {
                 ))}
               </div>
 
-              {/* Age Criteria & Documents */}
-              <div className="grid md:grid-cols-2 gap-6 mt-12">
-                <div className="rounded-2xl overflow-hidden shadow-lg border-2 border-accent/40 bg-card">
-                  <div className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-4">
-                    <h3 className="font-serif text-xl font-bold">🎂 Age Criteria <span className="text-sm font-normal">(as of March 31st)</span></h3>
+              {/* Age Criteria & Documents (matches main site) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mt-16">
+                <div>
+                  <h3 className="text-2xl font-bold text-primary mb-6 flex items-center"><CalendarDays className="mr-3 h-6 w-6 text-accent" /> Age Criteria (as of March 31st)</h3>
+                  <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                    <table className="w-full text-left border-collapse">
+                      <thead><tr className="bg-muted text-foreground"><th className="p-4 border-b font-semibold">Class</th><th className="p-4 border-b font-semibold">Minimum Age</th></tr></thead>
+                      <tbody className="divide-y divide-border">
+                        {[["Pre-KG","3 Years"],["LKG","3-4 Years"],["UKG","4-5 Years"],["Grade 1","5-6 Years"],["Grade 2","6-7 Years"],["Grade 3","7-8 Years"],["Grade 4","8-9 Years"],["Grade 5","9-10 Years"]].map(([c,a])=>(
+                          <tr key={c}><td className="p-4">{c}</td><td className="p-4">{a}</td></tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                  <table className="w-full text-sm">
-                    <thead><tr className="bg-accent/15 text-primary"><th className="text-left px-6 py-2">Class</th><th className="text-left px-6 py-2">Minimum Age</th></tr></thead>
-                    <tbody>
-                      {[["Pre-KG","3 Years"],["LKG","3-4 Years"],["UKG","4-5 Years"],["Grade 1","5-6 Years"],["Grade 2","6-7 Years"],["Grade 3","7-8 Years"],["Grade 4","8-9 Years"],["Grade 5","9-10 Years"]].map(([c,a],i)=>(
-                        <tr key={c} className={i%2?"bg-secondary/40":""}>
-                          <td className="px-6 py-2 font-semibold text-primary">{c}</td>
-                          <td className="px-6 py-2"><span className="inline-block px-3 py-0.5 rounded-full bg-accent/20 text-foreground font-medium">{a}</span></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <p className="text-xs text-muted-foreground px-6 py-3 bg-accent/10">* Age relaxation may be considered based on the child's readiness and Principal's discretion.</p>
+                  <div className="mt-6 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm border border-yellow-100">* Age relaxation may be considered based on the child's readiness and Principal's discretion.</div>
                 </div>
-
-                <div className="rounded-2xl overflow-hidden shadow-lg border-2 border-primary/30 bg-card flex flex-col">
-                  <div className="bg-gradient-to-r from-accent to-primary text-primary-foreground px-6 py-4">
-                    <h3 className="font-serif text-xl font-bold">📄 Documents Required</h3>
-                  </div>
-                  <div className="p-6 flex-1 flex flex-col">
-                    <p className="text-sm text-muted-foreground mb-4">(Please submit any one of the following, along with originals for verification :)</p>
-                    <ul className="space-y-3 flex-1">
+                <div>
+                  <h3 className="text-2xl font-bold text-primary mb-6 flex items-center"><FileText className="mr-3 h-6 w-6 text-accent" /> Documents Required</h3>
+                  <div className="bg-muted/50 p-8 rounded-2xl border border-border">
+                    <p>(Please submit any one of the following, along with originals for verification :)</p>
+                    <ul className="space-y-4 mt-6">
                       {docsRequired.map((d) => (
-                        <li key={d} className="flex gap-3 items-start"><CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" /><span>{d}</span></li>
+                        <li key={d} className="flex items-start"><CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 shrink-0" /><span className="text-foreground/80">{d}</span></li>
                       ))}
                     </ul>
-                    <Button onClick={() => openPrintableTemplate({ title: "Admission Documents Checklist", subtitle: "Please submit along with originals for verification", fieldGroups: [{ heading: "Documents Required", fields: docsRequired.map((d) => ({ label: d, value: "☐" })) }] })} className="mt-6 gap-2 bg-accent hover:bg-accent/90 text-accent-foreground">
-                      <Printer className="h-4 w-4" /> Download Checklist
-                    </Button>
+                    <button onClick={() => openPrintableTemplate({ title: "Admission Documents Checklist", subtitle: "Please submit along with originals for verification", fieldGroups: [{ heading: "Documents Required", fields: docsRequired.map((d) => ({ label: d, value: "☐" })) }] })} className="mt-8 w-full flex items-center justify-center gap-2 border-2 border-accent text-accent font-bold py-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all">
+                      <Download className="h-5 w-5" /> Download Checklist
+                    </button>
                   </div>
                 </div>
               </div>
 
               {/* Ready to Join */}
-              <div className="mt-12 rounded-2xl p-8 md:p-10 text-center bg-gradient-to-br from-primary via-primary to-accent text-primary-foreground shadow-xl">
-                <h3 className="font-serif text-3xl font-bold mb-3">Ready to Join Us?</h3>
-                <p className="text-primary-foreground/85 max-w-xl mx-auto mb-6">Take the first step towards your child's bright future. Schedule a campus visit or contact our admissions office today.</p>
-                <div className="flex flex-wrap gap-3 justify-center">
-                  <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground"><Link to="/contact">Contact Admissions</Link></Button>
-                  <Button variant="outline" className="bg-background text-primary hover:bg-background/90" onClick={() => { import("@/lib/prospectus").then((m) => m.generateProspectusPDF()); }}>Download Brochure</Button>
+              <div className="py-20 text-center">
+                <h2 className="text-4xl font-bold text-foreground mb-6">Ready to Join Us?</h2>
+                <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">Take the first step towards your child's bright future. Schedule a campus visit or contact our admissions office today.</p>
+                <div className="flex flex-col md:flex-row gap-4 justify-center">
+                  <Link to="/contact" className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-4 rounded-full font-bold text-lg transition-all shadow-xl">Contact Admissions</Link>
+                  <button onClick={() => { import("@/lib/prospectus").then((m) => m.generateProspectusPDF()); }} className="bg-background border-2 border-border text-foreground/80 hover:border-accent hover:text-accent px-10 py-4 rounded-full font-bold text-lg transition-all">Download Brochure</button>
                 </div>
               </div>
             </div>
