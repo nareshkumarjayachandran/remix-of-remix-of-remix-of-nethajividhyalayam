@@ -17,7 +17,7 @@ const corsHeaders = {
 const SCHOOL_EMAIL = "nethajividhyalayam@gmail.com";
 const SCHOOL_NAME = "Nethaji Vidhyalayam Nursery and Primary School";
 const SCHOOL_ADDRESS = "5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129";
-const SCHOOL_PHONE = "+91 9841594945 / 6380967675";
+const SCHOOL_PHONE = "+91 9841594945 / +91 6380967675";
 const SCHOOL_PHONE_LINKS =
   '<a href="tel:+919841594945" style="color:#1e40af;text-decoration:underline;">+91 9841594945</a>' +
   ' / ' +
@@ -145,8 +145,11 @@ function buildSchoolEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:0;background:#f4f4f4;">
   <div style="max-width:650px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;border:2px solid #1a3a5c;">
     <div style="background:#1a3a5c;color:#fff;padding:24px;text-align:center;">
-      <h1 style="margin:0;font-size:24px;letter-spacing:1px;">📋 ${req.title}</h1>
-      ${req.subtitle ? `<p style="margin:6px 0 0;font-size:13px;opacity:0.85;">${req.subtitle}</p>` : ""}
+      <h1 style="margin:0;font-size:22px;letter-spacing:1px;">${SCHOOL_NAME.toUpperCase()}</h1>
+      <p style="margin:6px 0 0;font-size:11px;opacity:0.85;">${SCHOOL_ADDRESS}</p>
+      <p style="margin:4px 0 0;font-size:11px;opacity:0.85;">Phone: ${SCHOOL_PHONE} | Email: ${SCHOOL_EMAIL}</p>
+      <h2 style="margin:12px 0 0;font-size:17px;">📋 ${req.title}</h2>
+      ${req.subtitle ? `<p style="margin:4px 0 0;font-size:13px;opacity:0.85;">${req.subtitle}</p>` : ""}
     </div>
     <div style="background:#d4a843;padding:10px 20px;display:flex;justify-content:space-between;font-size:12px;color:#1a3a5c;">
       <span><strong>Date:</strong> ${dateStr}</span>

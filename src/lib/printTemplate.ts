@@ -149,7 +149,7 @@ export const buildEmailMessage = (title: string, fieldGroups: FieldGroup[]): str
   const dateStr = now.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
   const timeStr = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
 
-  let msg = `${title}\nDate: ${dateStr} | Time: ${timeStr}\n${"=".repeat(40)}\n\n`;
+  let msg = `NETHAJI VIDHYALAYAM NURSERY AND PRIMARY SCHOOL\n5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129\nPhone: +91 9841594945 / +91 6380967675 | Email: nethajividhyalayam@gmail.com\n${"=".repeat(40)}\n\n${title}\nDate: ${dateStr} | Time: ${timeStr}\n${"=".repeat(40)}\n\n`;
   for (const group of fieldGroups) {
     msg += `--- ${group.heading} ---\n`;
     for (const f of group.fields) {
