@@ -122,14 +122,16 @@ const AcademicsPrimary = () => {
                 Academic Excellence with Character Building
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                The Primary School years (Grades 1–5) are pivotal in shaping a child's academic journey.
-                Our curriculum is designed to build strong foundational skills in reading, writing,
-                mathematics, and critical thinking while nurturing curiosity and a love for learning.
+                The Upper Primary years (Grades 3–5) are a beautiful turning point in a child's learning
+                journey. It is the time when children move from learning to read, to reading to learn,
+                from simple answers to asking thoughtful questions.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                We follow a student-centered approach that emphasizes experiential learning, project-based
-                activities, and collaborative teamwork. Our dedicated teachers ensure that each child receives
-                the support they need to thrive academically and personally.
+                Our curriculum is thoughtfully designed to strengthen reading, writing, mathematics, and
+                independent thinking, while keeping curiosity alive and learning joyful. We follow a
+                child-centred approach with experiential learning, meaningful projects, and teamwork.
+                Our caring teachers guide each child with patience and encouragement, helping them grow
+                with confidence, discipline, values, and a true love for learning.
               </p>
               <div className="flex gap-6 mt-6">
                 <div className="bg-secondary rounded-xl p-4 text-center flex-1">
