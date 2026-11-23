@@ -2,13 +2,13 @@ import { Book, Dumbbell, Bus, Shield, Wifi, Users, Monitor, Beaker, Music, Utens
 import DuotoneIcon, { type DuotoneTone } from "@/components/common/DuotoneIcon";
 
 const facilities = [
-  { icon: Book, title: "Library", tone: "teal" as DuotoneTone, description: "A vast collection of 500+ books, digital resources, magazines, and a quiet reading zone for students.", image: "/photos/facilities/library-overview.jpg", highlights: ["500+ books", "Reading programs", "Quiet study zones"] },
-  { icon: Dumbbell, title: "Sports Complex", tone: "emerald" as DuotoneTone, description: "Regular sports activities are conducted in the complex. The complex helps students stay active and healthy. Trained coaches guide students during practice sessions.", image: "/photos/facilities/sports-complex-overview.jpg", highlights: ["Annual sports meet", "Art and craft activities"] },
-  { icon: Bus, title: "Transport", tone: "sky" as DuotoneTone, description: "Safe and reliable transport facility ensuring student safety. Provides convenient and supervised travel for students.", image: "/photos/facilities/school-transport.jpg", highlights: ["GPS tracking", "Trained staff", "Attender present", "5–10 km radius"] },
-  { icon: Monitor, title: "Smart Classrooms", tone: "violet" as DuotoneTone, description: "Digitally equipped classrooms with interactive boards, projectors, and audio-visual aids for engaging learning.", image: "/photos/facilities/smart-classrooms.jpg", highlights: ["Interactive boards", "Projectors", "Audio-visual aids"] },
+  { icon: Book, title: "Library", tone: "teal" as DuotoneTone, subtitle: "Where Stories Come Alive", description: "A calm and cozy reading corner with 500+ books, magazines and digital resources — where children discover stories, grow imagination, and fall in love with reading.", image: "/photos/facilities/library-overview.jpg", highlights: ["500+ books", "Reading programs", "Quiet study zones"] },
+  { icon: Dumbbell, title: "Sports Complex", tone: "emerald" as DuotoneTone, subtitle: "Play, Grow, Shine", description: "A lively sports ground where children stay active and healthy through regular games, guided with care by trained coaches.", image: "/photos/facilities/sports-complex-overview.jpg", highlights: ["Annual sports meet", "Art and craft activities"] },
+  { icon: Bus, title: "Transport", tone: "sky" as DuotoneTone, subtitle: "Safe Journeys, Happy Children", description: "Safe, reliable and supervised transport for field trips and outings — so every journey is comfortable and worry-free.", image: "/photos/facilities/school-transport.jpg", highlights: ["GPS tracking", "Trained staff", "Attender present", "5–10 km radius"] },
+  { icon: Monitor, title: "Smart Classrooms", tone: "violet" as DuotoneTone, subtitle: "Where Lessons Come Alive", description: "Modern classrooms with interactive boards, projectors and audio-visual tools — making every lesson clear, colourful and joyful.", image: "/photos/facilities/smart-classrooms.jpg", highlights: ["Interactive boards", "Projectors", "Audio-visual aids"] },
   { icon: Beaker, title: "Science Lab", tone: "cyan" as DuotoneTone, description: "Well-equipped labs for hands-on experiments and scientific exploration.", image: "/photos/facilities/science-lab.jpg", highlights: ["Practical experiments", "Modern equipment"] },
-  { icon: Monitor, title: "Computer Lab", tone: "indigo" as DuotoneTone, description: "Modern computer lab with latest hardware and software for developing digital skills.", image: "/photos/facilities/computer-lab.jpg", highlights: ["Latest hardware", "Digital literacy"] },
-  { icon: Music, title: "Music & Dance Room", tone: "rose" as DuotoneTone, description: "Dedicated space for music classes, dance practice, and cultural activity rehearsals.", image: "/photos/facilities/music-and-dance-room.jpg", highlights: ["Music training", "Dance practice"] },
+  { icon: Monitor, title: "Computer Lab", tone: "indigo" as DuotoneTone, subtitle: "Explore, Learn, Create", description: "A bright, modern lab with new computers and software — where children learn, explore and create with confidence.", image: "/photos/facilities/computer-lab.jpg", highlights: ["Latest hardware", "Digital literacy"] },
+  { icon: Music, title: "Music & Dance Room", tone: "rose" as DuotoneTone, subtitle: "Where Rhythm Meets Joy", description: "A cheerful space for music, dance and cultural practice — where children sing, move, perform and shine with confidence.", image: "/photos/facilities/music-and-dance-room.jpg", highlights: ["Music training", "Dance practice"] },
   { icon: Utensils, title: "Canteen & Cafeteria", tone: "orange" as DuotoneTone, description: "Hygienic canteen serving nutritious and delicious meals for students and staff.", image: "/photos/facilities/canteen-and-cafeteria.jpg", highlights: ["Hygienic food", "Nutritious meals"] },
   { icon: Heart, title: "Medical Room", tone: "pink" as DuotoneTone, description: "First-aid facility with trained staff to handle medical emergencies.", image: "/photos/facilities/medical-room.jpg", highlights: ["First-aid", "Trained staff"] },
 ];
@@ -63,6 +63,9 @@ const Facilities = () => {
                     <DuotoneIcon icon={facility.icon} tone={facility.tone} />
                     <h3 className="font-serif text-2xl font-bold text-primary">{facility.title}</h3>
                   </div>
+                  {"subtitle" in facility && facility.subtitle && (
+                    <p className="text-accent font-semibold italic mb-2">{facility.subtitle}</p>
+                  )}
                   <p className="text-muted-foreground mb-4">{facility.description}</p>
                   {facility.highlights && (
                     <div className="flex flex-wrap gap-2">
