@@ -57,7 +57,7 @@ const events = [
     title: "Teachers' Day Celebration",
     date: "September 5, 2024",
     description: "Students honour their beloved teachers with performances, speeches, and heartfelt gratitude.",
-    image: "/photos/teachers-day/teachers-day.jpg",
+    image: "/photos/teachers-day/Teachers_Day_Celebration.jpeg",
     category: "Celebration",
   },
   {

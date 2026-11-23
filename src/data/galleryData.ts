@@ -50,7 +50,7 @@ export const galleryImages: GalleryImage[] = [
   // ── Teachers' Day ──
   {
     id: 6,
-    src: "/photos/teachers-day/Teachers_Day_Celebration.jpg",
+    src: "/photos/teachers-day/Teachers_Day_Celebration.jpeg",
     alt: "Teachers' Day Celebration",
     category: "Events",
     description: "A heartfelt celebration honoring our dedicated teachers with flowers, gifts, and cultural programs organized by grateful students.",
