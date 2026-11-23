@@ -17,49 +17,6 @@ const stagesData = [
     link: "/academics/primary",
     subjects: [] as { name: string; detail: string }[],
   },
-  {
-    title: "Preparatory Stage (LKG)",
-    summary: "Core Subjects (Languages, Math, EVS), Discovery Learning, Reading Habits",
-    link: "/academics/nursery",
-    subjects: [
-      { name: "English", detail: "Phonics blending, simple sentences, picture reading, basic writing" },
-      { name: "Tamil", detail: "Vowels (உயிர் எழுத்து), consonants (மெய் எழுத்து), simple words" },
-      { name: "Mathematics", detail: "Numbers 1–50, shapes, patterns, addition concept" },
-      { name: "EVS", detail: "My body, seasons, plants, transport, community helpers" },
-      { name: "Art & Craft", detail: "Craft activities, drawing, colouring, paper folding" },
-      { name: "Physical Education", detail: "Group games, exercises, yoga for kids" },
-      { name: "Value Education", detail: "Respect, honesty, caring for others" },
-    ],
-  },
-  {
-    title: "Middle Stage (UKG)",
-    summary: "Subject Specialization (Science, Social Studies), Critical Thinking, Project Work",
-    link: "/academics/nursery",
-    subjects: [
-      { name: "English", detail: "Reading passages, comprehension, creative writing, grammar basics" },
-      { name: "Tamil", detail: "Uyir-mei letters, simple words, sentences, short stories" },
-      { name: "Mathematics", detail: "Numbers up to 100, addition & subtraction with carry, multiplication tables (1–5)" },
-      { name: "Science", detail: "Living vs non-living, plants & animals, our environment" },
-      { name: "Social Studies", detail: "Our school, neighbourhood, festivals, maps introduction" },
-      { name: "Art & Craft", detail: "Project-based art, model-making, display work" },
-      { name: "Computer Science", detail: "Introduction to computers, keyboard & mouse, basic software" },
-    ],
-  },
-  {
-    title: "Secondary Stage (Grade 1 to 5)",
-    summary: "Core Academics, Life Skills, Holistic Growth",
-    link: "/academics/primary",
-    subjects: [
-      { name: "English", detail: "Grammar, comprehension, creative writing, literature reading, vocabulary building" },
-      { name: "Tamil", detail: "Prose, poetry, grammar, composition and language enrichment" },
-      { name: "Mathematics", detail: "Number operations, fractions, decimals, geometry, data handling" },
-      { name: "Science", detail: "Living things, matter, force & energy, Earth and environment, basic experiments" },
-      { name: "Social Studies", detail: "History, civics, geography, map skills, cultural heritage" },
-      { name: "Computer Science", detail: "MS Office basics, internet safety, programming logic introduction" },
-      { name: "Physical Education", detail: "Outdoor sports, yoga, health & hygiene, team activities" },
-      { name: "Art & Craft / Music", detail: "Creative arts, visual expression, Indian classical music basics" },
-    ],
-  },
 ];
 
 const pillars = [
