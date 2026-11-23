@@ -148,7 +148,7 @@ function buildSchoolEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
     <div style="background:#1a3a5c;color:#fff;padding:20px;">
       <table role="presentation" style="width:100%;border-collapse:collapse;"><tr>
         <td style="width:110px;vertical-align:middle;">
-          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_badge.png" alt="School Logo" width="100" style="display:block;width:100px;height:auto;background:#ffffff;" />
+          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_print.webp" alt="School Logo" width="80" style="display:block;width:80px;height:auto;" />
         </td>
         <td style="vertical-align:middle;padding-left:16px;">
           <h1 style="margin:0;font-size:20px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
@@ -215,7 +215,7 @@ function buildParentEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
     <div style="background:#1a3a5c;color:#fff;padding:20px;">
       <table role="presentation" style="width:100%;border-collapse:collapse;"><tr>
         <td style="width:110px;vertical-align:middle;">
-          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_badge.png" alt="School Logo" width="100" style="display:block;width:100px;height:auto;background:#ffffff;" />
+          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_print.webp" alt="School Logo" width="80" style="display:block;width:80px;height:auto;" />
         </td>
         <td style="vertical-align:middle;padding-left:16px;">
           <h1 style="margin:0;font-size:20px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
