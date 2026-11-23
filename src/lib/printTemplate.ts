@@ -134,12 +134,24 @@ const generateHTML = (options: PrintTemplateOptions, logoDataUri: string): strin
 };
 
 export const openPrintableTemplate = async (options: PrintTemplateOptions) => {
+  // Open the window synchronously (before any await) so popup blockers allow it
+  const printWindow = window.open("", "_blank");
   const logoDataUri = await fetchLogoBase64();
   const html = generateHTML(options, logoDataUri);
-  const printWindow = window.open("", "_blank");
   if (printWindow) {
     printWindow.document.write(html);
     printWindow.document.close();
+  } else {
+    // Popup blocked (e.g. inside preview frame) — download the document as a file instead
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${options.title.replace(/[^a-z0-9]+/gi, "-")}.html`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
   }
 };
 
