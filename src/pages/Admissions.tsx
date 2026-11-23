@@ -428,6 +428,16 @@ const Admissions = () => {
 
               {feeSubmitted ? (
                 <div className="text-center bg-card p-12 rounded-2xl shadow-lg">
+                  <div className="mb-6 space-y-4 text-left"><div className="flex flex-col sm:flex-row items-center gap-4 bg-primary text-primary-foreground p-5 rounded-xl text-center sm:text-left">
+                  <img src="/nethaji_logo_print.webp" alt="Nethaji Vidhyalayam logo" className="h-20 w-auto object-contain" />
+                  <div>
+                    <h3 className="font-serif text-2xl font-bold tracking-wide">NETHAJI VIDHYALAYAM</h3>
+                    <p className="text-sm opacity-90">5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129</p>
+                    <p className="text-sm opacity-90">Phone: +91 9841594945 / +91 6380967675 | Email: nethajividhyalayam@gmail.com</p>
+                  </div>
+                </div>
+                <p className="text-center font-bold uppercase tracking-widest text-primary border-y py-2">Admission Application Form</p>
+</div>
                   <CheckCircle className="h-16 w-16 text-accent mx-auto mb-4" />
                   <h3 className="font-serif text-2xl font-bold text-primary mb-2">Payment Recorded!</h3>
                   <p className="text-muted-foreground mb-6">Your fee payment details have been sent to the school.</p>
@@ -574,6 +584,15 @@ const Admissions = () => {
                 </div>
               ) : (
                 <form onSubmit={handleApplySubmit} className="bg-card p-8 rounded-2xl shadow-lg space-y-6">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 bg-primary text-primary-foreground p-5 rounded-xl text-center sm:text-left">
+                  <img src="/nethaji_logo_print.webp" alt="Nethaji Vidhyalayam logo" className="h-20 w-auto object-contain" />
+                  <div>
+                    <h3 className="font-serif text-2xl font-bold tracking-wide">NETHAJI VIDHYALAYAM</h3>
+                    <p className="text-sm opacity-90">5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129</p>
+                    <p className="text-sm opacity-90">Phone: +91 9841594945 / +91 6380967675 | Email: nethajividhyalayam@gmail.com</p>
+                  </div>
+                </div>
+                <p className="text-center font-bold uppercase tracking-widest text-primary border-y py-2">Admission Application Form</p>
                   <h3 className="font-serif text-xl font-bold text-primary border-b pb-3">Student Details</h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
