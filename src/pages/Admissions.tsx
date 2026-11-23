@@ -412,7 +412,7 @@ const Admissions = () => {
                         <li key={d} className="flex items-start"><CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 shrink-0" /><span className="text-foreground/80">{d}</span></li>
                       ))}
                     </ul>
-                    <button onClick={() => openPrintableTemplate({ title: "Admission Documents Checklist", subtitle: "Please submit along with originals for verification", fieldGroups: [{ heading: "Documents Required", fields: docsRequired.map((d) => ({ label: d, value: "☐" })) }] })} className="mt-8 w-full flex items-center justify-center gap-2 border-2 border-accent text-accent font-bold py-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all">
+                    <button onClick={() => { import("@/lib/checklistPdf").then((m) => m.downloadChecklistPDF(docsRequired)); }} className="mt-8 w-full flex items-center justify-center gap-2 border-2 border-accent text-accent font-bold py-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all">
                       <Download className="h-5 w-5" /> Download Checklist
                     </button>
                   </div>
