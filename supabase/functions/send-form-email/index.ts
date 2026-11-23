@@ -144,12 +144,18 @@ function buildAdmissionFormFooter(req: FormEmailRequest): string {
 function buildSchoolEmail(req: FormEmailRequest, dateStr: string, timeStr: string): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:0;background:#f4f4f4;">
   <div style="max-width:650px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;border:2px solid #1a3a5c;">
-    <div style="background:#1a3a5c;color:#fff;padding:24px;text-align:center;">
-      <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_badge.png" alt="School Logo" width="80" height="80" style="display:block;margin:0 auto 10px;width:80px;height:80px;border-radius:50%;background:#ffffff;" />
-      <h1 style="margin:0;font-size:22px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
-      <p style="margin:6px 0 0;font-size:12px;color:#ffffff;">${SCHOOL_ADDRESS}</p>
-      <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: <span style="color:#ffffff;">${SCHOOL_PHONE}</span> | Email: <span style="color:#ffffff;">${SCHOOL_EMAIL}</span></p>
-      <div style="border-top:1px solid rgba(255,255,255,0.4);margin:14px auto 0;padding-top:12px;">
+    <div style="background:#1a3a5c;color:#fff;padding:20px;">
+      <table role="presentation" style="width:100%;border-collapse:collapse;"><tr>
+        <td style="width:110px;vertical-align:middle;">
+          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_print.webp" alt="School Logo" width="100" style="display:block;width:100px;height:auto;" />
+        </td>
+        <td style="vertical-align:middle;padding-left:16px;">
+          <h1 style="margin:0;font-size:20px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
+          <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">${SCHOOL_ADDRESS}</p>
+          <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: ${SCHOOL_PHONE} | Email: ${SCHOOL_EMAIL}</p>
+        </td>
+      </tr></table>
+      <div style="border-top:1px solid rgba(255,255,255,0.4);margin:14px auto 0;padding-top:12px;text-align:center;">
         <h2 style="margin:0;font-size:18px;color:#ffffff;">📋 ${req.title}</h2>
         ${req.subtitle ? `<p style="margin:4px 0 0;font-size:14px;color:#ffffff;">${req.subtitle}</p>` : ""}
       </div>
@@ -205,11 +211,17 @@ function buildParentEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
   const thankYou = getThankYouMessage(req.formType);
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:0;background:#f4f4f4;">
   <div style="max-width:650px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;border:2px solid #1a3a5c;">
-    <div style="background:#1a3a5c;color:#fff;padding:24px;text-align:center;">
-      <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_badge.png" alt="School Logo" width="80" height="80" style="display:block;margin:0 auto 10px;width:80px;height:80px;border-radius:50%;background:#ffffff;" />
-      <h1 style="margin:0;font-size:22px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
-      <p style="margin:6px 0 0;font-size:12px;color:#ffffff;">${SCHOOL_ADDRESS}</p>
-      <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: <span style="color:#ffffff;">${SCHOOL_PHONE}</span> | Email: <span style="color:#ffffff;">${SCHOOL_EMAIL}</span></p>
+    <div style="background:#1a3a5c;color:#fff;padding:20px;">
+      <table role="presentation" style="width:100%;border-collapse:collapse;"><tr>
+        <td style="width:110px;vertical-align:middle;">
+          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_print.webp" alt="School Logo" width="100" style="display:block;width:100px;height:auto;" />
+        </td>
+        <td style="vertical-align:middle;padding-left:16px;">
+          <h1 style="margin:0;font-size:20px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
+          <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">${SCHOOL_ADDRESS}</p>
+          <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: ${SCHOOL_PHONE} | Email: ${SCHOOL_EMAIL}</p>
+        </td>
+      </tr></table>
     </div>
     <div style="background:#d4a843;padding:10px 20px;text-align:center;">
       <h2 style="margin:0;font-size:16px;color:#1a3a5c;text-transform:uppercase;letter-spacing:1px;">${req.title}</h2>
