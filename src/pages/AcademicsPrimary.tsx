@@ -1,6 +1,7 @@
+import { Trophy, Music, Palette, Dumbbell, Library, HeartPulse, Flower2 } from "lucide-react";
 import DuotoneIcon, { toneAt } from "@/components/common/DuotoneIcon";
 import useScrollToHash from "@/hooks/useScrollToHash";
-import { BookOpen, Cpu, ClipboardList, FlaskConical, Globe, CheckCircle, Lightbulb, BarChart2 } from "lucide-react";
+import { BookOpen, Cpu, ClipboardList, FlaskConical, Globe, Lightbulb, BarChart2 } from "lucide-react";
 
 const AcademicsPrimary = () => {
   useScrollToHash();
@@ -75,13 +76,13 @@ const AcademicsPrimary = () => {
   ];
 
   const coActivities = [
-    "Sports & Athletics",
-    "Music & Dance",
-    "Art & Craft",
-    "Physical Education",
-    "Library",
-    "Health Education",
-    "Yoga & Meditation",
+    { label: "Sports & Athletics", icon: Trophy },
+    { label: "Music & Dance", icon: Music },
+    { label: "Art & Craft", icon: Palette },
+    { label: "Physical Education", icon: Dumbbell },
+    { label: "Library", icon: Library },
+    { label: "Health Education", icon: HeartPulse },
+    { label: "Yoga & Meditation", icon: Flower2 },
   ];
 
   return (
@@ -206,8 +207,8 @@ const AcademicsPrimary = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {coActivities.map((a, i) => (
               <div key={i} className="flex items-center gap-2 bg-card rounded-xl px-4 py-3 shadow-sm">
-                <CheckCircle className="h-4 w-4 text-accent shrink-0" />
-                <span className="text-sm font-semibold text-foreground">{a}</span>
+                <DuotoneIcon icon={a.icon} tone={toneAt(i)} size="xs" />
+                <span className="text-sm font-semibold text-foreground">{a.label}</span>
               </div>
             ))}
           </div>
