@@ -145,11 +145,14 @@ function buildSchoolEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:0;background:#f4f4f4;">
   <div style="max-width:650px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;border:2px solid #1a3a5c;">
     <div style="background:#1a3a5c;color:#fff;padding:24px;text-align:center;">
-      <h1 style="margin:0;font-size:22px;letter-spacing:1px;">${SCHOOL_NAME.toUpperCase()}</h1>
-      <p style="margin:6px 0 0;font-size:11px;opacity:0.85;">${SCHOOL_ADDRESS}</p>
-      <p style="margin:4px 0 0;font-size:11px;opacity:0.85;">Phone: ${SCHOOL_PHONE} | Email: ${SCHOOL_EMAIL}</p>
-      <h2 style="margin:12px 0 0;font-size:17px;">📋 ${req.title}</h2>
-      ${req.subtitle ? `<p style="margin:4px 0 0;font-size:13px;opacity:0.85;">${req.subtitle}</p>` : ""}
+      <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_badge.png" alt="School Logo" width="80" height="80" style="display:block;margin:0 auto 10px;width:80px;height:80px;border-radius:50%;background:#ffffff;" />
+      <h1 style="margin:0;font-size:22px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
+      <p style="margin:6px 0 0;font-size:12px;color:#ffffff;">${SCHOOL_ADDRESS}</p>
+      <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: <span style="color:#ffffff;">${SCHOOL_PHONE}</span> | Email: <span style="color:#ffffff;">${SCHOOL_EMAIL}</span></p>
+      <div style="border-top:1px solid rgba(255,255,255,0.4);margin:14px auto 0;padding-top:12px;">
+        <h2 style="margin:0;font-size:18px;color:#ffffff;">📋 ${req.title}</h2>
+        ${req.subtitle ? `<p style="margin:4px 0 0;font-size:14px;color:#ffffff;">${req.subtitle}</p>` : ""}
+      </div>
     </div>
     <div style="background:#d4a843;padding:10px 20px;display:flex;justify-content:space-between;font-size:12px;color:#1a3a5c;">
       <span><strong>Date:</strong> ${dateStr}</span>
@@ -203,9 +206,10 @@ function buildParentEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:0;background:#f4f4f4;">
   <div style="max-width:650px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;border:2px solid #1a3a5c;">
     <div style="background:#1a3a5c;color:#fff;padding:24px;text-align:center;">
-      <h1 style="margin:0;font-size:22px;letter-spacing:1px;">${SCHOOL_NAME}</h1>
-      <p style="margin:6px 0 0;font-size:11px;opacity:0.8;">${SCHOOL_ADDRESS}</p>
-      <p style="margin:4px 0 0;font-size:11px;opacity:0.8;">Phone: ${SCHOOL_PHONE} | Email: ${SCHOOL_EMAIL}</p>
+      <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_badge.png" alt="School Logo" width="80" height="80" style="display:block;margin:0 auto 10px;width:80px;height:80px;border-radius:50%;background:#ffffff;" />
+      <h1 style="margin:0;font-size:22px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
+      <p style="margin:6px 0 0;font-size:12px;color:#ffffff;">${SCHOOL_ADDRESS}</p>
+      <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: <span style="color:#ffffff;">${SCHOOL_PHONE}</span> | Email: <span style="color:#ffffff;">${SCHOOL_EMAIL}</span></p>
     </div>
     <div style="background:#d4a843;padding:10px 20px;text-align:center;">
       <h2 style="margin:0;font-size:16px;color:#1a3a5c;text-transform:uppercase;letter-spacing:1px;">${req.title}</h2>
