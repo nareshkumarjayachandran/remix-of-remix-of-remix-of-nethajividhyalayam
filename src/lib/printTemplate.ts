@@ -40,7 +40,7 @@ const generateHTML = (options: PrintTemplateOptions, logoDataUri: string): strin
   const dateStr = now.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
   const timeStr = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
-  const schoolName = options.schoolName || "Nethaji Vidhyalayam";
+  const schoolName = options.schoolName || "NETHAJI VIDHYALAYAM NURSERY AND PRIMARY SCHOOL";
   const schoolAddress = options.schoolAddress || "5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129";
 
   const fieldGroupsHTML = options.fieldGroups

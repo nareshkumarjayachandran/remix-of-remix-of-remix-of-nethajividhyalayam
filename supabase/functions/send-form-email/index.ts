@@ -15,7 +15,7 @@ const corsHeaders = {
 };
 
 const SCHOOL_EMAIL = "nethajividhyalayam@gmail.com";
-const SCHOOL_NAME = "Nethaji Vidhyalayam";
+const SCHOOL_NAME = "Nethaji Vidhyalayam Nursery and Primary School";
 const SCHOOL_ADDRESS = "5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129";
 const SCHOOL_PHONE = "+91 9841594945 / 6380967675";
 const SCHOOL_PHONE_LINKS =

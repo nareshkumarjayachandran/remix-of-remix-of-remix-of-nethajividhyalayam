@@ -40,7 +40,7 @@ Keep responses SHORT, SWEET, and HELPFUL. Maximum 3-4 lines per answer + relevan
 When asked about today's date, time, nakshatra, tithi, or panchangam, provide the details from TODAY'S TAMIL PANCHANGAM above. Always include the relevant details directly in your answer.
 
 SCHOOL OVERVIEW:
-- School Name: Nethaji Vidhyalayam
+- School Name: Nethaji Vidhyalayam Nursery and Primary School
 - Founded: 11th June 2002 (25+ years of excellence)
 - Address: 5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129
 - Phone: +91 9841594945 / 6380967675

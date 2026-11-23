@@ -431,7 +431,7 @@ const Admissions = () => {
                   <div className="mb-6 space-y-4 text-left"><div className="flex flex-col sm:flex-row items-center gap-4 bg-primary text-primary-foreground p-5 rounded-xl text-center sm:text-left">
                   <img src="/nethaji_logo_print.webp" alt="Nethaji Vidhyalayam logo" className="h-20 w-auto object-contain" />
                   <div>
-                    <h3 className="font-serif text-2xl font-bold tracking-wide">NETHAJI VIDHYALAYAM</h3>
+                    <h3 className="font-serif text-xl sm:text-2xl font-bold tracking-wide leading-tight">NETHAJI VIDHYALAYAM NURSERY AND PRIMARY SCHOOL</h3>
                     <p className="text-sm opacity-90">5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129</p>
                     <p className="text-sm opacity-90">Phone: +91 9841594945 / +91 6380967675 | Email: nethajividhyalayam@gmail.com</p>
                   </div>
@@ -587,7 +587,7 @@ const Admissions = () => {
                   <div className="flex flex-col sm:flex-row items-center gap-4 bg-primary text-primary-foreground p-5 rounded-xl text-center sm:text-left">
                   <img src="/nethaji_logo_print.webp" alt="Nethaji Vidhyalayam logo" className="h-20 w-auto object-contain" />
                   <div>
-                    <h3 className="font-serif text-2xl font-bold tracking-wide">NETHAJI VIDHYALAYAM</h3>
+                    <h3 className="font-serif text-xl sm:text-2xl font-bold tracking-wide leading-tight">NETHAJI VIDHYALAYAM NURSERY AND PRIMARY SCHOOL</h3>
                     <p className="text-sm opacity-90">5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129</p>
                     <p className="text-sm opacity-90">Phone: +91 9841594945 / +91 6380967675 | Email: nethajividhyalayam@gmail.com</p>
                   </div>

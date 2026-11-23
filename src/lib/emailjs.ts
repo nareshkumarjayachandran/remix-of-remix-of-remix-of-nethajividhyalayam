@@ -16,11 +16,11 @@ export const sendParentCopy = (parentEmail: string, parentName: string, formTitl
   
   return emailjs.send(SERVICE_ID, TEMPLATE_ID, {
     to_email: parentEmail,
-    from_name: "Nethaji Vidhyalayam",
+    from_name: "Nethaji Vidhyalayam Nursery and Primary School",
     from_email: "nethajividhyalayam@gmail.com",
     phone: "+91 9841594945 / 6380967675",
-    subject: `Thank you ${parentName} — ${formTitle} | Nethaji Vidhyalayam`,
-    message: `Dear ${parentName},\n\nThank you for your ${formTitle.toLowerCase()}. We have received your submission and our team will get back to you shortly.\n\nBelow is a copy of your submission for your records:\n\n${"=".repeat(40)}\n\n${message}\n\n${"=".repeat(40)}\n\nNethaji Vidhyalayam\n5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129\nPhone: +91 9841594945 / 6380967675\nEmail: nethajividhyalayam@gmail.com\n\nThis is a computer-generated email. Please do not reply.`,
+    subject: `Thank you ${parentName} — ${formTitle} | Nethaji Vidhyalayam Nursery and Primary School`,
+    message: `Dear ${parentName},\n\nThank you for your ${formTitle.toLowerCase()}. We have received your submission and our team will get back to you shortly.\n\nBelow is a copy of your submission for your records:\n\n${"=".repeat(40)}\n\n${message}\n\n${"=".repeat(40)}\n\nNETHAJI VIDHYALAYAM NURSERY AND PRIMARY SCHOOL\n5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129\nPhone: +91 9841594945 / 6380967675\nEmail: nethajividhyalayam@gmail.com\n\nThis is a computer-generated email. Please do not reply.`,
   }, { publicKey: PUBLIC_KEY });
 };
 
