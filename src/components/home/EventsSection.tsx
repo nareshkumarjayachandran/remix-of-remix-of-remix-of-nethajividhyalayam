@@ -73,7 +73,7 @@ const events = [
     title: "Career Guidance Workshop",
     date: "August 10, 2024",
     description: "Expert sessions to guide students on career paths, higher education options, and skill development.",
-    image: "/photos/career-guidance/career-workshop.jpeg",
+    image: "/photos/career-guidance/career-workshop.jpg",
     category: "Workshop",
   },
 ];

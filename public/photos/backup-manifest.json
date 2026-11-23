@@ -1,0 +1,993 @@
+{
+  "backupDate": "2026-11-23",
+  "naming": "Existing website filenames and paths preserved exactly; no image conversions or renaming.",
+  "scope": "All images in public and src/assets, including school photos, blog photos, logos, thumbnails and previous uploads.",
+  "imageCount": 101,
+  "missingPhotoReferences": [],
+  "images": [
+    {
+      "filename": "favicon.ico",
+      "projectPath": "public/favicon.ico",
+      "websitePath": "/favicon.ico",
+      "bytes": 20373,
+      "sha256": "dd821076a9b03adc2173c93956226aea3d92482d7578fc4339c5d3a2e9c24586",
+      "referencedBy": []
+    },
+    {
+      "filename": "favicon.png",
+      "projectPath": "public/favicon.png",
+      "websitePath": "/favicon.png",
+      "bytes": 24802,
+      "sha256": "125d2cb125ac45f140da8574395eb55b24f403fc15338ae94e8c6fb167d34627",
+      "referencedBy": []
+    },
+    {
+      "filename": "logo.png",
+      "projectPath": "public/logo.png",
+      "websitePath": "/logo.png",
+      "bytes": 24802,
+      "sha256": "125d2cb125ac45f140da8574395eb55b24f403fc15338ae94e8c6fb167d34627",
+      "referencedBy": []
+    },
+    {
+      "filename": "0746cb26-dc35-49af-a21f-3b4c2b5af7a3.svg",
+      "projectPath": "public/lovable-uploads/0746cb26-dc35-49af-a21f-3b4c2b5af7a3.svg",
+      "websitePath": "/lovable-uploads/0746cb26-dc35-49af-a21f-3b4c2b5af7a3.svg",
+      "bytes": 2520125,
+      "sha256": "db704f683182d55729d01e42bfa57f3e43ea5cfa282bc8cf085b3c36dcd13059",
+      "referencedBy": []
+    },
+    {
+      "filename": "23b457f3-cee8-491e-a141-6cdeab1b9559.webp",
+      "projectPath": "public/lovable-uploads/23b457f3-cee8-491e-a141-6cdeab1b9559.webp",
+      "websitePath": "/lovable-uploads/23b457f3-cee8-491e-a141-6cdeab1b9559.webp",
+      "bytes": 32594,
+      "sha256": "8161e4a2a71cb9ef805fd68f6ca57dc65aaccd95d67f84ae0a24e0d0babd969b",
+      "referencedBy": []
+    },
+    {
+      "filename": "27e9807b-ebcc-4b07-9264-311753b6246e.png",
+      "projectPath": "public/lovable-uploads/27e9807b-ebcc-4b07-9264-311753b6246e.png",
+      "websitePath": "/lovable-uploads/27e9807b-ebcc-4b07-9264-311753b6246e.png",
+      "bytes": 307963,
+      "sha256": "bd022136efd453b6f37da35d4ef734a37329da894f242656afb9243d6dab6ecc",
+      "referencedBy": []
+    },
+    {
+      "filename": "36b3cecc-b138-41e1-9053-4e6b1b1d7588.png",
+      "projectPath": "public/lovable-uploads/36b3cecc-b138-41e1-9053-4e6b1b1d7588.png",
+      "websitePath": "/lovable-uploads/36b3cecc-b138-41e1-9053-4e6b1b1d7588.png",
+      "bytes": 222831,
+      "sha256": "58374beecc0aaf2414822530ca3da4cf8086aab045554965b127be7e605467fb",
+      "referencedBy": []
+    },
+    {
+      "filename": "41a3caf9-6fc3-460d-b5b9-7003528f4c0b.webp",
+      "projectPath": "public/lovable-uploads/41a3caf9-6fc3-460d-b5b9-7003528f4c0b.webp",
+      "websitePath": "/lovable-uploads/41a3caf9-6fc3-460d-b5b9-7003528f4c0b.webp",
+      "bytes": 14914,
+      "sha256": "c91e0804cae0e28c27bf9d50c094180fb7f3ab4005f9c07d4d07beb39ffaab6d",
+      "referencedBy": []
+    },
+    {
+      "filename": "4b1e5885-823f-43b9-b7a8-6e9d8245139d.svg",
+      "projectPath": "public/lovable-uploads/4b1e5885-823f-43b9-b7a8-6e9d8245139d.svg",
+      "websitePath": "/lovable-uploads/4b1e5885-823f-43b9-b7a8-6e9d8245139d.svg",
+      "bytes": 2520125,
+      "sha256": "db704f683182d55729d01e42bfa57f3e43ea5cfa282bc8cf085b3c36dcd13059",
+      "referencedBy": []
+    },
+    {
+      "filename": "6e723ebc-0e69-429d-8000-a7352e3ee5f6.jpg",
+      "projectPath": "public/lovable-uploads/6e723ebc-0e69-429d-8000-a7352e3ee5f6.jpg",
+      "websitePath": "/lovable-uploads/6e723ebc-0e69-429d-8000-a7352e3ee5f6.jpg",
+      "bytes": 53967,
+      "sha256": "a69c5fcdabc98619274160e6fdad332e49661ce2e2a747bcec77208f3f2aff50",
+      "referencedBy": []
+    },
+    {
+      "filename": "6f23b238-a46a-4fa2-aef7-4a113ecaa113.jpg",
+      "projectPath": "public/lovable-uploads/6f23b238-a46a-4fa2-aef7-4a113ecaa113.jpg",
+      "websitePath": "/lovable-uploads/6f23b238-a46a-4fa2-aef7-4a113ecaa113.jpg",
+      "bytes": 1137040,
+      "sha256": "14f9b58766b07f9e107e6296e37e96f13f98dd0789573c8548b755be5c068979",
+      "referencedBy": []
+    },
+    {
+      "filename": "71ad1696-cc68-4a4a-ac28-f8a6147f4353.png",
+      "projectPath": "public/lovable-uploads/71ad1696-cc68-4a4a-ac28-f8a6147f4353.png",
+      "websitePath": "/lovable-uploads/71ad1696-cc68-4a4a-ac28-f8a6147f4353.png",
+      "bytes": 222831,
+      "sha256": "58374beecc0aaf2414822530ca3da4cf8086aab045554965b127be7e605467fb",
+      "referencedBy": []
+    },
+    {
+      "filename": "81684472-7d0f-412c-ad39-cce1650f6c40.webp",
+      "projectPath": "public/lovable-uploads/81684472-7d0f-412c-ad39-cce1650f6c40.webp",
+      "websitePath": "/lovable-uploads/81684472-7d0f-412c-ad39-cce1650f6c40.webp",
+      "bytes": 24802,
+      "sha256": "125d2cb125ac45f140da8574395eb55b24f403fc15338ae94e8c6fb167d34627",
+      "referencedBy": []
+    },
+    {
+      "filename": "99be1d08-17c7-41b8-992a-911a05caa4fe.webp",
+      "projectPath": "public/lovable-uploads/99be1d08-17c7-41b8-992a-911a05caa4fe.webp",
+      "websitePath": "/lovable-uploads/99be1d08-17c7-41b8-992a-911a05caa4fe.webp",
+      "bytes": 249461,
+      "sha256": "f05bcfae17d271f3af72eb54f1f44463bee805aa178f8b40f9d8c2afcf3db2e2",
+      "referencedBy": []
+    },
+    {
+      "filename": "d5c76e6d-3288-4004-a140-e8fb9531ba9d.webp",
+      "projectPath": "public/lovable-uploads/d5c76e6d-3288-4004-a140-e8fb9531ba9d.webp",
+      "websitePath": "/lovable-uploads/d5c76e6d-3288-4004-a140-e8fb9531ba9d.webp",
+      "bytes": 25718,
+      "sha256": "93af6ab86414408270946315ee0e67f4bee9a417effdc138ba3f849acb3864de",
+      "referencedBy": []
+    },
+    {
+      "filename": "dab6cd01-8344-42e7-9849-b8e574078ead.webp",
+      "projectPath": "public/lovable-uploads/dab6cd01-8344-42e7-9849-b8e574078ead.webp",
+      "websitePath": "/lovable-uploads/dab6cd01-8344-42e7-9849-b8e574078ead.webp",
+      "bytes": 32594,
+      "sha256": "8161e4a2a71cb9ef805fd68f6ca57dc65aaccd95d67f84ae0a24e0d0babd969b",
+      "referencedBy": []
+    },
+    {
+      "filename": "fbee826f-04da-4594-a43b-c130490034ea.png",
+      "projectPath": "public/lovable-uploads/fbee826f-04da-4594-a43b-c130490034ea.png",
+      "websitePath": "/lovable-uploads/fbee826f-04da-4594-a43b-c130490034ea.png",
+      "bytes": 307963,
+      "sha256": "bd022136efd453b6f37da35d4ef734a37329da894f242656afb9243d6dab6ecc",
+      "referencedBy": []
+    },
+    {
+      "filename": "nethaji_logo2_circle.webp",
+      "projectPath": "public/nethaji_logo2_circle.webp",
+      "websitePath": "/nethaji_logo2_circle.webp",
+      "bytes": 24802,
+      "sha256": "125d2cb125ac45f140da8574395eb55b24f403fc15338ae94e8c6fb167d34627",
+      "referencedBy": [
+        "src/App.tsx",
+        "src/components/layout/Footer.tsx",
+        "src/components/layout/Header.tsx"
+      ]
+    },
+    {
+      "filename": "nethaji_logo_badge.png",
+      "projectPath": "public/nethaji_logo_badge.png",
+      "websitePath": "/nethaji_logo_badge.png",
+      "bytes": 87717,
+      "sha256": "5b0676f9a01b9e9bcd7287daa6be3047dd44ee096c2f332b58a9a718d33dfb79",
+      "referencedBy": [
+        "src/lib/prospectus.ts",
+        "src/lib/checklistPdf.ts"
+      ]
+    },
+    {
+      "filename": "nethaji_logo_print.webp",
+      "projectPath": "public/nethaji_logo_print.webp",
+      "websitePath": "/nethaji_logo_print.webp",
+      "bytes": 132730,
+      "sha256": "a684ef0ca1dcd900fd9ad26b8417d5002eab2a8ad7a9d6da2884e557040a33ba",
+      "referencedBy": [
+        "src/lib/printTemplate.ts",
+        "src/pages/Admissions.tsx",
+        "src/pages/QuestionPaper.tsx",
+        "src/pages/WorksheetMaker.tsx",
+        "supabase/functions/send-form-email/index.ts"
+      ]
+    },
+    {
+      "filename": "our-story-campus.jpg",
+      "projectPath": "public/photos/about/our-story-campus.jpg",
+      "websitePath": "/photos/about/our-story-campus.jpg",
+      "bytes": 54339,
+      "sha256": "a248eb5e9a3d73131af9a25fdafd499eceb15edbafdb20aa2b6b9ed0f66c9b30",
+      "referencedBy": [
+        "src/components/about/AboutTopicPage.tsx"
+      ]
+    },
+    {
+      "filename": "academic-program-overview.jpg",
+      "projectPath": "public/photos/academics/academic-program-overview.jpg",
+      "websitePath": "/photos/academics/academic-program-overview.jpg",
+      "bytes": 54339,
+      "sha256": "a248eb5e9a3d73131af9a25fdafd499eceb15edbafdb20aa2b6b9ed0f66c9b30",
+      "referencedBy": [
+        "src/pages/Academics.tsx"
+      ]
+    },
+    {
+      "filename": "classroom-1.jpg",
+      "projectPath": "public/photos/academics/classroom-1.jpg",
+      "websitePath": "/photos/academics/classroom-1.jpg",
+      "bytes": 15848913,
+      "sha256": "bcfd0d33495b146f515cc510e2fdd91c5135929db3ef4e52148484380ac84306",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "classroom-learning.jpg",
+      "projectPath": "public/photos/academics/classroom-learning.jpg",
+      "websitePath": "/photos/academics/classroom-learning.jpg",
+      "bytes": 30931,
+      "sha256": "f44e7b4739c2a3bcb98b1aaf3dfd8111c001dd4e313d69abe480d3151adac2e3",
+      "referencedBy": [
+        "src/pages/AcademicsCurriculum.tsx",
+        "src/pages/AcademicsNursery.tsx",
+        "src/pages/AcademicsPrimary.tsx",
+        "src/components/home/AboutSection.tsx"
+      ]
+    },
+    {
+      "filename": "nursery-classroom.jpg",
+      "projectPath": "public/photos/academics/nursery-classroom.jpg",
+      "websitePath": "/photos/academics/nursery-classroom.jpg",
+      "bytes": 14856092,
+      "sha256": "40ae0fac9b72865bc8c6402d109e7d7dbe40a90dec28caccc903ae999b0bf79d",
+      "referencedBy": [
+        "src/pages/AcademicsNursery.tsx"
+      ]
+    },
+    {
+      "filename": "pre-primary-program.jpg",
+      "projectPath": "public/photos/academics/pre-primary-program.jpg",
+      "websitePath": "/photos/academics/pre-primary-program.jpg",
+      "bytes": 29635,
+      "sha256": "85a2774dddf7b976b181f943f535d7de0edfde095760096bef38f37e7327313b",
+      "referencedBy": [
+        "src/pages/Academics.tsx"
+      ]
+    },
+    {
+      "filename": "primary-classroom.jpg",
+      "projectPath": "public/photos/academics/primary-classroom.jpg",
+      "websitePath": "/photos/academics/primary-classroom.jpg",
+      "bytes": 661312,
+      "sha256": "70ada841bc8ec2c57c963752789ca40f016c203e883e61641071a7e275b3feed",
+      "referencedBy": [
+        "src/pages/AcademicsPrimary.tsx"
+      ]
+    },
+    {
+      "filename": "primary-program.jpg",
+      "projectPath": "public/photos/academics/primary-program.jpg",
+      "websitePath": "/photos/academics/primary-program.jpg",
+      "bytes": 57995,
+      "sha256": "3f6eac23ce4dcb65971b978fbfa7faef7c1229a75973a50f88fa86ebd59f2fd2",
+      "referencedBy": [
+        "src/pages/Academics.tsx"
+      ]
+    },
+    {
+      "filename": "school-activities.jpg",
+      "projectPath": "public/photos/activities/school-activities.jpg",
+      "websitePath": "/photos/activities/school-activities.jpg",
+      "bytes": 556246,
+      "sha256": "e712ed8bc0cbc5596594ad12fb04c34f334be7d40deb174b9cd22bc1f3efc706",
+      "referencedBy": [
+        "src/components/home/AboutSection.tsx"
+      ]
+    },
+    {
+      "filename": "sports-day.jpg",
+      "projectPath": "public/photos/annual-sports-day/sports-day.jpg",
+      "websitePath": "/photos/annual-sports-day/sports-day.jpg",
+      "bytes": 655104,
+      "sha256": "7f37755c7cb56bec38e044a6cc7f828b1ae9f34b3f428ae50c71938ef2584a86",
+      "referencedBy": [
+        "src/components/home/EventsSection.tsx"
+      ]
+    },
+    {
+      "filename": "art-exhibition.jpg",
+      "projectPath": "public/photos/art-craft/art-exhibition.jpg",
+      "websitePath": "/photos/art-craft/art-exhibition.jpg",
+      "bytes": 51616,
+      "sha256": "b51ba2841da015c9b018f86880d89e45c34eb04e616930bedeca814a032f0e1a",
+      "referencedBy": [
+        "src/components/home/EventsSection.tsx"
+      ]
+    },
+    {
+      "filename": "artwork-display.jpg",
+      "projectPath": "public/photos/art-craft/artwork-display.jpg",
+      "websitePath": "/photos/art-craft/artwork-display.jpg",
+      "bytes": 524594,
+      "sha256": "ffe32cec8b2f9095e96d36d0d62c56c7e3a2e862f0b2d207ef7ea270e8eafd84",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "Admission_Overview.jpg",
+      "projectPath": "public/photos/blog/Admission_Overview.jpg",
+      "websitePath": "/photos/blog/Admission_Overview.jpg",
+      "bytes": 133437,
+      "sha256": "4eeca5a87bafa93d2d95a05819dfe628ce603e5a8086fefa254ec2bd12905900",
+      "referencedBy": [
+        "src/data/blogPosts.json"
+      ]
+    },
+    {
+      "filename": "C0470T01.JPG",
+      "projectPath": "public/photos/blog/C0470T01.JPG",
+      "websitePath": "/photos/blog/C0470T01.JPG",
+      "bytes": 134050,
+      "sha256": "789f941d609a4dc9720425c38e201fbdee09b5b67ff86a319662f30caaf4a57a",
+      "referencedBy": [
+        "src/data/blogPosts.json",
+        "src/pages/Blog.tsx"
+      ]
+    },
+    {
+      "filename": "C0511T01.JPG",
+      "projectPath": "public/photos/blog/C0511T01.JPG",
+      "websitePath": "/photos/blog/C0511T01.JPG",
+      "bytes": 114353,
+      "sha256": "d4884af240927309aac56bf519ffe53a0a2d9c968040e6bff0db2e21d5745d79",
+      "referencedBy": [
+        "src/data/blogPosts.json"
+      ]
+    },
+    {
+      "filename": "C0513T01.JPG",
+      "projectPath": "public/photos/blog/C0513T01.JPG",
+      "websitePath": "/photos/blog/C0513T01.JPG",
+      "bytes": 123748,
+      "sha256": "a297b28842aa1ab0f8695d1d36fb54b6dccb9350b4ed37fabda00b737a142ab1",
+      "referencedBy": [
+        "src/data/blogPosts.json"
+      ]
+    },
+    {
+      "filename": "gita-storytelling.jpg",
+      "projectPath": "public/photos/blog/gita-storytelling.jpg",
+      "websitePath": "/photos/blog/gita-storytelling.jpg",
+      "bytes": 833799,
+      "sha256": "08e38f7f8db3f9800ae2004bf788405e1ad4e8c4c0c4dc0f3cbf24817cb53c07",
+      "referencedBy": [
+        "src/data/blogPosts.json"
+      ]
+    },
+    {
+      "filename": "science-expo.jpg",
+      "projectPath": "public/photos/blog/science-expo.jpg",
+      "websitePath": "/photos/blog/science-expo.jpg",
+      "bytes": 37316,
+      "sha256": "361284ae3214bf65df37e39c60397830e9de414d18f08574e7ab03be9471d0ec",
+      "referencedBy": [
+        "src/data/blogPosts.json"
+      ]
+    },
+    {
+      "filename": "career-workshop.jpg",
+      "projectPath": "public/photos/career-guidance/career-workshop.jpg",
+      "websitePath": "/photos/career-guidance/career-workshop.jpg",
+      "bytes": 703892,
+      "sha256": "7d856de820cf714d8d4925e4b084721da5c742f43431bf6c417286ded3927f69",
+      "referencedBy": [
+        "src/components/home/EventsSection.tsx"
+      ]
+    },
+    {
+      "filename": "cultural-event.jpg",
+      "projectPath": "public/photos/cultural-festival/cultural-event.jpg",
+      "websitePath": "/photos/cultural-festival/cultural-event.jpg",
+      "bytes": 14683984,
+      "sha256": "8477275c3f1ac24e6b28c25ccca1199bef609f9da67eca2a4eaebc21b61548d7",
+      "referencedBy": [
+        "src/components/home/EventsSection.tsx"
+      ]
+    },
+    {
+      "filename": "stage-performance.jpg",
+      "projectPath": "public/photos/cultural-festival/stage-performance.jpg",
+      "websitePath": "/photos/cultural-festival/stage-performance.jpg",
+      "bytes": 816714,
+      "sha256": "583e34c50f01b58f55edd37110532636e335a49f61935872b0ce1aa70abc6a13",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "annual-day-celebration.jpg",
+      "projectPath": "public/photos/events/annual-day-celebration.jpg",
+      "websitePath": "/photos/events/annual-day-celebration.jpg",
+      "bytes": 116838,
+      "sha256": "e0756aad3162eef57f67126eb7d841d4dd76fecc0d0173a22c4351e1c70b374e",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "annual-day.jpg",
+      "projectPath": "public/photos/events/annual-day.jpg",
+      "websitePath": "/photos/events/annual-day.jpg",
+      "bytes": 12568733,
+      "sha256": "bec9eefcff50b28ab3aa4b42f5a8afd0e3e3263af8a15647e409e77ed9b0a9d8",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "art-and-craft-exhibition.jpg",
+      "projectPath": "public/photos/events/art-and-craft-exhibition.jpg",
+      "websitePath": "/photos/events/art-and-craft-exhibition.jpg",
+      "bytes": 86069,
+      "sha256": "fde2a039d0bd9133c14f098750e860a07401a0e6e6471ef8c305eacabea4cd3c",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "career-guidance-workshop.jpg",
+      "projectPath": "public/photos/events/career-guidance-workshop.jpg",
+      "websitePath": "/photos/events/career-guidance-workshop.jpg",
+      "bytes": 99044,
+      "sha256": "06d869839aebb8ae29a1dff12b9aac7920dff8a42976814069f071e86dbda894",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "christmas-and-pongal-celebrations.jpg",
+      "projectPath": "public/photos/events/christmas-and-pongal-celebrations.jpg",
+      "websitePath": "/photos/events/christmas-and-pongal-celebrations.jpg",
+      "bytes": 52287,
+      "sha256": "601e3d99bbf30ceb3cd7478cfcd70d2725eba6a4dcf0bc749d81f56ae4c18b56",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "cta-background.jpg",
+      "projectPath": "public/photos/events/cta-background.jpg",
+      "websitePath": "/photos/events/cta-background.jpg",
+      "bytes": 226007,
+      "sha256": "44042287ac72ad9c53a74c51f05cc8a62d7fdb86686a31ef6ed439c49426352f",
+      "referencedBy": [
+        "src/components/home/CTASection.tsx"
+      ]
+    },
+    {
+      "filename": "independence-day-celebration.jpg",
+      "projectPath": "public/photos/events/independence-day-celebration.jpg",
+      "websitePath": "/photos/events/independence-day-celebration.jpg",
+      "bytes": 109554,
+      "sha256": "0fe3ba7056d4edb4006090df688dd56ae9553b9f779a9d38afcf8b481353d497",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "independence-day.jpg",
+      "projectPath": "public/photos/events/independence-day.jpg",
+      "websitePath": "/photos/events/independence-day.jpg",
+      "bytes": 17848287,
+      "sha256": "6d37310ec78fb748671958dd8d6f56ed84c58dcc0e01c18a0d3218bd8a7b4b87",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "parent-teacher-meeting.jpg",
+      "projectPath": "public/photos/events/parent-teacher-meeting.jpg",
+      "websitePath": "/photos/events/parent-teacher-meeting.jpg",
+      "bytes": 98409,
+      "sha256": "611a2f6ffc4605bf0938d3fc1c84ea21896bb2dfb1d1b3a56d7ffeb46748138f",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "school-annual-picnic.jpg",
+      "projectPath": "public/photos/events/school-annual-picnic.jpg",
+      "websitePath": "/photos/events/school-annual-picnic.jpg",
+      "bytes": 86141,
+      "sha256": "2c8d85180856c1c04bb14d3dc1a6a03a599aa5e81b0cbe014a672360e118e21d",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "science-exhibition.jpg",
+      "projectPath": "public/photos/events/science-exhibition.jpg",
+      "websitePath": "/photos/events/science-exhibition.jpg",
+      "bytes": 103577,
+      "sha256": "7560877bdbb803454ef9fda20fc8928202aa04b228fe1ea8ddfa81763fe792c4",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "sports-day.jpg",
+      "projectPath": "public/photos/events/sports-day.jpg",
+      "websitePath": "/photos/events/sports-day.jpg",
+      "bytes": 89025,
+      "sha256": "63cb62cbdd36c2f9147e5855b50597c37dd45208e405f75c3f1618fa6ecc258b",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "teachers-day-celebration.jpg",
+      "projectPath": "public/photos/events/teachers-day-celebration.jpg",
+      "websitePath": "/photos/events/teachers-day-celebration.jpg",
+      "bytes": 98409,
+      "sha256": "611a2f6ffc4605bf0938d3fc1c84ea21896bb2dfb1d1b3a56d7ffeb46748138f",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "yoga-and-wellness-day.jpg",
+      "projectPath": "public/photos/events/yoga-and-wellness-day.jpg",
+      "websitePath": "/photos/events/yoga-and-wellness-day.jpg",
+      "bytes": 50143,
+      "sha256": "12ea3b04b24899439fa4598fc3867d95d437536acdb261bea33644c8680b13d2",
+      "referencedBy": [
+        "src/pages/Events.tsx"
+      ]
+    },
+    {
+      "filename": "canteen-and-cafeteria.jpg",
+      "projectPath": "public/photos/facilities/canteen-and-cafeteria.jpg",
+      "websitePath": "/photos/facilities/canteen-and-cafeteria.jpg",
+      "bytes": 61195,
+      "sha256": "4eb259825c113e361fe5356eb53c2cdbadbfb21b9c8170d770f4b25999c30141",
+      "referencedBy": [
+        "src/pages/Facilities.tsx"
+      ]
+    },
+    {
+      "filename": "computer-lab.jpg",
+      "projectPath": "public/photos/facilities/computer-lab.jpg",
+      "websitePath": "/photos/facilities/computer-lab.jpg",
+      "bytes": 57995,
+      "sha256": "3f6eac23ce4dcb65971b978fbfa7faef7c1229a75973a50f88fa86ebd59f2fd2",
+      "referencedBy": [
+        "src/pages/Facilities.tsx"
+      ]
+    },
+    {
+      "filename": "library-books.jpg",
+      "projectPath": "public/photos/facilities/library-books.jpg",
+      "websitePath": "/photos/facilities/library-books.jpg",
+      "bytes": 52847,
+      "sha256": "6e979d5c32607ebe28d3b788949f7e75dbeec27e090f859c33ecb08287730868",
+      "referencedBy": [
+        "src/components/home/FacilitiesSection.tsx"
+      ]
+    },
+    {
+      "filename": "library-overview.jpg",
+      "projectPath": "public/photos/facilities/library-overview.jpg",
+      "websitePath": "/photos/facilities/library-overview.jpg",
+      "bytes": 95634,
+      "sha256": "1072b1ad50d5ef9000f2c8caafd30dbf8a154b4dce47eed26a1ab0efebe3fe7b",
+      "referencedBy": [
+        "src/pages/Facilities.tsx"
+      ]
+    },
+    {
+      "filename": "library.jpg",
+      "projectPath": "public/photos/facilities/library.jpg",
+      "websitePath": "/photos/facilities/library.jpg",
+      "bytes": 40171,
+      "sha256": "8b4e6104ea257663760fcce8296bf4fe555d133e11a0eb5e58e82a1cdccd7589",
+      "referencedBy": [
+        "src/components/home/AboutSection.tsx"
+      ]
+    },
+    {
+      "filename": "medical-room.jpg",
+      "projectPath": "public/photos/facilities/medical-room.jpg",
+      "websitePath": "/photos/facilities/medical-room.jpg",
+      "bytes": 40377,
+      "sha256": "2e16663fa15d4ae8060cc8f76e8fb82a1463b55784e7750fb6ba0ca80251ec7a",
+      "referencedBy": [
+        "src/pages/Facilities.tsx"
+      ]
+    },
+    {
+      "filename": "music-and-dance-room.jpg",
+      "projectPath": "public/photos/facilities/music-and-dance-room.jpg",
+      "websitePath": "/photos/facilities/music-and-dance-room.jpg",
+      "bytes": 76888,
+      "sha256": "f81e75cd1b2947fa29111298a201dcb9f396ef936d5251b8a4b8574ecb578476",
+      "referencedBy": [
+        "src/pages/Facilities.tsx"
+      ]
+    },
+    {
+      "filename": "school-transport.jpg",
+      "projectPath": "public/photos/facilities/school-transport.jpg",
+      "websitePath": "/photos/facilities/school-transport.jpg",
+      "bytes": 42246,
+      "sha256": "a1bdf207da22c6116040ec9374c593c79f3930b310dcee86d9c936f52b59253c",
+      "referencedBy": [
+        "src/pages/Facilities.tsx"
+      ]
+    },
+    {
+      "filename": "science-lab.jpg",
+      "projectPath": "public/photos/facilities/science-lab.jpg",
+      "websitePath": "/photos/facilities/science-lab.jpg",
+      "bytes": 58720,
+      "sha256": "91dee32e7edb1138c15a1039be99091f0af04575f14f4333dc41e97d2fd1debf",
+      "referencedBy": [
+        "src/pages/Facilities.tsx"
+      ]
+    },
+    {
+      "filename": "smart-classrooms.jpg",
+      "projectPath": "public/photos/facilities/smart-classrooms.jpg",
+      "websitePath": "/photos/facilities/smart-classrooms.jpg",
+      "bytes": 54339,
+      "sha256": "a248eb5e9a3d73131af9a25fdafd499eceb15edbafdb20aa2b6b9ed0f66c9b30",
+      "referencedBy": [
+        "src/pages/Facilities.tsx"
+      ]
+    },
+    {
+      "filename": "sports-complex-overview.jpg",
+      "projectPath": "public/photos/facilities/sports-complex-overview.jpg",
+      "websitePath": "/photos/facilities/sports-complex-overview.jpg",
+      "bytes": 52622,
+      "sha256": "cf26a061141719e2d222a4e15cdde1a1b84b51dc5752bc489f462a0554ee31b0",
+      "referencedBy": [
+        "src/pages/Facilities.tsx"
+      ]
+    },
+    {
+      "filename": "sports-complex.jpg",
+      "projectPath": "public/photos/facilities/sports-complex.jpg",
+      "websitePath": "/photos/facilities/sports-complex.jpg",
+      "bytes": 33742,
+      "sha256": "43145c5097a0750b3225690a78b4c5f061110a8022c9f7fcb2bc5e7be0d3e352",
+      "referencedBy": [
+        "src/components/home/FacilitiesSection.tsx"
+      ]
+    },
+    {
+      "filename": "transport.jpg",
+      "projectPath": "public/photos/facilities/transport.jpg",
+      "websitePath": "/photos/facilities/transport.jpg",
+      "bytes": 23859,
+      "sha256": "f5dbf9c564748344ad816e51e64ecf68d62f8ae57e2ff1988f852f1b8861224f",
+      "referencedBy": [
+        "src/components/home/FacilitiesSection.tsx"
+      ]
+    },
+    {
+      "filename": "chairman.jpg",
+      "projectPath": "public/photos/leadership/chairman.jpg",
+      "websitePath": "/photos/leadership/chairman.jpg",
+      "bytes": 6191944,
+      "sha256": "7814e57d042156d48c4c76a873a42ab8b7fea1603b2e64b36b3dfc204b73cc3b",
+      "referencedBy": [
+        "src/components/about/AboutTopicPage.tsx",
+        "src/components/home/LeadershipSection.tsx"
+      ]
+    },
+    {
+      "filename": "principal.jpg",
+      "projectPath": "public/photos/leadership/principal.jpg",
+      "websitePath": "/photos/leadership/principal.jpg",
+      "bytes": 13022064,
+      "sha256": "6ace9128bafe6a0cc93597423951f8001dafa98bce1662fa4e77cb49dac4ee65",
+      "referencedBy": [
+        "src/components/about/AboutTopicPage.tsx",
+        "src/components/home/LeadershipSection.tsx"
+      ]
+    },
+    {
+      "filename": "vice-principal.jpg",
+      "projectPath": "public/photos/leadership/vice-principal.jpg",
+      "websitePath": "/photos/leadership/vice-principal.jpg",
+      "bytes": 12291355,
+      "sha256": "1794f5d5517c490dd4c5a584831fed6bf80f88491568acf05e8a7056c66b6dfc",
+      "referencedBy": [
+        "src/components/about/AboutTopicPage.tsx",
+        "src/components/home/LeadershipSection.tsx"
+      ]
+    },
+    {
+      "filename": "memory-1.jpg",
+      "projectPath": "public/photos/memories/memory-1.jpg",
+      "websitePath": "/photos/memories/memory-1.jpg",
+      "bytes": 2254158,
+      "sha256": "6f38ffd3dcf6f3c9a6ec98d3ccfc85fc2497cf4490ae62ebc6ae33d4dc26815f",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "memory-2.jpg",
+      "projectPath": "public/photos/memories/memory-2.jpg",
+      "websitePath": "/photos/memories/memory-2.jpg",
+      "bytes": 3418655,
+      "sha256": "f4ccefa4f1143da630a3f4a68a9f75ed06d9f32e56f9f5dc67fac0e1deb896ac",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "memory-3.jpg",
+      "projectPath": "public/photos/memories/memory-3.jpg",
+      "websitePath": "/photos/memories/memory-3.jpg",
+      "bytes": 15762244,
+      "sha256": "afec987bcbfd80365bc903a5e742b981a521c7bb5e07a764de2c04dbd8aa1cfd",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "memory-4.jpg",
+      "projectPath": "public/photos/memories/memory-4.jpg",
+      "websitePath": "/photos/memories/memory-4.jpg",
+      "bytes": 4170036,
+      "sha256": "fb4639fe39dec996b11681f4b167d3aca104ca8795708cc95d00adb8aacf0a56",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "memory-5.jpg",
+      "projectPath": "public/photos/memories/memory-5.jpg",
+      "websitePath": "/photos/memories/memory-5.jpg",
+      "bytes": 2714463,
+      "sha256": "c06ff5f130d79214a786ed1da07899d460481fafd378339db90337f3ac421268",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "memory-6.jpg",
+      "projectPath": "public/photos/memories/memory-6.jpg",
+      "websitePath": "/photos/memories/memory-6.jpg",
+      "bytes": 2815091,
+      "sha256": "6fcbc2d4fe9f7ff59fa50a08e39b4758e5ea4ab24e21fc66201f039a68566423",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "ptm.jpeg",
+      "projectPath": "public/photos/parent-teacher/ptm.jpeg",
+      "websitePath": "/photos/parent-teacher/ptm.jpeg",
+      "bytes": 112493,
+      "sha256": "9045040d9043c5062471438d0db35b9cec4510d4046bbb0bc08cfea8f02eba56",
+      "referencedBy": [
+        "src/components/home/EventsSection.tsx"
+      ]
+    },
+    {
+      "filename": "qr-payment.jpg",
+      "projectPath": "public/photos/qr-payment.jpg",
+      "websitePath": "/photos/qr-payment.jpg",
+      "bytes": 84864,
+      "sha256": "cddb10f20b462bf092d88181bd8f450d480bee89460799b51a8e896614d29aa7",
+      "referencedBy": [
+        "src/pages/Admissions.tsx"
+      ]
+    },
+    {
+      "filename": "group-photo.jpg",
+      "projectPath": "public/photos/school-picnic/group-photo.jpg",
+      "websitePath": "/photos/school-picnic/group-photo.jpg",
+      "bytes": 13491670,
+      "sha256": "12c7a35dfa620a17402e57370a101fe72d49ff0db105af068f4fb8e7da0b9945",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "picnic.jpeg",
+      "projectPath": "public/photos/school-picnic/picnic.jpeg",
+      "websitePath": "/photos/school-picnic/picnic.jpeg",
+      "bytes": 267366,
+      "sha256": "16484ed816ed99ec7317a2a22c3fd61d0ba89e852e82f470019597f92e5b316d",
+      "referencedBy": [
+        "src/components/home/EventsSection.tsx"
+      ]
+    },
+    {
+      "filename": "project-display.jpg",
+      "projectPath": "public/photos/science-exhibition/project-display.jpg",
+      "websitePath": "/photos/science-exhibition/project-display.jpg",
+      "bytes": 8985243,
+      "sha256": "7d24e49645c2f9cb3036aac5036bc10eb25742584b56a9a31c13db7ac5310186",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "science-expo.jpg",
+      "projectPath": "public/photos/science-exhibition/science-expo.jpg",
+      "websitePath": "/photos/science-exhibition/science-expo.jpg",
+      "bytes": 37316,
+      "sha256": "361284ae3214bf65df37e39c60397830e9de414d18f08574e7ab03be9471d0ec",
+      "referencedBy": [
+        "src/components/home/EventsSection.tsx"
+      ]
+    },
+    {
+      "filename": "sports-activities.jpg",
+      "projectPath": "public/photos/sports/sports-activities.jpg",
+      "websitePath": "/photos/sports/sports-activities.jpg",
+      "bytes": 6618018,
+      "sha256": "9506d116435778fe2d8e4294084b613e14dbbc5b7d076ccf7a5c2857d82babfd",
+      "referencedBy": [
+        "src/components/home/AboutSection.tsx"
+      ]
+    },
+    {
+      "filename": "sports-day-1.jpg",
+      "projectPath": "public/photos/sports/sports-day-1.jpg",
+      "websitePath": "/photos/sports/sports-day-1.jpg",
+      "bytes": 1924600,
+      "sha256": "633333c0065d7cc8f411766709f01a42213176f1e907a2489fd284ac7c4ca499",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "celebration-1.jpg",
+      "projectPath": "public/photos/teachers-day/celebration-1.jpg",
+      "websitePath": "/photos/teachers-day/celebration-1.jpg",
+      "bytes": 3030765,
+      "sha256": "c967cae92e674a2a4605075ec194b60c47e226d3ea4e2a2352893068221634c6",
+      "referencedBy": [
+        "src/data/galleryData.ts"
+      ]
+    },
+    {
+      "filename": "teachers-day.jpg",
+      "projectPath": "public/photos/teachers-day/teachers-day.jpg",
+      "websitePath": "/photos/teachers-day/teachers-day.jpg",
+      "bytes": 10517277,
+      "sha256": "4fe5672af5aad0d3afbe83a968c4b003c1a31aa0b11d193592ee4f61e8b5475c",
+      "referencedBy": [
+        "src/components/home/EventsSection.tsx"
+      ]
+    },
+    {
+      "filename": "yoga-day.jpg",
+      "projectPath": "public/photos/yoga-wellness/yoga-day.jpg",
+      "websitePath": "/photos/yoga-wellness/yoga-day.jpg",
+      "bytes": 2711709,
+      "sha256": "fb4cc21d2de32e6d8fb9cda9ebd1b39a6e37a9e5429d5e720c6ec5c7f4f98e4c",
+      "referencedBy": [
+        "src/components/home/EventsSection.tsx"
+      ]
+    },
+    {
+      "filename": "placeholder.svg",
+      "projectPath": "public/placeholder.svg",
+      "websitePath": "/placeholder.svg",
+      "bytes": 3253,
+      "sha256": "64badf7aabda0b9630b87020ffb6095cb858ccbcf66b355c2aa08b1063954d3b",
+      "referencedBy": [
+        "src/pages/Gallery.tsx",
+        "src/pages/VideoGallery.tsx",
+        "src/components/home/GallerySection.tsx"
+      ]
+    },
+    {
+      "filename": "pwa-192x192.png",
+      "projectPath": "public/pwa-192x192.png",
+      "websitePath": "/pwa-192x192.png",
+      "bytes": 11564,
+      "sha256": "d2890f26aabeac759b29f96e3b377643ea0ee8b3ab0ecbf5faa10715b25d9778",
+      "referencedBy": []
+    },
+    {
+      "filename": "pwa-512x512.png",
+      "projectPath": "public/pwa-512x512.png",
+      "websitePath": "/pwa-512x512.png",
+      "bytes": 11564,
+      "sha256": "d2890f26aabeac759b29f96e3b377643ea0ee8b3ab0ecbf5faa10715b25d9778",
+      "referencedBy": []
+    },
+    {
+      "filename": "annual-day.jpg",
+      "projectPath": "public/videos/thumbnails/annual-day.jpg",
+      "websitePath": "/videos/thumbnails/annual-day.jpg",
+      "bytes": 107297,
+      "sha256": "537b7eb0ce070ae50b35d31ab786fb92c44d4f675e78126fc1ab12e5ab8c992f",
+      "referencedBy": [
+        "src/data/schoolVideos.ts"
+      ]
+    },
+    {
+      "filename": "campus-tour.jpg",
+      "projectPath": "public/videos/thumbnails/campus-tour.jpg",
+      "websitePath": "/videos/thumbnails/campus-tour.jpg",
+      "bytes": 145515,
+      "sha256": "98d2f1d20dd63656384c4d5e2e03a6645f4399ba755a3b61f3bf77abcbbe3f4a",
+      "referencedBy": [
+        "src/data/schoolVideos.ts",
+        "src/components/home/HeroSection.tsx"
+      ]
+    },
+    {
+      "filename": "classroom-activities.jpg",
+      "projectPath": "public/videos/thumbnails/classroom-activities.jpg",
+      "websitePath": "/videos/thumbnails/classroom-activities.jpg",
+      "bytes": 89968,
+      "sha256": "55436319aff3fe0471706740af53b33caf641497fc97d860ee93255201543346",
+      "referencedBy": [
+        "src/data/schoolVideos.ts"
+      ]
+    },
+    {
+      "filename": "cultural-program.jpg",
+      "projectPath": "public/videos/thumbnails/cultural-program.jpg",
+      "websitePath": "/videos/thumbnails/cultural-program.jpg",
+      "bytes": 131742,
+      "sha256": "b2955cf0b4c1f77428f8e889609390800a40bd68d342a2f5ef118c2811daa14a",
+      "referencedBy": [
+        "src/data/schoolVideos.ts"
+      ]
+    },
+    {
+      "filename": "science-exhibition.jpg",
+      "projectPath": "public/videos/thumbnails/science-exhibition.jpg",
+      "websitePath": "/videos/thumbnails/science-exhibition.jpg",
+      "bytes": 109004,
+      "sha256": "61029143f4a0dad366778702ccf2099566f97c748a499c4391ce1be10d410044",
+      "referencedBy": [
+        "src/data/schoolVideos.ts"
+      ]
+    },
+    {
+      "filename": "sports-day.jpg",
+      "projectPath": "public/videos/thumbnails/sports-day.jpg",
+      "websitePath": "/videos/thumbnails/sports-day.jpg",
+      "bytes": 79999,
+      "sha256": "0edef71f73c3a95ba78295ae743096640c5bc7fd7173d885dfacdce6d7967703",
+      "referencedBy": [
+        "src/data/schoolVideos.ts"
+      ]
+    },
+    {
+      "filename": "logo.png",
+      "projectPath": "src/assets/logo.png",
+      "websitePath": null,
+      "bytes": 434628,
+      "sha256": "357a75afe446f3544407b89cc370132ddab21e2e91230e7ea43dc72d5432355b",
+      "referencedBy": []
+    },
+    {
+      "filename": "nethaji_logo.svg",
+      "projectPath": "src/assets/nethaji_logo.svg",
+      "websitePath": null,
+      "bytes": 316613,
+      "sha256": "587f9a112af9e15903dd951d7e421ab607b8c76530d6db169baa440d8d593e3f",
+      "referencedBy": []
+    },
+    {
+      "filename": "nethaji_logo2_circle.webp",
+      "projectPath": "src/assets/nethaji_logo2_circle.webp",
+      "websitePath": null,
+      "bytes": 24802,
+      "sha256": "125d2cb125ac45f140da8574395eb55b24f403fc15338ae94e8c6fb167d34627",
+      "referencedBy": [
+        "src/App.tsx",
+        "src/components/layout/Footer.tsx"
+      ]
+    },
+    {
+      "filename": "nursery-classroom.jpg",
+      "projectPath": "src/assets/nursery-classroom.jpg",
+      "websitePath": null,
+      "bytes": 1137040,
+      "sha256": "14f9b58766b07f9e107e6296e37e96f13f98dd0789573c8548b755be5c068979",
+      "referencedBy": []
+    }
+  ]
+}
