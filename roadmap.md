@@ -14,3 +14,7 @@
 - [x] Correct Chennai/IST dates, Tamil year/month/day and daily astronomical timings, including the floating date badge.
 - [x] Show the current calendar month and verify daily updates with tests and the page.
 - [x] Display the current Kaliyugam year beside today's date on both calendar tabs.
+
+# Admission email corrections
+- [x] Use Indian submission time, leave FORM NO blank, and display the original logo without a dark background and white phone links in both email copies.
+- [x] Test the corrected email output and deploy the email function (timestamp tests and rendered header verified; no actual email sent).

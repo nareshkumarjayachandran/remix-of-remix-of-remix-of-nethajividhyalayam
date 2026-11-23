@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "resend";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { formatSchoolEmailTimestamp } from "../_shared/emailDates.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseAdmin = createClient(
@@ -19,9 +20,9 @@ const SCHOOL_NAME = "Nethaji Vidhyalayam Nursery and Primary School";
 const SCHOOL_ADDRESS = "5/325, Rajiv Nagar, S.Kolathur Main Road, S.Kolathur, Kovilambakkam Post, Chennai - 600129";
 const SCHOOL_PHONE = "+91 9841594945 / +91 6380967675";
 const SCHOOL_PHONE_LINKS =
-  '<a href="tel:+919841594945" style="color:#1e40af;text-decoration:underline;">+91 9841594945</a>' +
+  '<a href="tel:+919841594945" style="color:#ffffff !important;text-decoration:none;"><span style="color:#ffffff;">+91 9841594945</span></a>' +
   ' / ' +
-  '<a href="tel:+916380967675" style="color:#1e40af;text-decoration:underline;">6380967675</a>';
+  '<a href="tel:+916380967675" style="color:#ffffff !important;text-decoration:none;"><span style="color:#ffffff;">+91 6380967675</span></a>';
 
 interface FieldGroup {
   heading: string;
@@ -119,7 +120,7 @@ function buildAdmissionFormHeader(req: FormEmailRequest, dateStr: string): strin
     <div style="text-align:center;margin:0 0 18px;">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:#1a3a5c;margin-bottom:8px;">
         <span><strong>Date:</strong> ${dateStr}</span>
-        <span style="margin-left:auto;"><strong>FORM NO:</strong> ${req.subtitle || "—"}</span>
+        <span style="margin-left:auto;"><strong>FORM NO:</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
       </div>
       <h2 style="display:inline-block;margin:0;padding:6px 28px;border:2px solid #c0392b;color:#c0392b;font-size:18px;letter-spacing:3px;border-radius:4px;">ADMISSION FORM</h2>
     </div>`;
@@ -147,12 +148,12 @@ function buildSchoolEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
     <div style="background:#1a3a5c;color:#fff;padding:20px;">
       <table role="presentation" style="width:100%;border-collapse:collapse;"><tr>
         <td style="width:110px;vertical-align:middle;">
-          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_print.webp" alt="School Logo" width="100" style="display:block;width:100px;height:auto;" />
+          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_badge.png" alt="School Logo" width="100" style="display:block;width:100px;height:auto;background:#ffffff;" />
         </td>
         <td style="vertical-align:middle;padding-left:16px;">
           <h1 style="margin:0;font-size:20px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
           <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">${SCHOOL_ADDRESS}</p>
-          <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: ${SCHOOL_PHONE} | Email: ${SCHOOL_EMAIL}</p>
+          <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: ${SCHOOL_PHONE_LINKS} | Email: ${SCHOOL_EMAIL}</p>
         </td>
       </tr></table>
       <div style="border-top:1px solid rgba(255,255,255,0.4);margin:14px auto 0;padding-top:12px;text-align:center;">
@@ -214,12 +215,12 @@ function buildParentEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
     <div style="background:#1a3a5c;color:#fff;padding:20px;">
       <table role="presentation" style="width:100%;border-collapse:collapse;"><tr>
         <td style="width:110px;vertical-align:middle;">
-          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_print.webp" alt="School Logo" width="100" style="display:block;width:100px;height:auto;" />
+          <img src="https://nethavidhyalayam.lovable.app/nethaji_logo_badge.png" alt="School Logo" width="100" style="display:block;width:100px;height:auto;background:#ffffff;" />
         </td>
         <td style="vertical-align:middle;padding-left:16px;">
           <h1 style="margin:0;font-size:20px;letter-spacing:1px;color:#ffffff;">${SCHOOL_NAME.toUpperCase()}</h1>
           <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">${SCHOOL_ADDRESS}</p>
-          <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: ${SCHOOL_PHONE} | Email: ${SCHOOL_EMAIL}</p>
+          <p style="margin:4px 0 0;font-size:12px;color:#ffffff;">Phone: ${SCHOOL_PHONE_LINKS} | Email: ${SCHOOL_EMAIL}</p>
         </td>
       </tr></table>
     </div>
@@ -240,9 +241,9 @@ function buildParentEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
         ${buildAdmissionFormFooter(req)}
       </div>
       
-      <div style="margin-top:24px;padding:16px;background:#eff6ff;border-radius:8px;border:1px solid #bfdbfe;">
-        <p style="font-size:13px;color:#1e40af;margin:0;"><strong>📞 Need Help?</strong></p>
-        <p style="font-size:12px;color:#1e40af;margin:4px 0 0;">Call us at ${SCHOOL_PHONE_LINKS} or email ${SCHOOL_EMAIL}</p>
+      <div style="margin-top:24px;padding:16px;background:#1a3a5c;border-radius:8px;border:1px solid #1a3a5c;">
+        <p style="font-size:13px;color:#ffffff;margin:0;"><strong>📞 Need Help?</strong></p>
+        <p style="font-size:12px;color:#ffffff;margin:4px 0 0;">Call us at ${SCHOOL_PHONE_LINKS} or email ${SCHOOL_EMAIL}</p>
       </div>
     </div>
     <div style="background:#1a3a5c;color:#fff;padding:16px 24px;text-align:center;font-size:11px;">
@@ -319,9 +320,7 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    const now = new Date();
-    const dateStr = now.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
-    const timeStr = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const { dateStr, timeStr } = formatSchoolEmailTimestamp(new Date());
 
     // Build attachments — only the actual resume file (no HTML attachment)
     const schoolAttachments: { filename: string; content: string; content_type: string }[] = [];
