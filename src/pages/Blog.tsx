@@ -18,7 +18,7 @@ const Blog = () => {
   return (
     <div className="bg-muted/40 min-h-screen pb-20">
       <section className="relative h-[360px] overflow-hidden">
-        <img src="/photos/blog/C0470T01.JPG" alt="Blog banner" className="w-full h-full object-cover" />
+        <img src="/photos/blog/Best_Learning_Games_for_Preschool_Children.jpg" alt="Blog banner" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-primary/70 flex flex-col items-center justify-center text-center px-4 text-primary-foreground">
           <span className="py-1 px-4 rounded-full bg-primary-foreground/20 font-semibold mb-4">Nethaji Vidhyalayam</span>
           <h1 className="font-serif text-4xl md:text-6xl font-bold mb-4">Blog & News</h1>

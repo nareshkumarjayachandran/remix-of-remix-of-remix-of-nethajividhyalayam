@@ -39,19 +39,19 @@ const leadership = [
   {
     name: "Mr. J.J. NARESHKUMAR",
     role: "Correspondent / Chairman",
-    image: "/photos/leadership/chairman.jpg",
+    image: "/photos/leadership/Mr_JJ_Nareshkumar_Correspondent_Chairman.jpg",
     description: "Leading the institution with decades of experience in education and a vision for holistic student development.",
   },
   {
     name: "Mrs. P.S. JANANI",
     role: "Principal",
-    image: "/photos/leadership/principal.jpg",
+    image: "/photos/leadership/Mrs_PS_Janani_Principal.jpg",
     description: "An accomplished educator committed to academic excellence and holistic student development.",
   },
   {
     name: "Mrs. M. DEVIKALA",
     role: "Vice Principal",
-    image: "/photos/leadership/vice-principal.jpg",
+    image: "/photos/leadership/Mrs_M_Devikala_Vice_Principal.jpg",
     description: "Ensuring smooth administration and upholding the values of the institution with dedication and integrity.",
   },
 ];
@@ -156,7 +156,7 @@ const LeadershipContent = () => (
 const ChairmanContent = () => (
   <section className="section-padding bg-secondary">
     <div className="container-custom grid md:grid-cols-2 gap-12 items-center">
-      <img src="/photos/leadership/chairman.jpg" alt="Mr. J.J. NARESHKUMAR - Chairman" className="rounded-xl shadow-xl w-full" />
+      <img src="/photos/leadership/Mr_JJ_Nareshkumar_Correspondent_Chairman.jpg" alt="Mr. J.J. NARESHKUMAR - Chairman" className="rounded-xl shadow-xl w-full" />
       <div>
         <blockquote className="text-muted-foreground leading-relaxed italic border-l-4 border-accent pl-6 mb-6">“Every child is a lamp waiting to be lit. Our duty is not just to teach, but to ignite.”</blockquote>
         <p className="text-muted-foreground leading-relaxed mb-4">Our commitment to providing world-class education remains unwavering. We believe every child deserves the opportunity to learn, grow, and excel in a supportive environment.</p>
@@ -177,7 +177,7 @@ const PrincipalContent = () => (
         <blockquote className="text-muted-foreground leading-relaxed italic border-l-4 border-accent pl-6 mb-6">“Every child who enters our school is unique. Our promise is to see that uniqueness, nurture it, and let it shine.”</blockquote>
         <p className="font-serif font-bold text-primary">— Mrs. P.S. JANANI, Principal</p>
       </div>
-      <img src="/photos/leadership/principal.jpg" alt="Mrs. P.S. JANANI - Principal" className="rounded-xl shadow-xl w-full" />
+      <img src="/photos/leadership/Mrs_PS_Janani_Principal.jpg" alt="Mrs. P.S. JANANI - Principal" className="rounded-xl shadow-xl w-full" />
     </div>
   </section>
 );

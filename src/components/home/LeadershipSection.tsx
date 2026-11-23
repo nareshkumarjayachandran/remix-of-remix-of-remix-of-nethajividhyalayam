@@ -6,21 +6,21 @@ const teamMembers = [
   {
     name: "Mr. J.J. NARESHKUMAR",
     role: "Chairman",
-    image: "/photos/leadership/chairman.jpg",
+    image: "/photos/leadership/Mr_JJ_Nareshkumar_Correspondent_Chairman.jpg",
     message:
       "Every child is a lamp waiting to be lit. Our duty is not just to teach, but to ignite.",
   },
   {
     name: "Mrs. P.S. JANANI",
     role: "Principal",
-    image: "/photos/leadership/principal.jpg",
+    image: "/photos/leadership/Mrs_PS_Janani_Principal.jpg",
     message:
       "At Nethaji, we don't just teach; we inspire. Every child who enters our school is unique. Our promise is to see that uniqueness, nurture it, and let it shine.",
   },
   {
     name: "Mrs. M. DEVIKALA",
     role: "Vice Principal",
-    image: "/photos/leadership/vice-principal.jpg",
+    image: "/photos/leadership/Mrs_M_Devikala_Vice_Principal.jpg",
     message:
       "We are committed to ensuring smooth administration and upholding the values of our institution with dedication and integrity.",
   },

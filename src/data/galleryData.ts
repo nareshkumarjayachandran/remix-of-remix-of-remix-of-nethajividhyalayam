@@ -10,7 +10,7 @@ export const galleryImages: GalleryImage[] = [
   // ── School Annual Picnic ──
   {
     id: 1,
-    src: "/photos/school-picnic/group-photo.jpg",
+    src: "/photos/school-picnic/School_Annual_Picnic.jpg",
     alt: "School Annual Picnic",
     category: "Events",
     description: "Students enjoyed a joyful and refreshing school picnic filled with games, sightseeing, and bonding activities that strengthened friendships and created lasting memories.",
@@ -18,7 +18,7 @@ export const galleryImages: GalleryImage[] = [
   // ── Annual Day ──
   {
     id: 2,
-    src: "/photos/events/annual-day.jpg",
+    src: "/photos/events/Annual_Day_Celebration_2024.jpg",
     alt: "Annual Day Celebration 2024",
     category: "Events",
     description: "A spectacular annual day with cultural performances, prize distribution, and memorable moments celebrating student achievements throughout the year.",
@@ -26,7 +26,7 @@ export const galleryImages: GalleryImage[] = [
   // ── Sports Day ──
   {
     id: 3,
-    src: "/photos/sports/sports-day-1.jpg",
+    src: "/photos/sports/Sports_Day_Highlights.jpg",
     alt: "Sports Day Highlights",
     category: "Sports",
     description: "An exciting sports day filled with relay races, track events, and athletic competitions showcasing the sporting talents of our students.",
@@ -34,7 +34,7 @@ export const galleryImages: GalleryImage[] = [
   // ── Cultural Festival ──
   {
     id: 4,
-    src: "/photos/cultural-festival/stage-performance.jpg",
+    src: "/photos/cultural-festival/Cultural_Fest_Program.jpg",
     alt: "Cultural Fest Program",
     category: "Events",
     description: "A vibrant cultural festival featuring traditional dance performances, music, drama, and artistic showcases by talented students.",
@@ -42,7 +42,7 @@ export const galleryImages: GalleryImage[] = [
   // ── Science Exhibition ──
   {
     id: 5,
-    src: "/photos/science-exhibition/project-display.jpg",
+    src: "/photos/science-exhibition/Science_Exhibition.jpg",
     alt: "Science Exhibition",
     category: "Campus",
     description: "Students presented innovative science projects and working models, demonstrating creativity and scientific thinking at the annual science exhibition.",
@@ -50,7 +50,7 @@ export const galleryImages: GalleryImage[] = [
   // ── Teachers' Day ──
   {
     id: 6,
-    src: "/photos/teachers-day/celebration-1.jpg",
+    src: "/photos/teachers-day/Teachers_Day_Celebration.jpg",
     alt: "Teachers' Day Celebration",
     category: "Events",
     description: "A heartfelt celebration honoring our dedicated teachers with flowers, gifts, and cultural programs organized by grateful students.",
@@ -58,7 +58,7 @@ export const galleryImages: GalleryImage[] = [
   // ── Art & Craft ──
   {
     id: 7,
-    src: "/photos/art-craft/artwork-display.jpg",
+    src: "/photos/art-craft/Art_and_Craft_Exhibition.jpg",
     alt: "Art & Craft Exhibition",
     category: "Events",
     description: "A colorful exhibition showcasing student artwork, paintings, drawings, and creative crafts displayed across the school corridors.",
