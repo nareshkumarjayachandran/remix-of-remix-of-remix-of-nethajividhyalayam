@@ -12,6 +12,12 @@ const stagesData = [
     subjects: [] as { name: string; detail: string }[],
   },
   {
+    title: "Preparatory Stage (III STD - V STD)",
+    summary: "Experiential Learning, Core Subjects, Life Skills, Digital Literacy (NEP 2020)",
+    link: "/academics/primary",
+    subjects: [] as { name: string; detail: string }[],
+  },
+  {
     title: "Preparatory Stage (LKG)",
     summary: "Core Subjects (Languages, Math, EVS), Discovery Learning, Reading Habits",
     link: "/academics/nursery",
@@ -82,6 +88,36 @@ const foundationalRows = [
   { area: "Panchakosha Development", values: ["Annamaya", "Annamaya, Pranamaya", "Manomaya", "Vijnanamaya", "Anandamaya"] },
   { area: "Teaching Methodology", values: ["Play-based", "Activity-based", "Experiential", "Concept-based", "Application-based"] },
   { area: "Assessment", values: ["Observation", "Observation", "Activity-based", "Continuous assessment", "Competency-based"] },
+];
+
+const prepColumns = [
+  { key: "std3", label: "Std. III", sub: "8–9 yrs" },
+  { key: "std4", label: "Std. IV", sub: "9–10 yrs" },
+  { key: "std5", label: "Std. V", sub: "10–11 yrs" },
+];
+
+const prepRows = [
+  { area: "English", values: ["Reading, grammar, vocabulary and sentence formation", "Comprehension, grammar and paragraph writing", "Creative writing, comprehension and communication"] },
+  { area: "Tamil", values: ["Reading, writing, vocabulary and simple sentences", "Grammar, comprehension and composition", "Creative writing, literature and communication"] },
+  { area: "Mathematics", values: ["Numbers, four basic operations, shapes and measurements", "Fractions, multiplication, division and geometry", "Decimals, fractions, measurements and problem-solving"] },
+  { area: "Environmental Studies / Science", values: ["Plants, animals, human body and surroundings", "Food, water, environment and natural resources", "Human body, science concepts, energy and conservation"] },
+  { area: "Social Studies", values: ["Family, community and local surroundings", "History, geography and civic awareness", "Indian history, geography, culture and constitution"] },
+  { area: "Computer Education", values: ["Computer basics and keyboard skills", "Word processing and basic digital skills", "Presentations, internet awareness and digital literacy"] },
+  { area: "Physical Education", values: ["Yoga, games and coordination", "Sports, yoga and fitness", "Team games, yoga and physical fitness"] },
+  { area: "Art & Craft", values: ["Drawing, colouring and craft", "Creative art and design", "Painting, craft and project work"] },
+  { area: "Cultural & Value Education", values: ["Stories, moral values and traditions", "Indian culture, heritage and festivals", "National values, leadership and responsibility"] },
+  { area: "Life Skills", values: ["Good habits, sharing and discipline", "Teamwork, communication and responsibility", "Decision-making, confidence and leadership"] },
+  { area: "Experiential Learning", values: ["Observation, activities and exploration", "Experiments, field visits and projects", "Research, projects and practical application"] },
+  { area: "Assessment", values: ["Oral, written and activity-based", "Continuous and competency-based", "Written, practical and project-based"] },
+];
+
+const prepFramework = [
+  ["Panchakosha", "Holistic development of all five koshas"],
+  ["Panchapadi", "Aditi, Bodh, Abhyas, Prayog and Prasar"],
+  ["Teaching Methodology", "Experiential, activity-based, inquiry-based and collaborative learning"],
+  ["Indian Knowledge System", "Indian heritage, traditions, yoga and values"],
+  ["Assessment", "Competency-based and continuous assessment"],
+  ["Learning Outcome", "Conceptual understanding, critical thinking, creativity and communication"],
 ];
 
 const AcademicsCurriculum = () => {
@@ -196,6 +232,67 @@ const AcademicsCurriculum = () => {
                         </div>
                       ))}
                     </div>
+                    {i === 1 && (
+                      <div className="mt-6 space-y-6">
+                        <h4 className="font-serif font-bold text-primary mb-3">Curriculum Matrix: Preparatory Stage (III STD – V STD)</h4>
+                        <p className="text-xs text-muted-foreground -mt-4">NEP 2020 | Experiential Learning Approach | Age Group: 8–11 Years</p>
+                        <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
+                          <div className="overflow-x-auto">
+                            <table className="w-full min-w-[760px] lg:min-w-0 text-sm border-separate border-spacing-0">
+                              <thead>
+                                <tr>
+                                  <th className="w-14 bg-primary text-primary-foreground px-3 py-4 text-center font-semibold">S.No.</th>
+                                  <th className="bg-primary text-primary-foreground px-4 py-4 text-left font-semibold">Curriculum Areas</th>
+                                  {prepColumns.map((col) => (
+                                    <th key={col.key} className="bg-primary text-primary-foreground px-4 py-4 text-left font-semibold">
+                                      <span className="block">{col.label}</span>
+                                      <span className="block text-xs font-normal text-primary-foreground/75">{col.sub}</span>
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {prepRows.map((row, r) => {
+                                  const rowBg = r % 2 === 0 ? "bg-card" : "bg-secondary";
+                                  return (
+                                    <tr key={row.area} className={rowBg}>
+                                      <td className="px-3 py-3 text-center font-semibold text-accent border-b border-border">{r + 1}</td>
+                                      <td className="px-4 py-3 font-semibold text-foreground border-b border-border">{row.area}</td>
+                                      {row.values.map((val, j) => (
+                                        <td key={j} className="px-4 py-3 text-muted-foreground align-top border-b border-border">{val}</td>
+                                      ))}
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
+                          <div className="bg-primary text-primary-foreground text-center font-serif font-bold py-3">Integrated Learning Framework</div>
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="bg-primary/90 text-primary-foreground">
+                                <th className="px-4 py-3 text-left font-semibold w-1/3">Component</th>
+                                <th className="px-4 py-3 text-left font-semibold">Implementation</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {prepFramework.map(([c, d], r) => (
+                                <tr key={c} className={r % 2 === 0 ? "bg-card" : "bg-secondary"}>
+                                  <td className="px-4 py-3 font-semibold text-foreground border-b border-border">{c}</td>
+                                  <td className="px-4 py-3 text-muted-foreground border-b border-border">{d}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className="rounded-2xl border-2 border-primary bg-secondary p-5 text-center">
+                          <h5 className="font-serif font-bold text-primary mb-1">Core Philosophy</h5>
+                          <p className="text-sm text-muted-foreground">Moving from learning through play to learning through exploration, understanding, application and independent thinking.</p>
+                        </div>
+                      </div>
+                    )}
                     {i === 0 && (
                       <div className="mt-6">
                         <h4 className="font-serif font-bold text-primary mb-3">Curriculum Matrix: Foundational Stage (Pre-KG – II STD)</h4>
