@@ -237,7 +237,7 @@ const SchoolCalendar = () => {
       <section className="bg-primary text-primary-foreground py-20">
         <div className="container-custom text-center">
           <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4">School Calendar & Tamil Panchangam</h1>
-          <p className="text-lg text-primary-foreground/80">Academic Year {getAcademicYearFull(schoolDate)} | {today.tamilYear} | கலி யுகம் (Kaliyugam) {today.kaliYear}</p>
+          <p className="text-lg text-primary-foreground/80">Academic Year {getAcademicYearFull(schoolDate)} | கலி யுகம் {today.kaliYear} {today.tamilYear.split(" (")[0]} ஆண்டு</p>
         </div>
       </section>
 
