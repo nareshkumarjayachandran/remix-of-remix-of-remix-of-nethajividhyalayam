@@ -113,6 +113,34 @@ async function fetchResumeAttachment(storagePath: string, resumeFileName: string
   };
 }
 
+function buildAdmissionFormHeader(req: FormEmailRequest, dateStr: string): string {
+  if (req.formType !== "admission") return "";
+  return `
+    <div style="text-align:center;margin:0 0 18px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#1a3a5c;margin-bottom:8px;">
+        <span><strong>Date:</strong> ${dateStr}</span>
+        <span style="margin-left:auto;"><strong>FORM NO:</strong> ${req.subtitle || "—"}</span>
+      </div>
+      <h2 style="display:inline-block;margin:0;padding:6px 28px;border:2px solid #c0392b;color:#c0392b;font-size:18px;letter-spacing:3px;border-radius:4px;">ADMISSION FORM</h2>
+    </div>`;
+}
+
+function buildAdmissionFormFooter(req: FormEmailRequest): string {
+  if (req.formType !== "admission") return "";
+  const cell = "border:1px solid #1a3a5c;padding:22px 10px 8px;font-size:12px;color:#1a3a5c;text-align:center;width:25%;";
+  return `
+    <div style="text-align:right;margin:24px 0 18px;font-size:12px;color:#1a3a5c;">
+      <div style="display:inline-block;border-top:1px solid #1a3a5c;padding-top:4px;min-width:180px;text-align:center;">Signature of Parent</div>
+    </div>
+    <div style="border:2px solid #c0392b;border-radius:6px;padding:12px;">
+      <h3 style="margin:0 0 10px;text-align:center;color:#c0392b;font-size:14px;letter-spacing:2px;">FOR OFFICE USE ONLY</h3>
+      <table style="width:100%;border-collapse:collapse;"><tr>
+        <td style="${cell}">Admission No</td><td style="${cell}">Date of Admission</td>
+        <td style="${cell}">Principal Signature</td><td style="${cell}">Correspondent Signature</td>
+      </tr></table>
+    </div>`;
+}
+
 function buildSchoolEmail(req: FormEmailRequest, dateStr: string, timeStr: string): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:0;background:#f4f4f4;">
   <div style="max-width:650px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;border:2px solid #1a3a5c;">
@@ -128,7 +156,9 @@ function buildSchoolEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
       <p style="font-size:14px;color:#333;margin:0 0 20px;">New submission received from the website. A printable copy is attached.</p>
       ${buildResumeBlock(!!req.resumeStoragePath, req.resumeFileName)}
       ${buildReceiptHTML(req.receiptDetails)}
+      ${buildAdmissionFormHeader(req, dateStr)}
       ${buildFieldGroupsHTML(req.fieldGroups)}
+      ${buildAdmissionFormFooter(req)}
     </div>
     <div style="background:#f5f5f5;padding:16px 24px;text-align:center;font-size:11px;color:#888;border-top:1px solid #eee;">
       <p style="margin:0;">This is an automated email from ${SCHOOL_NAME} website.</p>
@@ -186,7 +216,9 @@ function buildParentEmail(req: FormEmailRequest, dateStr: string, timeStr: strin
         <h3 style="font-size:14px;color:#1a3a5c;margin:0 0 4px;">📄 Your Submission Summary</h3>
         <p style="font-size:11px;color:#888;margin:0 0 16px;">Date: ${dateStr} | Time: ${timeStr}</p>
         ${buildReceiptHTML(req.receiptDetails)}
+        ${buildAdmissionFormHeader(req, dateStr)}
         ${buildFieldGroupsHTML(req.fieldGroups)}
+        ${buildAdmissionFormFooter(req)}
       </div>
       
       <div style="margin-top:24px;padding:16px;background:#eff6ff;border-radius:8px;border:1px solid #bfdbfe;">
