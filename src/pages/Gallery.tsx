@@ -27,11 +27,14 @@ const Gallery = () => {
       {/* Hero Banner */}
       <section className="bg-primary text-primary-foreground py-16 md:py-20">
         <div className="container-custom text-center">
-          <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4">
-            Nethaji Vidyalayam School Gallery
+          <h1 className="font-serif text-4xl md:text-5xl font-bold mb-3">
+            Nethaji Vidhyalayam School Gallery
           </h1>
+          <p className="text-xl md:text-2xl font-semibold text-accent mb-4">
+            Smiles, Stories &amp; Celebrations
+          </p>
           <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
-            A glimpse into the vibrant life at Nethaji Vidhyalayam, from academic achievements to cultural celebrations.
+            Every photo tells a story — of learning, laughter, talent and togetherness at Nethaji Vidhyalayam.
           </p>
         </div>
       </section>
