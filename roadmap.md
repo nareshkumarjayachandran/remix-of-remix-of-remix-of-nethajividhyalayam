@@ -13,3 +13,4 @@
 # Current calendar and Tamil panchangam
 - [x] Correct Chennai/IST dates, Tamil year/month/day and daily astronomical timings, including the floating date badge.
 - [x] Show the current calendar month and verify daily updates with tests and the page.
+- [x] Display the current Kaliyugam year beside today's date on both calendar tabs.

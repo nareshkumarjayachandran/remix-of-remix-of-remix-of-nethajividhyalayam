@@ -245,6 +245,7 @@ const SchoolCalendar = () => {
         <div className="container-custom flex flex-wrap justify-center items-center gap-x-5 gap-y-2 text-center">
           <p className="font-semibold text-foreground">{today.date}</p>
           <p className="text-primary">{today.tamilMonth} {today.tamilDate} · {today.tamilYear}</p>
+          <p className="font-semibold text-primary">கலி யுகம் (Kaliyugam) {today.kaliYear}</p>
           <span className="text-xs text-muted-foreground">Chennai · IST</span>
         </div>
       </div>
