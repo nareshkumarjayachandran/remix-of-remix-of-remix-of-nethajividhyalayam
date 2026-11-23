@@ -9,3 +9,7 @@
 # Phone numbers and mail id
 - [x] Show +91 6380967675 everywhere; each phone number dials its own number.
 - [x] Keep the mail id in the top bar on PC (1024px+) only; footer and Contact page always show it.
+
+# Current calendar and Tamil panchangam
+- [x] Correct Chennai/IST dates, Tamil year/month/day and daily astronomical timings, including the floating date badge.
+- [x] Show the current calendar month and verify daily updates with tests and the page.

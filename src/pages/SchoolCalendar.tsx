@@ -1,36 +1,35 @@
 import DuotoneIcon from "@/components/common/DuotoneIcon";
-import { useState, useMemo } from "react";
-import { Sun, Moon, Star, Calendar, Clock, Award } from "lucide-react";
-import { calculateTodayPanchangam } from "@/lib/panchangam";
+import { useState, useMemo, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Sun, Moon, Star, Calendar, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { calculateTodayPanchangam, getChennaiDateParts } from "@/lib/panchangam";
 import { getAcademicYearFull, getAcademicYearStartYear } from "@/lib/schoolDates";
 
 const calendarMonths = [
   { month: "June", tamilMonth: "வைகாசி / ஆனி", events: [
     { date: "1", title: "School Reopens" }, { date: "5", title: "Orientation Day" },
     { date: "21", title: "International Yoga Day" },
-    { date: "12", title: "V.O.C. Birth Anniversary (வ.உ.சி. பிறந்த நாள்)" },
   ]},
   { month: "July", tamilMonth: "ஆனி / ஆடி", events: [
+    { date: "15", title: "Kamaraj Birth Anniversary (காமராஜர் பிறந்த நாள்)" },
     { date: "4", title: "Science Week Begins" }, { date: "15", title: "Parent-Teacher Meet" },
     { date: "23", title: "Bal Gangadhar Tilak Birth Anniversary" },
-    { date: "28", title: "Bharathiar Memorial Day (பாரதியார் நினைவு நாள்)" },
     { date: "28", title: "Talent Show" },
   ]},
   { month: "August", tamilMonth: "ஆடி / ஆவணி", events: [
     { date: "15", title: "Independence Day (சுதந்திர தினம்)" },
-    { date: "20", title: "Rajaji Birth Anniversary (ராஜாஜி பிறந்த நாள்)" },
     { date: "20", title: "Inter-house Quiz" }, { date: "26", title: "Sports Week Begins" },
   ]},
   { month: "September", tamilMonth: "ஆவணி / புரட்டாசி", events: [
     { date: "5", title: "Teachers' Day (Dr. Radhakrishnan Birthday)" },
-    { date: "11", title: "Bharathiar Birth Anniversary (பாரதியார் பிறந்த நாள்)" },
+    { date: "5", title: "V.O.C. Birth Anniversary (வ.உ.சி. பிறந்த நாள்)" },
+    { date: "11", title: "Bharathiar Memorial Day (பாரதியார் நினைவு நாள்)" },
     { date: "15", title: "Half-Yearly Exams Begin" },
     { date: "17", title: "Periyar Birth Anniversary (பெரியார் பிறந்த நாள்)" },
     { date: "28", title: "Results Day" },
   ]},
   { month: "October", tamilMonth: "புரட்டாசி / ஐப்பசி", events: [
     { date: "2", title: "Gandhi Jayanti (காந்தி ஜெயந்தி)" },
-    { date: "7", title: "VOC Memorial Day (வ.உ.சி. நினைவு நாள்)" },
     { date: "10-18", title: "Dussehra / Diwali Holidays" },
     { date: "15", title: "APJ Abdul Kalam Birth Anniversary" },
     { date: "25", title: "School Resumes" },
@@ -41,12 +40,14 @@ const calendarMonths = [
     { date: "11", title: "Maulana Azad Birth Anniversary (Education Day)" },
     { date: "14", title: "Children's Day (Nehru Jayanti)" },
     { date: "19", title: "Rani Lakshmibai Birth Anniversary" },
+    { date: "18", title: "V.O.C. Memorial Day (வ.உ.சி. நினைவு நாள்)" },
     { date: "20", title: "Annual Day Rehearsals" },
   ]},
   { month: "December", tamilMonth: "கார்த்திகை / மார்கழி", events: [
     { date: "1", title: "Annual Day" },
     { date: "6", title: "Dr. B.R. Ambedkar Memorial Day (அம்பேத்கர் நினைவு நாள்)" },
-    { date: "11", title: "Subramania Bharati Birth Anniversary (Revised)" },
+    { date: "10", title: "Rajaji Birth Anniversary (ராஜாஜி பிறந்த நாள்)" },
+    { date: "11", title: "Subramania Bharati Birth Anniversary" },
     { date: "15", title: "Christmas Celebrations" },
     { date: "22-31", title: "Winter Holidays" },
     { date: "24", title: "Periyar Memorial Day (பெரியார் நினைவு நாள்)" },
@@ -62,7 +63,6 @@ const calendarMonths = [
   { month: "February", tamilMonth: "தை / மாசி", events: [
     { date: "1", title: "Science Exhibition" },
     { date: "14", title: "Valentine's Week Activities" },
-    { date: "18", title: "Kamaraj Birth Anniversary (காமராஜர் பிறந்த நாள்)" },
     { date: "20", title: "Pre-Board Exams" },
     { date: "28", title: "Rajendra Prasad Memorial Day" },
   ]},
@@ -92,15 +92,15 @@ const leaderAnniversaries = [
   { date: "Jan 23", name: "நேதாஜி சுபாஷ் சந்திர போஸ் (Netaji Subhas Chandra Bose)", type: "பிறந்த நாள்", description: "Parakram Diwas — INA founder & freedom fighter" },
   { date: "Jan 26", name: "குடியரசு தினம் (Republic Day)", type: "தேசிய நாள்", description: "Constitution of India came into effect" },
   { date: "Jan 30", name: "மகாத்மா காந்தி (Mahatma Gandhi)", type: "நினைவு நாள்", description: "Martyrs' Day — Father of the Nation" },
-  { date: "Feb 18", name: "காமராஜர் (Kamaraj)", type: "பிறந்த நாள்", description: "King maker of Indian politics — TN's beloved leader" },
+  { date: "Jul 15", name: "காமராஜர் (Kamaraj)", type: "பிறந்த நாள்", description: "King maker of Indian politics — TN's beloved leader" },
   { date: "Mar 23", name: "பகத் சிங், ராஜ்குரு, சுக்தேவ் (Bhagat Singh, Rajguru, Sukhdev)", type: "தியாகிகள் தினம்", description: "Martyrs' Day — Young revolutionaries" },
   { date: "Apr 14", name: "டாக்டர் அம்பேத்கர் (Dr. B.R. Ambedkar)", type: "பிறந்த நாள்", description: "Architect of Indian Constitution" },
   { date: "May 7", name: "ரவீந்திரநாத் தாகூர் (Rabindranath Tagore)", type: "பிறந்த நாள்", description: "Nobel Laureate — National anthem composer" },
-  { date: "Jun 12", name: "வ.உ.சிதம்பரனார் (V.O. Chidambaranar)", type: "பிறந்த நாள்", description: "Kappalottiya Tamilan — Maritime freedom fighter" },
+  { date: "Sep 5", name: "வ.உ.சிதம்பரனார் (V.O. Chidambaranar)", type: "பிறந்த நாள்", description: "Kappalottiya Tamilan — Maritime freedom fighter" },
   { date: "Jul 23", name: "பால கங்காதர திலகர் (Bal Gangadhar Tilak)", type: "பிறந்த நாள்", description: "'Swaraj is my birthright' — Freedom movement leader" },
   { date: "Aug 15", name: "சுதந்திர தினம் (Independence Day)", type: "தேசிய நாள்", description: "India's Independence from British rule" },
   { date: "Sep 5", name: "டாக்டர் ராதாகிருஷ்ணன் (Dr. S. Radhakrishnan)", type: "பிறந்த நாள்", description: "Teachers' Day — Philosopher & 2nd President" },
-  { date: "Sep 11", name: "பாரதியார் (Mahakavi Bharathiar)", type: "பிறந்த நாள்", description: "Tamil poet, freedom fighter & social reformer" },
+  { date: "Dec 11", name: "பாரதியார் (Mahakavi Bharathiar)", type: "பிறந்த நாள்", description: "Tamil poet, freedom fighter & social reformer" },
   { date: "Sep 17", name: "பெரியார் (Periyar E.V. Ramasamy)", type: "பிறந்த நாள்", description: "Father of Dravidian movement — Social reformer" },
   { date: "Oct 2", name: "மகாத்மா காந்தி (Mahatma Gandhi)", type: "பிறந்த நாள்", description: "Gandhi Jayanti — Father of the Nation" },
   { date: "Oct 15", name: "அப்துல் கலாம் (APJ Abdul Kalam)", type: "பிறந்த நாள்", description: "Missile Man of India — 11th President" },
@@ -113,24 +113,19 @@ const leaderAnniversaries = [
 ];
 
 const panchangamData = {
-  kaliYugam: {
-    year: 5127,
-    tamilYear: "குரோதி (Kurodhi)",
-    ayanam: "உத்தராயணம் (Uttarayanam) — Jan to Jul | தக்ஷிணாயணம் (Dakshinayanam) — Jul to Jan",
-  },
   tamilMonths: [
-    { name: "சித்திரை (Chithirai)", english: "Apr 14 – May 14", deity: "அக்னி", rashi: "மேஷம்" },
-    { name: "வைகாசி (Vaikasi)", english: "May 15 – Jun 14", deity: "இந்திரன்", rashi: "ரிஷபம்" },
-    { name: "ஆனி (Aani)", english: "Jun 15 – Jul 14", deity: "சூரியன்", rashi: "மிதுனம்" },
-    { name: "ஆடி (Aadi)", english: "Jul 15 – Aug 14", deity: "சந்திரன்", rashi: "கடகம்" },
-    { name: "ஆவணி (Aavani)", english: "Aug 15 – Sep 14", deity: "பிரம்மா", rashi: "சிம்மம்" },
-    { name: "புரட்டாசி (Purattasi)", english: "Sep 15 – Oct 14", deity: "விஷ்ணு", rashi: "கன்னி" },
-    { name: "ஐப்பசி (Aippasi)", english: "Oct 15 – Nov 14", deity: "சிவன்", rashi: "துலாம்" },
-    { name: "கார்த்திகை (Karthigai)", english: "Nov 15 – Dec 14", deity: "முருகன்", rashi: "விருச்சிகம்" },
-    { name: "மார்கழி (Margazhi)", english: "Dec 15 – Jan 13", deity: "லக்ஷ்மி", rashi: "தனுசு" },
-    { name: "தை (Thai)", english: "Jan 14 – Feb 12", deity: "பிரஜாபதி", rashi: "மகரம்" },
-    { name: "மாசி (Maasi)", english: "Feb 13 – Mar 13", deity: "துர்க்கை", rashi: "கும்பம்" },
-    { name: "பங்குனி (Panguni)", english: "Mar 14 – Apr 13", deity: "ஹனுமான்", rashi: "மீனம்" },
+    { name: "சித்திரை (Chithirai)", english: "Apr – May", deity: "அக்னி", rashi: "மேஷம்" },
+    { name: "வைகாசி (Vaikasi)", english: "May – Jun", deity: "இந்திரன்", rashi: "ரிஷபம்" },
+    { name: "ஆனி (Aani)", english: "Jun – Jul", deity: "சூரியன்", rashi: "மிதுனம்" },
+    { name: "ஆடி (Aadi)", english: "Jul – Aug", deity: "சந்திரன்", rashi: "கடகம்" },
+    { name: "ஆவணி (Aavani)", english: "Aug – Sep", deity: "பிரம்மா", rashi: "சிம்மம்" },
+    { name: "புரட்டாசி (Purattasi)", english: "Sep – Oct", deity: "விஷ்ணு", rashi: "கன்னி" },
+    { name: "ஐப்பசி (Aippasi)", english: "Oct – Nov", deity: "சிவன்", rashi: "துலாம்" },
+    { name: "கார்த்திகை (Karthigai)", english: "Nov – Dec", deity: "முருகன்", rashi: "விருச்சிகம்" },
+    { name: "மார்கழி (Margazhi)", english: "Dec – Jan", deity: "லக்ஷ்மி", rashi: "தனுசு" },
+    { name: "தை (Thai)", english: "Jan – Feb", deity: "பிரஜாபதி", rashi: "மகரம்" },
+    { name: "மாசி (Maasi)", english: "Feb – Mar", deity: "துர்க்கை", rashi: "கும்பம்" },
+    { name: "பங்குனி (Panguni)", english: "Mar – Apr", deity: "ஹனுமான்", rashi: "மீனம்" },
   ],
   vaaram: [
     { day: "ஞாயிறு (Sunday)", deity: "சூரியன்", color: "சிவப்பு (Red)" },
@@ -201,41 +196,104 @@ type TabType = "school" | "panchangam";
 
 const SchoolCalendar = () => {
   const [activeTab, setActiveTab] = useState<TabType>("school");
-  const today = useMemo(() => calculateTodayPanchangam(), []);
-  const academicYearStartYear = getAcademicYearStartYear();
+  const [now, setNow] = useState(() => new Date());
+  const today = useMemo(() => calculateTodayPanchangam(now), [now]);
+  const current = getChennaiDateParts(now);
+  const [viewMonth, setViewMonth] = useState(() => {
+    const parts = getChennaiDateParts();
+    return { year: parts.year, month: parts.month };
+  });
+  useEffect(() => {
+    const refresh = () => setNow(new Date());
+    const timer = window.setInterval(refresh, 60000);
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, []);
+  // Follow midnight rollover only when the user is viewing the current month.
+  useEffect(() => {
+    setViewMonth(previous => {
+      const prior = new Date(Date.UTC(current.year, current.month - 1, current.day) - 86400000);
+      return previous.year === prior.getUTCFullYear() && previous.month === prior.getUTCMonth() + 1
+        ? { year: current.year, month: current.month } : previous;
+    });
+  }, [current.year, current.month, current.day]);
+  const schoolDate = new Date(current.year, current.month - 1, current.day);
+  const academicYearStartYear = getAcademicYearStartYear(schoolDate);
+  const monthLabel = new Date(Date.UTC(viewMonth.year, viewMonth.month - 1, 1)).toLocaleDateString("en-IN", { timeZone: "UTC", month: "long", year: "numeric" });
+  const firstWeekday = new Date(Date.UTC(viewMonth.year, viewMonth.month - 1, 1)).getUTCDay();
+  const daysInMonth = new Date(Date.UTC(viewMonth.year, viewMonth.month, 0)).getUTCDate();
+  const shiftMonth = (amount: number) => {
+    const date = new Date(Date.UTC(viewMonth.year, viewMonth.month - 1 + amount, 1));
+    setViewMonth({ year: date.getUTCFullYear(), month: date.getUTCMonth() + 1 });
+  };
 
   return (
     <>
       <section className="bg-primary text-primary-foreground py-20">
         <div className="container-custom text-center">
           <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4">School Calendar & Tamil Panchangam</h1>
-          <p className="text-lg text-primary-foreground/80">Academic Year {getAcademicYearFull()} | கலி யுகம் {panchangamData.kaliYugam.year} — {panchangamData.kaliYugam.tamilYear}</p>
+          <p className="text-lg text-primary-foreground/80">Academic Year {getAcademicYearFull(schoolDate)} | {today.tamilYear}</p>
         </div>
       </section>
 
+      <div className="bg-card border-b py-4">
+        <div className="container-custom flex flex-wrap justify-center items-center gap-x-5 gap-y-2 text-center">
+          <p className="font-semibold text-foreground">{today.date}</p>
+          <p className="text-primary">{today.tamilMonth} {today.tamilDate} · {today.tamilYear}</p>
+          <span className="text-xs text-muted-foreground">Chennai · IST</span>
+        </div>
+      </div>
       {/* Tab Switcher */}
       <div className="bg-muted border-b">
         <div className="container-custom flex gap-1 py-2">
-          <button
+          <Button variant="ghost"
             onClick={() => setActiveTab("school")}
-            className={`px-6 py-3 rounded-t-lg font-semibold text-sm transition-colors ${activeTab === "school" ? "bg-background text-primary shadow" : "text-muted-foreground hover:text-foreground"}`}
+            className={`h-auto whitespace-normal px-3 sm:px-6 py-3 rounded-t-lg font-semibold text-sm transition-colors ${activeTab === "school" ? "bg-background text-primary shadow" : "text-muted-foreground hover:text-foreground"}`}
           >
             <Calendar className="inline-block w-4 h-4 mr-2" />
             School Calendar
-          </button>
-          <button
+          </Button>
+          <Button variant="ghost"
             onClick={() => setActiveTab("panchangam")}
-            className={`px-6 py-3 rounded-t-lg font-semibold text-sm transition-colors ${activeTab === "panchangam" ? "bg-background text-primary shadow" : "text-muted-foreground hover:text-foreground"}`}
+            className={`h-auto whitespace-normal px-3 sm:px-6 py-3 rounded-t-lg font-semibold text-sm transition-colors ${activeTab === "panchangam" ? "bg-background text-primary shadow" : "text-muted-foreground hover:text-foreground"}`}
           >
             <Star className="inline-block w-4 h-4 mr-2" />
             தமிழ் பஞ்சாங்கம் (Panchangam)
-          </button>
+          </Button>
         </div>
       </div>
 
       {activeTab === "school" && (
         <section className="section-padding bg-background">
           <div className="container-custom">
+            <div className="mb-10 mx-auto max-w-3xl">
+              <div className="flex items-center justify-between gap-3 mb-5">
+                <h2 className="font-serif text-2xl font-bold text-foreground">{monthLabel}</h2>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="icon" aria-label="Previous month" onClick={() => shiftMonth(-1)}><ChevronLeft /></Button>
+                  <Button variant="outline" onClick={() => setViewMonth({ year: current.year, month: current.month })}>Today</Button>
+                  <Button variant="outline" size="icon" aria-label="Next month" onClick={() => shiftMonth(1)}><ChevronRight /></Button>
+                </div>
+              </div>
+              <div className="grid grid-cols-7 border-t border-l border-border" role="grid" aria-label={monthLabel}>
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => <div key={day} role="columnheader" className="text-center text-xs sm:text-sm font-semibold bg-muted text-muted-foreground py-3 border-r border-b border-border">{day}</div>)}
+                {Array.from({ length: Math.ceil((firstWeekday + daysInMonth) / 7) * 7 }, (_, i) => {
+                  const day = i - firstWeekday + 1;
+                  const valid = day >= 1 && day <= daysInMonth;
+                  const isToday = valid && day === current.day && viewMonth.month === current.month && viewMonth.year === current.year;
+                  return <div key={i} role="gridcell" aria-current={isToday ? "date" : undefined} aria-label={valid ? `${day} ${monthLabel}${isToday ? ", Today" : ""}` : undefined} className={`min-h-12 sm:min-h-16 flex flex-col items-center justify-center border-r border-b border-border ${isToday ? "bg-primary text-primary-foreground font-bold" : "bg-card text-foreground"}`}>
+                    {valid ? day : ""}{isToday && <span className="text-[10px] sm:text-xs">Today</span>}
+                  </div>;
+                })}
+              </div>
+            </div>
+            <h2 className="font-serif text-2xl font-bold text-foreground mb-2">Academic Year {getAcademicYearFull(schoolDate)}</h2>
+            <p className="text-sm text-muted-foreground mb-6">School event and holiday dates are provisional; please confirm with the school.</p>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {calendarMonths.map((monthData, idx) => (
                 <div key={idx} className="bg-card rounded-2xl shadow-lg overflow-hidden card-hover animate-fade-up" style={{ animationDelay: `${idx * 0.05}s` }}>
@@ -270,7 +328,7 @@ const SchoolCalendar = () => {
                 <Sun className="w-6 h-6" />
                 <div>
                   <h2 className="font-serif text-xl font-bold">இன்றைய பஞ்சாங்கம் — Today's Panchangam</h2>
-                  <p className="text-sm opacity-80">{today.date}</p>
+                  <p className="text-sm opacity-80">{today.date} · Chennai · IST</p>
                 </div>
               </div>
               <div className="p-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -280,7 +338,7 @@ const SchoolCalendar = () => {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground font-semibold uppercase">தமிழ் மாதம்</p>
-                  <p className="text-sm font-bold text-foreground">{today.tamilMonth}</p>
+                  <p className="text-sm font-bold text-foreground">{today.tamilMonth} {today.tamilDate}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground font-semibold uppercase">பக்ஷம் (Paksham)</p>
@@ -289,18 +347,22 @@ const SchoolCalendar = () => {
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground font-semibold uppercase">திதி (Tithi)</p>
                   <p className="text-sm font-bold text-primary">{today.tithi}</p>
+                  <p className="text-xs text-muted-foreground">Until {today.tithiUntil}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground font-semibold uppercase">நட்சத்திரம் (Nakshatra)</p>
                   <p className="text-sm font-bold text-primary">{today.nakshatra}</p>
+                  <p className="text-xs text-muted-foreground">Until {today.nakshatraUntil}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground font-semibold uppercase">யோகம் (Yogam)</p>
                   <p className="text-sm font-bold text-foreground">{today.yogam}</p>
+                  <p className="text-xs text-muted-foreground">Until {today.yogamUntil}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground font-semibold uppercase">கரணம் (Karanam)</p>
                   <p className="text-sm font-bold text-foreground">{today.karanam}</p>
+                  <p className="text-xs text-muted-foreground">Until {today.karanamUntil}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground font-semibold uppercase">ராகு காலம்</p>
@@ -325,12 +387,14 @@ const SchoolCalendar = () => {
               </div>
             </div>
 
+            <p className="text-xs text-muted-foreground">Chennai · All times in IST · Thirukanitham / Lahiri astronomical calculation. Almanac conventions may differ slightly.</p>
+
             {/* Kali Yugam & Year Info */}
             <div className="bg-gradient-to-br from-accent/30 to-primary/10 rounded-2xl p-8 text-center border">
               <DuotoneIcon icon={Sun} tone="teal" size="lg" className="mx-auto mb-4" />
-              <h2 className="font-serif text-3xl font-bold text-foreground mb-2">கலி யுகம் {panchangamData.kaliYugam.year}</h2>
-              <p className="text-lg text-foreground/80 mb-1">தமிழ் ஆண்டு: <strong>{panchangamData.kaliYugam.tamilYear}</strong></p>
-              <p className="text-sm text-muted-foreground">{panchangamData.kaliYugam.ayanam}</p>
+              <h2 className="font-serif text-3xl font-bold text-foreground mb-2">கலி யுகம் {today.kaliYear}</h2>
+              <p className="text-lg text-foreground/80 mb-1">தமிழ் ஆண்டு: <strong>{today.tamilYear}</strong></p>
+              <p className="text-sm text-muted-foreground">{today.ayanam}</p>
             </div>
 
             {/* Tamil Months */}
@@ -393,7 +457,7 @@ const SchoolCalendar = () => {
             {/* Rahu Kalam */}
             <div>
               <h2 className="font-serif text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <DuotoneIcon icon={Clock} tone="sky" size="xs" /> ராகு காலம் (Rahu Kalam)
+                <DuotoneIcon icon={Clock} tone="sky" size="xs" /> ராகு காலம் (Rahu Kalam — traditional 6 AM–6 PM reference)
               </h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {panchangamData.rahuKalam.map((r, i) => (

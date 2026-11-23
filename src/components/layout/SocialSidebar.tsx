@@ -1,6 +1,7 @@
 import { Facebook, Youtube, Instagram } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getAcademicYear } from "@/lib/schoolDates";
+import { getChennaiDateParts } from "@/lib/panchangam";
 import { useMobileMenuOpen } from "@/lib/mobileMenuStore";
 
 const XIcon = ({ className }: { className?: string }) => (
@@ -121,9 +122,11 @@ const SocialSidebar = () => {
     return () => cancelAnimationFrame(raf);
   }, [mouseY, forceUpdate]);
 
-  const dayName = now.toLocaleDateString("en-US", { weekday: "short" });
-  const dateStr = now.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
+  const chennaiDate = getChennaiDateParts(now);
+  const dayName = now.toLocaleDateString("en-US", { timeZone: "Asia/Kolkata", weekday: "short" });
+  const dateStr = now.toLocaleDateString("en-US", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric" });
   const timeStr = now.toLocaleTimeString("en-US", {
+    timeZone: "Asia/Kolkata",
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -149,18 +152,18 @@ const SocialSidebar = () => {
           <div className="flex items-center gap-3">
             <div className="flex-shrink-0 w-8 flex flex-col items-center">
               <span className="text-[10px] uppercase tracking-widest text-accent font-bold">{dayName}</span>
-              <span className="text-lg font-bold font-serif leading-tight">{now.getDate()}</span>
+              <span className="text-lg font-bold font-serif leading-tight">{chennaiDate.day}</span>
               <span className="text-[9px] text-white/60 uppercase">
-                {now.toLocaleDateString("en-US", { month: "short" })}
+                {now.toLocaleDateString("en-US", { timeZone: "Asia/Kolkata", month: "short" })}
               </span>
             </div>
             <div
               className={`transition-opacity duration-500 whitespace-nowrap text-left ${expanded ? "opacity-100" : "opacity-0"}`}
             >
               <div className="text-lg font-bold font-serif tabular-nums">{timeStr}</div>
-              <div className="text-[10px] text-white/60">{dateStr}</div>
+              <div className="text-[10px] text-white/60">{dateStr} · IST</div>
               <div className="mt-1.5 text-[9px] bg-accent/20 border border-accent/30 rounded-full px-2 py-0.5 text-accent font-semibold">
-                {getAcademicYear()}
+                {getAcademicYear(new Date(chennaiDate.year, chennaiDate.month - 1, chennaiDate.day))}
               </div>
             </div>
           </div>
