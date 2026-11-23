@@ -237,7 +237,7 @@ const SchoolCalendar = () => {
       <section className="bg-primary text-primary-foreground py-20">
         <div className="container-custom text-center">
           <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4">School Calendar & Tamil Panchangam</h1>
-          <p className="text-lg text-primary-foreground/80">Academic Year {getAcademicYearFull(schoolDate)} | கலி யுகம் {today.kaliYear} {today.tamilYear.split(" (")[0]} ஆண்டு</p>
+          <p className="text-lg text-primary-foreground/80">Academic Year {getAcademicYearFull(schoolDate)} | கலியுகம் {today.kaliYear} {today.tamilYear.split(" (")[0]} ஆண்டு</p>
         </div>
       </section>
 
@@ -245,7 +245,7 @@ const SchoolCalendar = () => {
         <div className="container-custom flex flex-wrap justify-center items-center gap-x-5 gap-y-2 text-center">
           <p className="font-semibold text-foreground">{today.date}</p>
           <p className="text-primary">{today.tamilMonth} {today.tamilDate} · {today.tamilYear}</p>
-          <p className="font-semibold text-primary">கலி யுகம் (Kaliyugam) {today.kaliYear}</p>
+          <p className="font-semibold text-primary">கலியுகம் (Kaliyugam) {today.kaliYear}</p>
           <span className="text-xs text-muted-foreground">Chennai · IST</span>
         </div>
       </div>
@@ -393,7 +393,7 @@ const SchoolCalendar = () => {
             {/* Kali Yugam & Year Info */}
             <div className="bg-gradient-to-br from-accent/30 to-primary/10 rounded-2xl p-8 text-center border">
               <DuotoneIcon icon={Sun} tone="teal" size="lg" className="mx-auto mb-4" />
-              <h2 className="font-serif text-3xl font-bold text-foreground mb-2">கலி யுகம் {today.kaliYear}</h2>
+              <h2 className="font-serif text-3xl font-bold text-foreground mb-2">கலியுகம் {today.kaliYear}</h2>
               <p className="text-lg text-foreground/80 mb-1">தமிழ் ஆண்டு: <strong>{today.tamilYear}</strong></p>
               <p className="text-sm text-muted-foreground">{today.ayanam}</p>
             </div>
