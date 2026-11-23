@@ -25,7 +25,7 @@ interface Props {
 
 /** Two-tone layered icon badge with a 3D bevel plate. */
 const DuotoneIcon = ({ icon: Icon, tone, size = "md", className }: Props) => {
-  const t = tones[tone];
+  const t = tones[tone] ?? tones.teal;
   const box = size === "xs" ? "w-8 h-8 rounded-lg border-b-2" : size === "lg" ? "w-16 h-16 rounded-2xl" : size === "sm" ? "w-12 h-12 rounded-xl" : "w-14 h-14 rounded-2xl";
   const ico = size === "xs" ? "h-4 w-4" : size === "lg" ? "h-8 w-8" : size === "sm" ? "h-6 w-6" : "h-7 w-7";
   return (
