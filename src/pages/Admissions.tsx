@@ -204,7 +204,18 @@ const Admissions = () => {
 
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("admission_applications").insert([applyForm]);
+      const { error } = await supabase.from("admission_applications").insert([{
+        ...applyForm,
+        student_name: applyForm.student_name.trim(),
+        parent_name: applyForm.parent_name.trim(),
+        address: applyForm.address.trim(),
+        parent_email: applyForm.parent_email.trim() || null,
+        blood_group: applyForm.blood_group || null,
+        previous_school: applyForm.previous_school.trim() || null,
+        religion: applyForm.religion.trim() || null,
+        community: applyForm.community.trim() || null,
+        nationality: applyForm.nationality.trim() || null,
+      }]);
       if (error) throw error;
 
       const fieldGroups = getApplyFieldGroups();
