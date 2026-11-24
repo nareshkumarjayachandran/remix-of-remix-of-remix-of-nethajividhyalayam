@@ -27,22 +27,83 @@ jobs:
           node-version: '22'
           cache: npm
 
-      - name: Check required deployment settings
+      - name: Check and normalize deployment settings
+        id: ftp
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER_DIR: ${{ vars.FTP_SERVER_DIR }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: |
-          missing=0
-          for name in FTP_SERVER FTP_USERNAME FTP_PASSWORD VITE_SUPABASE_URL VITE_SUPABASE_PUBLISHABLE_KEY; do
-            if [ -z "${!name}" ]; then
-              echo "::error::Add the repository Actions secret named $name before deploying."
-              missing=1
-            fi
-          done
-          exit "$missing"
+          node -e '
+            const fs = require("fs");
+            const dns = require("dns").promises;
+
+            const required = [
+              "FTP_SERVER",
+              "FTP_USERNAME",
+              "FTP_PASSWORD",
+              "VITE_SUPABASE_URL",
+              "VITE_SUPABASE_PUBLISHABLE_KEY",
+            ];
+            let missing = false;
+            for (const name of required) {
+              if (!process.env[name] || !process.env[name].trim()) {
+                console.log(`::error::Add the repository Actions secret named ${name} before deploying.`);
+                missing = true;
+              }
+            }
+            if (missing) process.exit(1);
+
+            function stripQuotes(value) {
+              return value.trim().replace(/^["\x27`]+|["\x27`]+$/g, "").trim();
+            }
+
+            function cleanServer(raw) {
+              let s = stripQuotes(raw.replace(/[\r\n]+/g, " "));
+              s = s.replace(/^(?:FTP_SERVER|FTP_HOST|HOST|SERVER|IP)\s*[:=]\s*/i, "");
+              s = stripQuotes(s);
+              s = s.replace(/^(?:ftps?|sftp|https?):\/\//i, "");
+              const atIdx = s.lastIndexOf("@");
+              if (atIdx !== -1) s = s.slice(atIdx + 1);
+              s = s.split("/")[0];
+              s = s.replace(/:\d+$/, "");
+              return stripQuotes(s);
+            }
+
+            function cleanUsername(raw) {
+              let u = stripQuotes(raw.replace(/[\r\n]+/g, ""));
+              u = u.replace(/^(?:FTP_USERNAME|FTP_USER|USERNAME|USER)\s*[:=]\s*/i, "");
+              return stripQuotes(u);
+            }
+
+            const server = cleanServer(process.env.FTP_SERVER);
+            const username = cleanUsername(process.env.FTP_USERNAME);
+            const rawDir = stripQuotes(process.env.FTP_SERVER_DIR || "./public_html/");
+            const serverDir = rawDir.endsWith("/") ? rawDir : `${rawDir}/`;
+
+            if (server) console.log(`::add-mask::${server}`);
+            if (username) console.log(`::add-mask::${username}`);
+
+            if (!server || /\s/.test(server)) {
+              console.log("::error::FTP_SERVER secret is not a valid hostname or IP address even after cleanup. Set FTP_SERVER to your Hostinger FTP IP (e.g. 147.93.79.160) or ftp.nethajividhyalayam.org.");
+              process.exit(1);
+            }
+
+            (async () => {
+              try {
+                await dns.lookup(server);
+              } catch (err) {
+                console.log(`::error::FTP_SERVER could not be resolved via DNS (${err.code || "ENOTFOUND"}). Check your FTP_SERVER secret in GitHub Settings → Secrets and variables → Actions and set it to your Hostinger FTP IP (for example 147.93.79.160).`);
+                process.exit(1);
+              }
+              const out = process.env.GITHUB_OUTPUT;
+              fs.appendFileSync(out, `server=${server}\nusername=${username}\nserver_dir=${serverDir}\n`);
+              console.log("FTP settings validated and normalized successfully.");
+            })();
+          '
 
       - name: Install dependencies
         run: npm ci
@@ -56,10 +117,10 @@ jobs:
       - name: Deploy to Hostinger via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ steps.ftp.outputs.server }}
+          username: ${{ steps.ftp.outputs.username }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           local-dir: ./dist/
-          server-dir: ${{ vars.FTP_SERVER_DIR || './public_html/' }}
+          server-dir: ${{ steps.ftp.outputs.server_dir }}
           dangerous-clean-slate: false
