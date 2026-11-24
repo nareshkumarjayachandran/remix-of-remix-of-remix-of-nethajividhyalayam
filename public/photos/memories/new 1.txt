@@ -1,0 +1,22 @@
+"hey, i want to host this site on hostinger,
+please install all necessary dependencies and run a production build.
+once finished, show me where the 'dist' folder is"
+Dist Folder Location
+The production-ready build files are located at:
+
+Directory Link: dist
+Full Path: C:\Users\Admin\Downloads\remix-of-remix-of-remix-of-nethajividhyalayam-main\remix-of-remix-of-remix-of-nethajividhyalayam-main\dist
+🌐 How to Deploy to Hostinger
+Log in to Hostinger hPanel: Navigate to your website's File Manager (or connect via FTP / FileZilla).
+Open public_html: Go into the public_html directory of your domain.
+Upload Contents of dist:
+Upload the contents inside the dist folder (not the dist folder itself) directly into public_html.
+Your public_html directory should directly contain:
+index.html
+.htaccess (already generated with React SPA routing & caching rules)
+assets/
+photos/, videos/, lovable-uploads/
+manifest.webmanifest, sw.js, etc.
+Done: Visit your domain in the browser to view the live site.
+ 
+ 
