@@ -52,6 +52,25 @@ After running `npm run build`, upload the entire contents of the **`dist/`** fol
 - ✅ Pre-configured `.htaccess` for SPA routing
 - ✅ Offline fallback page
 
+### Automatic GitHub → Hostinger updates
+
+The existing `.github/workflows/deploy-hostinger.yml` runs on every push to `main`, or manually from **Actions → Deploy to Hostinger → Run workflow**. It installs locked dependencies, builds the website, and uploads only `dist/` using encrypted FTPS. Hosting must support FTPS; do not downgrade to unencrypted FTP.
+
+1. Back up your current Hostinger website before the first deployment.
+2. In the GitHub repository that will deploy the site, open **Settings → Secrets and variables → Actions → New repository secret**. Add:
+   - `FTP_SERVER`: the FTP hostname or IP supplied by Hostinger (without a URL scheme).
+   - `FTP_USERNAME`: the hosting FTP account username.
+   - `FTP_PASSWORD`: the hosting FTP account password.
+   - `VITE_SUPABASE_URL`: the existing public backend endpoint used by this project.
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`: the existing public backend publishable key. Never use a service-role or other private server key.
+3. Confirm the folder shown when logging in with that FTP account. The default upload destination is `./public_html/`. If the account already opens inside `public_html`, add an Actions **variable** named `FTP_SERVER_DIR` with value `./`. For other account roots, use the relative path to this website's folder, always ending with `/`.
+4. Open **Actions → Deploy to Hostinger → Run workflow** and select `main`. Missing secrets produce an explicit setup error without revealing their values.
+5. After a successful run, open the website and refresh `/admissions` and `/contact`. The build includes `public/.htaccess` to support direct page visits. Also verify an admission submission and any sign-in flow; hosting changes do not move Lovable Cloud, and authentication redirect settings may need the new domain.
+
+Future pushes to `main` deploy automatically. A failed build will not start an upload. Uploads are serialized and do not wipe the entire hosting directory, but previously deployed website files can be replaced or removed during synchronization: use an account scoped to this website only. Deployment duration depends on the build and upload size.
+
+If using the repository mirror, configure secrets in whichever repository runs this deployment, and avoid enabling two upload workflows against the same hosting folder. Lovable publication and Hostinger deployment are separate operations.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).

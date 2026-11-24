@@ -5,3 +5,4 @@
 - Parse and toggle worksheet chapter selections through `src/lib/worksheetTopics.ts` using complete suggestion labels so commas within titles do not break selection.
 - Keep Chennai panchangam calculations in `src/lib/panchangam.ts`, using Astronomy Engine and Lahiri sidereal longitudes; derive civil dates in Asia/Kolkata so visitors' timezones never change the school date.
 - Format outgoing form-email timestamps through `supabase/functions/_shared/emailDates.ts` so server timezone cannot alter the school submission time.
+- Keep Hostinger deployment in a single GitHub Actions workflow that builds locked dependencies and uploads only `dist/` over FTPS using repository secrets; serialize uploads to avoid overlapping production releases.

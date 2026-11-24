@@ -22,3 +22,8 @@
 # Admission email corrections
 - [x] Use Indian submission time, leave FORM NO blank, and display the original logo without a dark background and white phone links in both email copies.
 - [x] Test the corrected email output and deploy the email function (timestamp tests and rendered header verified; no actual email sent).
+
+# Automatic Hostinger deployment
+- [x] Update the existing deployment workflow for automatic main-branch updates, manual retries, secure uploads, and missing-setting checks.
+- [x] Document GitHub settings and the hosting directory selection.
+- [ ] Verify a live deployment after the owner adds the required GitHub secrets and confirms the FTP destination; external credentials and GitHub Actions access are not available here.
