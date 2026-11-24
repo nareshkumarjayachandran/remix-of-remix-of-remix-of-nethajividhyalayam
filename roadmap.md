@@ -24,6 +24,7 @@
 - [x] Test the corrected email output and deploy the email function (timestamp tests and rendered header verified; no actual email sent).
 
 # Automatic Hostinger deployment
+- [x] Synchronize the npm lockfile, validate a clean installation, and update GitHub actions to their Node 24 runtime versions with Node 22 for the website (isolated npm ci passed).
 - [x] Update the existing deployment workflow for automatic main-branch updates, manual retries, secure uploads, and missing-setting checks.
 - [x] Document GitHub settings and the hosting directory selection.
 - [ ] Verify a live deployment after the owner adds the required GitHub secrets and confirms the FTP destination; external credentials and GitHub Actions access are not available here.

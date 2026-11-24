@@ -56,6 +56,8 @@ After running `npm run build`, upload the entire contents of the **`dist/`** fol
 
 The existing `.github/workflows/deploy-hostinger.yml` runs on every push to `main`, or manually from **Actions → Deploy to Hostinger → Run workflow**. It installs locked dependencies, builds the website, and uploads only `dist/` using encrypted FTPS. Hosting must support FTPS; do not downgrade to unencrypted FTP.
 
+The website builds with Node.js 22; checkout/setup actions use their Node.js 24 runtime. Keep `package-lock.json` synchronized with `package.json` when dependencies change: the workflow deliberately retains `npm ci` for repeatable installations rather than resolving different packages on every deployment.
+
 1. Back up your current Hostinger website before the first deployment.
 2. In the GitHub repository that will deploy the site, open **Settings → Secrets and variables → Actions → New repository secret**. Add:
    - `FTP_SERVER`: the FTP hostname or IP supplied by Hostinger (without a URL scheme).
