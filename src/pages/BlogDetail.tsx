@@ -4,7 +4,7 @@ import { ArrowLeft, Calendar, User } from "lucide-react";
 import posts from "@/data/blogPosts.json";
 import { formatBlogDate } from "./Blog";
 
-const fonts = `<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Source+Serif+4:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"><base target="_top">`;
+const fonts = `<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Source+Serif+4:wght@400;600&family=IBM+Plex+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"><base target="_top">`;
 
 const BlogDetail = () => {
   const { slug } = useParams();
