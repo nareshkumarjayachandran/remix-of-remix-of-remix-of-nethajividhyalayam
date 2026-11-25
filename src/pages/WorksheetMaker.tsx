@@ -35,7 +35,9 @@ import {
 import VoiceReader from "@/components/ui/VoiceReader";
 import { parseWorksheetTopics, toggleWorksheetTopic } from "@/lib/worksheetTopics";
 import {
+  DEFAULT_WORKSHEET_TIME_LABEL,
   distributeBookletPages,
+  formatCleanWorksheetTitle,
   getBookletImpositionOrder,
   getWordPageCss,
   type BookletSlice,
@@ -72,6 +74,7 @@ interface Worksheet {
   sections: Section[];
   _hasDiagram?: boolean;
   subtitle?: string;
+  timeLabel?: string;
   difficultyLabel?: string;
   languageLabel?: string;
   studentNameLabel?: string;
@@ -765,7 +768,12 @@ export default function WorksheetMaker() {
       throw new Error("Rate limit reached. Please wait 30 seconds and try generating fewer sets at once.");
     }
     if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
-    return data.worksheet;
+    const ws = data.worksheet as Worksheet;
+    return {
+      ...ws,
+      title: formatCleanWorksheetTitle(ws.title, ws.topic || formData.topic),
+      timeLabel: ws.timeLabel ?? DEFAULT_WORKSHEET_TIME_LABEL,
+    };
   };
 
   // ─── Generate (single or multi-set) ────────────────────────────────────────
@@ -855,7 +863,11 @@ export default function WorksheetMaker() {
   };
 
   const loadSaved = (saved: SavedWorksheet) => {
-    setWorksheet(saved.worksheet);
+    setWorksheet({
+      ...saved.worksheet,
+      title: formatCleanWorksheetTitle(saved.worksheet.title, saved.worksheet.topic || saved.formData?.topic),
+      timeLabel: saved.worksheet.timeLabel ?? DEFAULT_WORKSHEET_TIME_LABEL,
+    });
     setFormData(saved.formData);
     setLayout(saved.layout || "portrait");
     setShowSaved(false);
@@ -951,8 +963,9 @@ export default function WorksheetMaker() {
       </head>
       <body>
         <div style="text-align:center;margin-bottom:12px">
+          <p style="text-align:right;margin:0 0 4px 0;font-size:12px;font-weight:bold;color:#1a3a5c">${displayedWorksheet.timeLabel ?? DEFAULT_WORKSHEET_TIME_LABEL}</p>
           <img src="${window.location.origin}/nethaji_logo_print.webp" alt="Logo" style="width:70px;height:70px;object-fit:contain" />
-          <h1 style="margin:4px 0">${displayedWorksheet.title}</h1>
+          <h1 style="margin:4px 0">${formatCleanWorksheetTitle(displayedWorksheet.title, displayedWorksheet.topic || formData.topic)}</h1>
           <p style="margin:2px 0;color:#555;font-size:12px">${formData.curriculum} · ${formData.grade} · ${formData.subject} · ${formData.term}</p>
         </div>
         <hr style="border:1px solid #1a3a5c"/>
@@ -2455,7 +2468,23 @@ export default function WorksheetMaker() {
                     className={`absolute ${compact ? "left-2.5 h-14 w-14" : "left-4 h-28 w-28 print:h-16 print:w-16"} top-1/2 -translate-y-1/2 object-contain`}
                     style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}
                   />
-                  <div className={`text-center ${compact ? "pl-16 pr-2" : "px-8 sm:px-32"}`}>
+                  <div className={`absolute ${compact ? "top-2 right-2" : "top-3 right-4"} z-10`}>
+                    {editMode ? (
+                      <input
+                        aria-label="Worksheet time"
+                        className={`${compact ? "w-24 text-[10px]" : "w-32 text-xs"} text-right bg-white/25 text-white placeholder-white/70 rounded px-2 py-0.5 font-bold outline-none border border-white/50`}
+                        value={displayedWorksheet.timeLabel ?? DEFAULT_WORKSHEET_TIME_LABEL}
+                        onChange={(e) => updateWorksheetField("timeLabel", e.target.value)}
+                      />
+                    ) : (
+                      <span
+                        className={`inline-block bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-black text-white rounded px-2 py-0.5 ${compact ? "text-[10px]" : "text-xs"} font-bold whitespace-nowrap`}
+                      >
+                        {displayedWorksheet.timeLabel ?? DEFAULT_WORKSHEET_TIME_LABEL}
+                      </span>
+                    )}
+                  </div>
+                  <div className={`text-center ${compact ? "pl-16 pr-24" : "px-8 sm:px-36"}`}>
                     {editMode ? (
                       <input
                         className="w-full text-center text-xs bg-white/20 text-white placeholder-white/70 rounded px-2 py-0.5 mb-1 outline-none border border-white/40"
@@ -2478,7 +2507,7 @@ export default function WorksheetMaker() {
                         className={`tamil-font ${compact ? "text-sm" : "text-base md:text-lg"} font-extrabold leading-tight print:text-black`}
                         style={{ fontFamily: "'Baloo 2', 'Noto Sans Tamil', serif" }}
                       >
-                        {displayedWorksheet.title}
+                        {formatCleanWorksheetTitle(displayedWorksheet.title, displayedWorksheet.topic || formData.topic)}
                       </h2>
                     )}
                     <div className="flex flex-wrap justify-center gap-1.5 mt-2">

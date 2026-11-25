@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  DEFAULT_WORKSHEET_TIME_LABEL,
   distributeBookletPages,
+  formatCleanWorksheetTitle,
   getBookletImpositionOrder,
   getWordPageCss,
   type WorksheetSection,
@@ -82,5 +84,16 @@ describe("worksheetLayout", () => {
     expect(getWordPageCss("portrait")).toContain("A4 portrait");
     expect(getWordPageCss("landscape")).toContain("A4 landscape");
     expect(getWordPageCss("booklet")).toContain("A4 landscape");
+  });
+
+  it("strips long topic lists from worksheet titles while keeping grade, subject and term", () => {
+    expect(
+      formatCleanWorksheetTitle(
+        "Nethaji Vidhyalayam Worksheet - Class 3rd - Social Studies - Term 1 - Maps and Directions, Our State Tamil Nadu, Physical Features of India, Globe and Maps, Symbols on Maps",
+        "Maps and Directions, Our State Tamil Nadu, Physical Features of India, Globe and Maps, Symbols on Maps",
+      ),
+    ).toBe("Nethaji Vidhyalayam Worksheet - Class 3rd - Social Studies - Term 1");
+    expect(formatCleanWorksheetTitle("Custom Maths Practice Sheet")).toBe("Custom Maths Practice Sheet");
+    expect(DEFAULT_WORKSHEET_TIME_LABEL).toBe("Time: 2 ½ Hours");
   });
 });

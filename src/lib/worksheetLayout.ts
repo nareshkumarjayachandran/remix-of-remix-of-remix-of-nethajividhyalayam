@@ -160,3 +160,26 @@ export function getWordPageCss(layout: WorksheetLayout): string {
   }
   return "@page { size: A4 portrait; margin: 1.5cm 2cm; }";
 }
+
+export const DEFAULT_WORKSHEET_TIME_LABEL = "Time: 2 ½ Hours";
+
+/**
+ * Strips trailing comma-separated chapter/topic lists from auto-generated worksheet titles
+ * so the header stays clean (e.g. "Nethaji Vidhyalayam Worksheet - Class 3rd - Social Studies - Term 1").
+ */
+export function formatCleanWorksheetTitle(title: string, topic?: string): string {
+  const trimmed = (title || "").trim();
+  if (!trimmed) return "";
+  const cleanTopic = (topic || "").trim();
+  if (cleanTopic) {
+    const suffix = ` - ${cleanTopic}`;
+    if (trimmed.toLowerCase().endsWith(suffix.toLowerCase())) {
+      return trimmed.slice(0, trimmed.length - suffix.length).trim();
+    }
+  }
+  const termMatch = trimmed.match(/^(.*?\bTerm\s*[123])\s*[-–—]\s+.+$/i);
+  if (termMatch?.[1]) {
+    return termMatch[1].trim();
+  }
+  return trimmed;
+}

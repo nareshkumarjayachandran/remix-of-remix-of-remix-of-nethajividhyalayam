@@ -163,8 +163,8 @@ ${merryBirdsTypeGuide}`
         : "Use a balanced mix of fill-in-blanks, matching, multiple choice, and short answers distributed across sections.";
 
     const worksheetTitle = isMerryBirds
-      ? `NethajiVidhyalayam Worksheet - Class ${grade} - ${subject} - ${term} - ${topic}`
-      : `NethajiVidhyalayam Worksheet - ${grade} ${subject} - ${term} - ${topic}`;
+      ? `Nethaji Vidhyalayam Worksheet - Class ${grade} - ${subject} - ${term}`
+      : `Nethaji Vidhyalayam Worksheet - ${grade} ${subject} - ${term}`;
 
     const curriculumRules = isMerryBirds
       ? `3. Questions must be from Oxford Merry Birds ${grade} ${subject} (${term}) for "${topic}" — use joyful, activity-based style with phonics, rhymes, simple stories, poems
