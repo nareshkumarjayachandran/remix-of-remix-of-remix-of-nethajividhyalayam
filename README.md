@@ -65,7 +65,7 @@ The website builds with Node.js 22; checkout/setup actions use their Node.js 24 
    - `FTP_PASSWORD`: the hosting FTP account password.
    - `VITE_SUPABASE_URL`: the existing public backend endpoint used by this project.
    - `VITE_SUPABASE_PUBLISHABLE_KEY`: the existing public backend publishable key. Never use a service-role or other private server key.
-3. Confirm the folder shown when logging in with that FTP account. The default upload destination is `./public_html/`. If the account already opens inside `public_html`, add an Actions **variable** named `FTP_SERVER_DIR` with value `./`. For other account roots, use the relative path to this website's folder, always ending with `/`.
+3. Confirm the folder shown when logging in with that FTP account. The default upload destination is `./` (the FTP account root, which on Hostinger is already `public_html`); a `public_html` value is automatically treated as `./` to prevent a nested `public_html/public_html` folder. For other account roots, use the relative path to this website's folder, always ending with `/`.
 4. Open **Actions → Deploy to Hostinger → Run workflow** and select `main`. Missing secrets produce an explicit setup error without revealing their values.
 5. After a successful run, open the website and refresh `/admissions` and `/contact`. The build includes `public/.htaccess` to support direct page visits. Also verify an admission submission and any sign-in flow; hosting changes do not move Lovable Cloud, and authentication redirect settings may need the new domain.
 

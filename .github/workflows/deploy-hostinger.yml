@@ -81,8 +81,13 @@ jobs:
 
             const server = cleanServer(process.env.FTP_SERVER);
             const username = cleanUsername(process.env.FTP_USERNAME);
-            const rawDir = stripQuotes(process.env.FTP_SERVER_DIR || "./public_html/");
-            const serverDir = rawDir.endsWith("/") ? rawDir : `${rawDir}/`;
+            const rawDir = stripQuotes(process.env.FTP_SERVER_DIR || "./");
+            let serverDir = rawDir.endsWith("/") ? rawDir : `${rawDir}/`;
+            // Hostinger FTP accounts already open inside public_html; uploading to public_html again nests the site.
+            if (/^(?:\.\/|\/)?public_html\/$/i.test(serverDir)) {
+              console.log("::warning::FTP_SERVER_DIR pointed at public_html, but this FTP account already opens inside it. Uploading to ./ instead.");
+              serverDir = "./";
+            }
 
             if (server) console.log(`::add-mask::${server}`);
             if (username) console.log(`::add-mask::${username}`);
