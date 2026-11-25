@@ -27,9 +27,20 @@ import {
   CheckSquare,
   ChevronDown,
   Share2,
+  Plus,
+  BookOpenCheck,
+  RectangleVertical,
+  RectangleHorizontal,
 } from "lucide-react";
 import VoiceReader from "@/components/ui/VoiceReader";
 import { parseWorksheetTopics, toggleWorksheetTopic } from "@/lib/worksheetTopics";
+import {
+  distributeBookletPages,
+  getBookletImpositionOrder,
+  getWordPageCss,
+  type BookletSlice,
+  type WorksheetLayout,
+} from "@/lib/worksheetLayout";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,6 +53,8 @@ interface Question {
   right?: string[];
   answers?: string[];
   diagramLabels?: string[];
+  colAHeader?: string;
+  colBHeader?: string;
 }
 
 interface Section {
@@ -58,6 +71,15 @@ interface Worksheet {
   instructions: string;
   sections: Section[];
   _hasDiagram?: boolean;
+  subtitle?: string;
+  difficultyLabel?: string;
+  languageLabel?: string;
+  studentNameLabel?: string;
+  dateLabel?: string;
+  scoreLabel?: string;
+  footerLine1?: string;
+  footerLine2?: string;
+  bookletRemarksTitle?: string;
 }
 
 interface SavedWorksheet {
@@ -66,6 +88,7 @@ interface SavedWorksheet {
   savedAt: string;
   worksheet: Worksheet;
   formData: FormData_;
+  layout?: WorksheetLayout;
 }
 
 interface FormData_ {
@@ -648,6 +671,9 @@ export default function WorksheetMaker() {
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [showAnswers, setShowAnswers] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [layout, setLayout] = useState<WorksheetLayout>("portrait");
+  const [bookletViewOrder, setBookletViewOrder] = useState<"imposition" | "reading">("imposition");
+  const [newSectionType, setNewSectionType] = useState<string>("fill_in_blanks");
   const [savedList, setSavedList] = useState<SavedWorksheet[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -809,6 +835,7 @@ export default function WorksheetMaker() {
       savedAt: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
       worksheet: displayedWorksheet,
       formData,
+      layout,
     };
     const updated = [saved, ...savedList].slice(0, 50);
     setSavedList(updated);
@@ -830,6 +857,7 @@ export default function WorksheetMaker() {
   const loadSaved = (saved: SavedWorksheet) => {
     setWorksheet(saved.worksheet);
     setFormData(saved.formData);
+    setLayout(saved.layout || "portrait");
     setShowSaved(false);
     setShowAnswers(false);
     toast({ title: "Worksheet loaded!", description: saved.title });
@@ -839,10 +867,18 @@ export default function WorksheetMaker() {
 
   const handlePrint = () => {
     const prev = showAnswers;
+    const prevEdit = editMode;
+    const prevBookletOrder = bookletViewOrder;
+    if (prevEdit) setEditMode(false);
+    if (layout === "booklet") setBookletViewOrder("imposition");
     setShowAnswers(true);
     setTimeout(() => {
       window.print();
-      setTimeout(() => setShowAnswers(prev), 500);
+      setTimeout(() => {
+        setShowAnswers(prev);
+        if (prevEdit) setEditMode(true);
+        setBookletViewOrder(prevBookletOrder);
+      }, 500);
     }, 300);
   };
 
@@ -904,7 +940,7 @@ export default function WorksheetMaker() {
       <head><meta charset="utf-8"><title>${displayedWorksheet.title}</title>
       <xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml>
       <style>
-        @page { size: A4 portrait; margin: 1.5cm 2cm; }
+        ${getWordPageCss(layout)}
         body { font-family: 'Noto Sans Tamil', Arial, sans-serif; font-size: 13px; color: #111; margin: 0; padding: 0; }
         h1 { font-size: 18px; text-align: center; color: #1a3a5c; margin: 4px 0; }
         h2 { font-size: 15px; color: #1a3a5c; }
@@ -940,212 +976,740 @@ export default function WorksheetMaker() {
 
   // ─── Edit helpers ──────────────────────────────────────────────────────────
 
-  const updateQuestion = (sIdx: number, qIdx: number, field: string, value: string) => {
+  const mutateWorksheet = (updater: (ws: Worksheet) => Worksheet) => {
     if (worksheetSets.length > 0) {
       const currentWs = worksheetSets[activeSetIndex];
       if (!currentWs) return;
-      const updated = { ...currentWs };
-      updated.sections = currentWs.sections.map((s, si) =>
-        si === sIdx
-          ? { ...s, questions: s.questions.map((q, qi) => qi === qIdx ? { ...q, [field]: value } : q) }
-          : s
-      );
       const newSets = [...worksheetSets];
-      newSets[activeSetIndex] = updated;
+      newSets[activeSetIndex] = updater(currentWs);
       setWorksheetSets(newSets);
-    } else {
-      if (!worksheet) return;
-      const updated = { ...worksheet };
-      updated.sections = worksheet.sections.map((s, si) =>
-        si === sIdx
-          ? { ...s, questions: s.questions.map((q, qi) => qi === qIdx ? { ...q, [field]: value } : q) }
-          : s
-      );
-      setWorksheet(updated);
+    } else if (worksheet) {
+      setWorksheet(updater(worksheet));
     }
+  };
+
+  const updateWorksheetField = <K extends keyof Worksheet>(field: K, value: Worksheet[K]) => {
+    mutateWorksheet((ws) => ({ ...ws, [field]: value }));
+  };
+
+  const updateSectionHeading = (sIdx: number, heading: string) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) => (si === sIdx ? { ...s, heading } : s)),
+    }));
+  };
+
+  const addSection = (type: string) => {
+    const headings: Record<string, string> = {
+      fill_in_blanks: "Fill in the Blanks",
+      multiple_choice: "Multiple Choice Questions",
+      match_following: "Match the Following",
+      short_answer: "Answer the Following",
+      true_false: "True or False",
+      diagram: "Draw and Label the Diagram",
+    };
+    mutateWorksheet((ws) => {
+      const nextId =
+        ws.sections.reduce((max, s) => Math.max(max, ...s.questions.map((q) => q.id || 0)), 0) + 1;
+      const starter: Question =
+        type === "multiple_choice"
+          ? { id: nextId, question: "New question", options: ["Option A", "Option B", "Option C", "Option D"], answer: "Option A" }
+          : type === "match_following"
+          ? { id: nextId, left: ["Item 1", "Item 2"], right: ["Match A", "Match B"], answers: ["a", "b"] }
+          : type === "diagram"
+          ? { id: nextId, question: "Draw and label the diagram.", diagramLabels: ["Part 1", "Part 2", "Part 3", "Part 4"], answer: "" }
+          : type === "true_false"
+          ? { id: nextId, question: "New statement.", answer: "True" }
+          : { id: nextId, question: type === "fill_in_blanks" ? "Write your ____ here." : "New question?", answer: "" };
+      return {
+        ...ws,
+        sections: [...ws.sections, { type, heading: headings[type] || "New Section", questions: [starter] }],
+      };
+    });
+  };
+
+  const deleteSection = (sIdx: number) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.filter((_, si) => si !== sIdx),
+    }));
+  };
+
+  const addQuestion = (sIdx: number) => {
+    mutateWorksheet((ws) => {
+      const nextId =
+        ws.sections.reduce((max, s) => Math.max(max, ...s.questions.map((q) => q.id || 0)), 0) + 1;
+      return {
+        ...ws,
+        sections: ws.sections.map((s, si) => {
+          if (si !== sIdx) return s;
+          const newQ: Question =
+            s.type === "multiple_choice"
+              ? { id: nextId, question: "New question", options: ["Option A", "Option B", "Option C", "Option D"], answer: "Option A" }
+              : s.type === "match_following"
+              ? { id: nextId, left: ["Item 1", "Item 2"], right: ["Match A", "Match B"], answers: ["a", "b"] }
+              : s.type === "diagram"
+              ? { id: nextId, question: "Draw and label.", diagramLabels: ["Part 1", "Part 2"], answer: "" }
+              : s.type === "true_false"
+              ? { id: nextId, question: "New statement.", answer: "True" }
+              : { id: nextId, question: s.type === "fill_in_blanks" ? "Fill in the ____." : "New question?", answer: "" };
+          return { ...s, questions: [...s.questions, newQ] };
+        }),
+      };
+    });
+  };
+
+  const deleteQuestion = (sIdx: number, qIdx: number) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx ? { ...s, questions: s.questions.filter((_, qi) => qi !== qIdx) } : s
+      ),
+    }));
+  };
+
+  const updateQuestion = (sIdx: number, qIdx: number, field: string, value: string) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? { ...s, questions: s.questions.map((q, qi) => (qi === qIdx ? { ...q, [field]: value } : q)) }
+          : s
+      ),
+    }));
+  };
+
+  const updateQuestionOption = (sIdx: number, qIdx: number, optIdx: number, value: string) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? {
+              ...s,
+              questions: s.questions.map((q, qi) =>
+                qi === qIdx
+                  ? { ...q, options: (q.options || []).map((o, oi) => (oi === optIdx ? value : o)) }
+                  : q
+              ),
+            }
+          : s
+      ),
+    }));
+  };
+
+  const addQuestionOption = (sIdx: number, qIdx: number) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? {
+              ...s,
+              questions: s.questions.map((q, qi) =>
+                qi === qIdx ? { ...q, options: [...(q.options || []), "New option"] } : q
+              ),
+            }
+          : s
+      ),
+    }));
+  };
+
+  const deleteQuestionOption = (sIdx: number, qIdx: number, optIdx: number) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? {
+              ...s,
+              questions: s.questions.map((q, qi) =>
+                qi === qIdx
+                  ? { ...q, options: (q.options || []).filter((_, oi) => oi !== optIdx) }
+                  : q
+              ),
+            }
+          : s
+      ),
+    }));
+  };
+
+  const updateMatchItem = (
+    sIdx: number,
+    qIdx: number,
+    listKey: "left" | "right" | "answers",
+    itemIdx: number,
+    value: string
+  ) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? {
+              ...s,
+              questions: s.questions.map((q, qi) => {
+                if (qi !== qIdx) return q;
+                const arr = [...(q[listKey] || [])];
+                arr[itemIdx] = value;
+                return { ...q, [listKey]: arr };
+              }),
+            }
+          : s
+      ),
+    }));
+  };
+
+  const addMatchRow = (sIdx: number, qIdx: number) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? {
+              ...s,
+              questions: s.questions.map((q, qi) =>
+                qi === qIdx
+                  ? {
+                      ...q,
+                      left: [...(q.left || []), `Item ${(q.left?.length || 0) + 1}`],
+                      right: [...(q.right || []), `Match ${String.fromCharCode(65 + (q.right?.length || 0))}`],
+                      answers: [...(q.answers || []), String.fromCharCode(97 + (q.answers?.length || 0))],
+                    }
+                  : q
+              ),
+            }
+          : s
+      ),
+    }));
+  };
+
+  const deleteMatchRow = (sIdx: number, qIdx: number, rowIdx: number) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? {
+              ...s,
+              questions: s.questions.map((q, qi) =>
+                qi === qIdx
+                  ? {
+                      ...q,
+                      left: (q.left || []).filter((_, i) => i !== rowIdx),
+                      right: (q.right || []).filter((_, i) => i !== rowIdx),
+                      answers: (q.answers || []).filter((_, i) => i !== rowIdx),
+                    }
+                  : q
+              ),
+            }
+          : s
+      ),
+    }));
+  };
+
+  const updateDiagramLabel = (sIdx: number, qIdx: number, lblIdx: number, value: string) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? {
+              ...s,
+              questions: s.questions.map((q, qi) => {
+                if (qi !== qIdx) return q;
+                const labels = [...(q.diagramLabels && q.diagramLabels.length > 0 ? q.diagramLabels : ["Part 1", "Part 2", "Part 3", "Part 4"])];
+                labels[lblIdx] = value;
+                return { ...q, diagramLabels: labels };
+              }),
+            }
+          : s
+      ),
+    }));
+  };
+
+  const addDiagramLabel = (sIdx: number, qIdx: number) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? {
+              ...s,
+              questions: s.questions.map((q, qi) => {
+                if (qi !== qIdx) return q;
+                const labels = [...(q.diagramLabels && q.diagramLabels.length > 0 ? q.diagramLabels : ["Part 1", "Part 2", "Part 3", "Part 4"])];
+                labels.push(`Part ${labels.length + 1}`);
+                return { ...q, diagramLabels: labels };
+              }),
+            }
+          : s
+      ),
+    }));
+  };
+
+  const deleteDiagramLabel = (sIdx: number, qIdx: number, lblIdx: number) => {
+    mutateWorksheet((ws) => ({
+      ...ws,
+      sections: ws.sections.map((s, si) =>
+        si === sIdx
+          ? {
+              ...s,
+              questions: s.questions.map((q, qi) =>
+                qi === qIdx
+                  ? { ...q, diagramLabels: (q.diagramLabels || []).filter((_, i) => i !== lblIdx) }
+                  : q
+              ),
+            }
+          : s
+      ),
+    }));
   };
 
   // ─── Render section ────────────────────────────────────────────────────────
 
-  const renderSection = (section: Section, sIdx: number) => {
-    switch (section.type) {
+  const renderQuestionItem = (sectionType: string, q: Question, sIdx: number, qIdx: number, compact = false) => {
+    const fontSz = compact ? "text-xs" : gradeFontSize;
+    const lineHt = compact ? "leading-snug" : gradeLineHeight;
+    const spacingMb = compact ? "mb-3" : "mb-5";
+
+    const deleteBtn = editMode ? (
+      <button
+        type="button"
+        onClick={() => deleteQuestion(sIdx, qIdx)}
+        title="Delete question"
+        className="no-print ml-2 text-red-400 hover:text-red-600 p-1 rounded hover:bg-red-50 transition-colors shrink-0"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </button>
+    ) : null;
+
+    switch (sectionType) {
       case "fill_in_blanks":
-        return section.questions.map((q, qIdx) => (
-          <div key={q.id} className={`mb-5 ${gradeLineHeight}`}>
-            <p className={`font-medium text-gray-800 print:text-black ${gradeFontSize} leading-[2.4]`}>
-              <span className="font-bold mr-2 text-sky-700 print:text-black">{q.id}.</span>
-              {editMode ? (
-                <input className="border-b border-gray-400 outline-none w-full mt-1 bg-transparent tamil-font" value={q.question || ""} onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)} />
-              ) : (
-                <span>{(q.question || "").split(/_{2,}|\[_+\]/).map((part, i, arr) => (
-                  <React.Fragment key={i}>
-                    {part}
-                    {i < arr.length - 1 && <span className="inline-block border-b-2 border-gray-500 print:border-black min-w-[120px] mx-1 align-bottom">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>}
-                  </React.Fragment>
-                ))}</span>
-              )}
-            </p>
-            {showAnswers && <p className="text-green-700 text-sm mt-1 ml-6 print:text-green-900 font-semibold">✓ {q.answer}</p>}
+        return (
+          <div key={`${sIdx}-${qIdx}`} className={`${spacingMb} ${lineHt}`}>
+            <div className={`flex items-start font-medium text-gray-800 print:text-black ${fontSz} ${compact ? "leading-relaxed" : "leading-[2.4]"}`}>
+              <span className="font-bold mr-2 text-sky-700 print:text-black shrink-0">{q.id}.</span>
+              <div className="flex-1 min-w-0">
+                {editMode ? (
+                  <input
+                    className="border-b border-amber-400 bg-amber-50/50 rounded px-2 py-0.5 outline-none w-full tamil-font"
+                    value={q.question || ""}
+                    placeholder="Use ____ for a blank line"
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)}
+                  />
+                ) : (
+                  <span>
+                    {(q.question || "").split(/_{2,}|\[_+\]/).map((part, i, arr) => (
+                      <React.Fragment key={i}>
+                        {part}
+                        {i < arr.length - 1 && (
+                          <span className={`inline-block border-b-2 border-gray-500 print:border-black ${compact ? "min-w-[65px]" : "min-w-[120px]"} mx-1 align-bottom`}>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          </span>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </span>
+                )}
+              </div>
+              {deleteBtn}
+            </div>
+            {(showAnswers || editMode) && (
+              <div className="text-green-700 text-xs sm:text-sm mt-1 ml-6 print:text-green-900 font-semibold flex items-center gap-1.5">
+                <span>✓</span>
+                {editMode ? (
+                  <input
+                    className="border-b border-green-400 bg-green-50/60 rounded px-2 py-0.5 outline-none flex-1 text-green-800 tamil-font"
+                    value={q.answer || ""}
+                    placeholder="Answer"
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "answer", e.target.value)}
+                  />
+                ) : (
+                  <span>{q.answer}</span>
+                )}
+              </div>
+            )}
           </div>
-        ));
+        );
 
       case "multiple_choice":
-        return section.questions.map((q, qIdx) => (
-          <div key={q.id} className={`mb-6 ${gradeLineHeight}`}>
-            <p className={`font-medium text-gray-800 print:text-black mb-3 ${gradeFontSize} leading-relaxed`}>
-              <span className="font-bold mr-2 text-sky-700 print:text-black">{q.id}.</span>
-              {editMode ? (
-                <input className="border-b border-gray-400 outline-none w-full mt-1 bg-transparent tamil-font" value={q.question || ""} onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)} />
-              ) : q.question}
-            </p>
-            <div className="grid grid-cols-2 gap-3 ml-6">
+        return (
+          <div key={`${sIdx}-${qIdx}`} className={`${compact ? "mb-3" : "mb-6"} ${lineHt}`}>
+            <div className={`flex items-start font-medium text-gray-800 print:text-black ${compact ? "mb-1.5" : "mb-3"} ${fontSz} leading-relaxed`}>
+              <span className="font-bold mr-2 text-sky-700 print:text-black shrink-0">{q.id}.</span>
+              <div className="flex-1 min-w-0">
+                {editMode ? (
+                  <input
+                    className="border-b border-amber-400 bg-amber-50/50 rounded px-2 py-0.5 outline-none w-full tamil-font"
+                    value={q.question || ""}
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)}
+                  />
+                ) : (
+                  q.question
+                )}
+              </div>
+              {deleteBtn}
+            </div>
+            <div className={`grid grid-cols-2 ${compact ? "gap-1.5 ml-4" : "gap-3 ml-6"}`}>
               {q.options?.map((opt, oi) => (
-                <label key={oi} className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 border-2 border-gray-400 rounded-sm shrink-0 mt-0.5 print:border-black" />
-                  <span className={`${gradeFontSize} text-gray-700 print:text-black tamil-font`}>{String.fromCharCode(65 + oi)}) {opt.replace(/^[a-dA-D]\)\s*/, "")}</span>
-                </label>
+                <div key={oi} className="flex items-start gap-2">
+                  <div className={`${compact ? "w-3.5 h-3.5" : "w-5 h-5"} border-2 border-gray-400 rounded-sm shrink-0 mt-0.5 print:border-black`} />
+                  {editMode ? (
+                    <div className="flex items-center gap-1 flex-1 min-w-0">
+                      <span className="text-xs font-bold text-gray-500">{String.fromCharCode(65 + oi)})</span>
+                      <input
+                        className="border-b border-amber-300 bg-amber-50/40 rounded px-1.5 py-0.5 text-xs sm:text-sm outline-none flex-1 min-w-0 tamil-font"
+                        value={opt.replace(/^[a-dA-D]\)\s*/, "")}
+                        onChange={(e) => updateQuestionOption(sIdx, qIdx, oi, e.target.value)}
+                      />
+                      {(q.options?.length || 0) > 2 && (
+                        <button
+                          type="button"
+                          onClick={() => deleteQuestionOption(sIdx, qIdx, oi)}
+                          className="no-print text-red-400 hover:text-red-600 text-xs px-1"
+                          title="Remove option"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <span className={`${fontSz} text-gray-700 print:text-black tamil-font`}>
+                      {String.fromCharCode(65 + oi)}) {opt.replace(/^[a-dA-D]\)\s*/, "")}
+                    </span>
+                  )}
+                </div>
               ))}
             </div>
-            {showAnswers && <p className="text-green-700 text-sm mt-2 ml-6 print:text-green-900 font-semibold">✓ {q.answer}</p>}
+            {editMode && (
+              <button
+                type="button"
+                onClick={() => addQuestionOption(sIdx, qIdx)}
+                className="no-print ml-6 mt-1.5 text-xs text-sky-600 hover:text-sky-800 font-semibold inline-flex items-center gap-1"
+              >
+                <Plus className="h-3 w-3" /> Add Option
+              </button>
+            )}
+            {(showAnswers || editMode) && (
+              <div className="text-green-700 text-xs sm:text-sm mt-1.5 ml-6 print:text-green-900 font-semibold flex items-center gap-1.5">
+                <span>✓</span>
+                {editMode ? (
+                  <input
+                    className="border-b border-green-400 bg-green-50/60 rounded px-2 py-0.5 outline-none flex-1 text-green-800 tamil-font"
+                    value={q.answer || ""}
+                    placeholder="Correct answer"
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "answer", e.target.value)}
+                  />
+                ) : (
+                  <span>{q.answer}</span>
+                )}
+              </div>
+            )}
           </div>
-        ));
+        );
 
       case "match_following":
-        return section.questions.map((q) => (
-          <div key={q.id} className="mb-8">
+        return (
+          <div key={`${sIdx}-${qIdx}`} className={compact ? "mb-4" : "mb-8"}>
+            {editMode && (
+              <div className="no-print flex justify-end mb-1">
+                {deleteBtn}
+              </div>
+            )}
             <div className="w-full border-2 border-gray-300 print:border-gray-600 rounded-xl overflow-hidden">
               {/* Header row */}
               <div className="grid grid-cols-2">
-                <div className="bg-sky-100 print:bg-gray-100 border-r-2 border-gray-300 print:border-gray-600 px-5 py-2.5">
-                  <p className="font-extrabold text-xs text-sky-700 print:text-gray-800 uppercase tracking-widest text-center">
-                    Column A — கிடுக்கிகள்
-                  </p>
+                <div className={`bg-sky-100 print:bg-gray-100 border-r-2 border-gray-300 print:border-gray-600 ${compact ? "px-2 py-1.5" : "px-5 py-2.5"}`}>
+                  {editMode ? (
+                    <input
+                      className="w-full text-center font-extrabold text-xs text-sky-800 bg-white/80 rounded px-1 py-0.5 outline-none"
+                      value={q.colAHeader ?? "Column A — கிடுக்கிகள்"}
+                      onChange={(e) => updateQuestion(sIdx, qIdx, "colAHeader", e.target.value)}
+                    />
+                  ) : (
+                    <p className="font-extrabold text-xs text-sky-700 print:text-gray-800 uppercase tracking-widest text-center">
+                      {q.colAHeader ?? "Column A — கிடுக்கிகள்"}
+                    </p>
+                  )}
                 </div>
-                <div className="bg-emerald-100 print:bg-gray-100 px-5 py-2.5">
-                  <p className="font-extrabold text-xs text-emerald-700 print:text-gray-800 uppercase tracking-widest text-center">
-                    Column B — பொருத்துக
-                  </p>
+                <div className={`bg-emerald-100 print:bg-gray-100 ${compact ? "px-2 py-1.5" : "px-5 py-2.5"}`}>
+                  {editMode ? (
+                    <input
+                      className="w-full text-center font-extrabold text-xs text-emerald-800 bg-white/80 rounded px-1 py-0.5 outline-none"
+                      value={q.colBHeader ?? "Column B — பொருத்துக"}
+                      onChange={(e) => updateQuestion(sIdx, qIdx, "colBHeader", e.target.value)}
+                    />
+                  ) : (
+                    <p className="font-extrabold text-xs text-emerald-700 print:text-gray-800 uppercase tracking-widest text-center">
+                      {q.colBHeader ?? "Column B — பொருத்துக"}
+                    </p>
+                  )}
                 </div>
               </div>
               {/* Data rows */}
               {(q.left || []).map((item, i) => (
                 <div key={i} className={`grid grid-cols-2 border-t-2 border-gray-200 print:border-gray-400 ${i % 2 === 0 ? "bg-white" : "bg-gray-50 print:bg-transparent"}`}>
-                  <div className="flex items-center gap-3 border-r-2 border-gray-300 print:border-gray-600 px-5 py-3 min-h-[3rem]">
-                    <span className="font-extrabold text-sky-600 print:text-gray-800 w-6 shrink-0 text-sm">{i + 1}.</span>
-                    <span className={`${gradeFontSize} tamil-font text-gray-800 print:text-black flex-1 leading-snug`}>{item}</span>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <span className="text-xs text-gray-400 print:hidden">ans:</span>
-                      <div className="w-10 h-6 border-b-2 border-dashed border-gray-400 print:border-gray-700" />
-                    </div>
+                  <div className={`flex items-center gap-2 border-r-2 border-gray-300 print:border-gray-600 ${compact ? "px-2 py-1.5 min-h-[2rem]" : "px-5 py-3 min-h-[3rem]"}`}>
+                    <span className="font-extrabold text-sky-600 print:text-gray-800 w-5 shrink-0 text-xs sm:text-sm">{i + 1}.</span>
+                    {editMode ? (
+                      <input
+                        className="border-b border-amber-300 bg-amber-50/40 rounded px-1.5 py-0.5 text-xs sm:text-sm outline-none flex-1 min-w-0 tamil-font"
+                        value={item}
+                        onChange={(e) => updateMatchItem(sIdx, qIdx, "left", i, e.target.value)}
+                      />
+                    ) : (
+                      <span className={`${fontSz} tamil-font text-gray-800 print:text-black flex-1 leading-snug`}>{item}</span>
+                    )}
+                    {!editMode && (
+                      <div className="flex items-center gap-1 shrink-0">
+                        <span className="text-[10px] text-gray-400 print:hidden">ans:</span>
+                        <div className={`${compact ? "w-6 h-4" : "w-10 h-6"} border-b-2 border-dashed border-gray-400 print:border-gray-700`} />
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3 px-5 py-3 min-h-[3rem]">
-                    <span className="font-extrabold text-emerald-600 print:text-gray-800 w-6 shrink-0 text-sm">{String.fromCharCode(97 + i)}.</span>
-                    <span className={`${gradeFontSize} tamil-font text-gray-800 print:text-black flex-1 leading-snug`}>{q.right?.[i]}</span>
+                  <div className={`flex items-center gap-2 ${compact ? "px-2 py-1.5 min-h-[2rem]" : "px-5 py-3 min-h-[3rem]"}`}>
+                    <span className="font-extrabold text-emerald-600 print:text-gray-800 w-5 shrink-0 text-xs sm:text-sm">{String.fromCharCode(97 + i)}.</span>
+                    {editMode ? (
+                      <div className="flex items-center gap-1 flex-1 min-w-0">
+                        <input
+                          className="border-b border-amber-300 bg-amber-50/40 rounded px-1.5 py-0.5 text-xs sm:text-sm outline-none flex-1 min-w-0 tamil-font"
+                          value={q.right?.[i] || ""}
+                          onChange={(e) => updateMatchItem(sIdx, qIdx, "right", i, e.target.value)}
+                        />
+                        {(q.left?.length || 0) > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => deleteMatchRow(sIdx, qIdx, i)}
+                            className="no-print text-red-400 hover:text-red-600 text-xs px-1"
+                            title="Remove row"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <span className={`${fontSz} tamil-font text-gray-800 print:text-black flex-1 leading-snug`}>{q.right?.[i]}</span>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-400 mt-1.5 ml-1 italic print:hidden">Write the matching letter (a, b, c…) in the dashed box beside each item in Column A.</p>
-            {showAnswers && (
-              <div className="mt-2 p-3 bg-green-50 rounded-lg border border-green-200 print:bg-transparent print:border-green-700">
-                <p className="text-green-700 text-sm font-semibold print:text-green-900 tamil-font">
-                  ✓ Answers: {q.left?.map((l, i) => `${i + 1} → ${q.answers?.[i]}`).join("  |  ")}
-                </p>
+            {editMode && (
+              <button
+                type="button"
+                onClick={() => addMatchRow(sIdx, qIdx)}
+                className="no-print mt-1.5 text-xs text-sky-600 hover:text-sky-800 font-semibold inline-flex items-center gap-1"
+              >
+                <Plus className="h-3 w-3" /> Add Match Row
+              </button>
+            )}
+            <p className="text-[11px] text-gray-400 mt-1 ml-1 italic print:hidden">Write the matching letter (a, b, c…) in the dashed box beside each item in Column A.</p>
+            {(showAnswers || editMode) && (
+              <div className="mt-2 p-2.5 bg-green-50 rounded-lg border border-green-200 print:bg-transparent print:border-green-700">
+                {editMode ? (
+                  <div className="flex flex-wrap gap-2 items-center text-xs text-green-800">
+                    <span className="font-bold">✓ Match Answers:</span>
+                    {(q.left || []).map((_, i) => (
+                      <label key={i} className="inline-flex items-center gap-1">
+                        <span>{i + 1}→</span>
+                        <input
+                          className="w-10 border-b border-green-400 bg-white rounded px-1 text-center font-semibold outline-none"
+                          value={q.answers?.[i] || ""}
+                          onChange={(e) => updateMatchItem(sIdx, qIdx, "answers", i, e.target.value)}
+                        />
+                      </label>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-green-700 text-xs sm:text-sm font-semibold print:text-green-900 tamil-font">
+                    ✓ Answers: {q.left?.map((l, i) => `${i + 1} → ${q.answers?.[i]}`).join("  |  ")}
+                  </p>
+                )}
               </div>
             )}
           </div>
-        ));
+        );
 
       case "short_answer":
-        return section.questions.map((q, qIdx) => (
-          <div key={q.id} className={`mb-7 ${gradeLineHeight}`}>
-            <p className={`font-medium text-gray-800 print:text-black mb-3 ${gradeFontSize} leading-relaxed`}>
-              <span className="font-bold mr-2 text-sky-700 print:text-black">{q.id}.</span>
-              {editMode ? (
-                <input className="border-b border-gray-400 outline-none w-full mt-1 bg-transparent tamil-font" value={q.question || ""} onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)} />
-              ) : q.question}
-            </p>
-            <div className="ml-6 space-y-3">
-              <div className="border-b-2 border-gray-300 h-8 print:border-gray-500" />
-              <div className="border-b-2 border-gray-300 h-8 print:border-gray-500" />
-              {["LKG","UKG","1st","2nd"].includes(formData.grade) && (
+        return (
+          <div key={`${sIdx}-${qIdx}`} className={`${compact ? "mb-3.5" : "mb-7"} ${lineHt}`}>
+            <div className={`flex items-start font-medium text-gray-800 print:text-black ${compact ? "mb-1.5" : "mb-3"} ${fontSz} leading-relaxed`}>
+              <span className="font-bold mr-2 text-sky-700 print:text-black shrink-0">{q.id}.</span>
+              <div className="flex-1 min-w-0">
+                {editMode ? (
+                  <input
+                    className="border-b border-amber-400 bg-amber-50/50 rounded px-2 py-0.5 outline-none w-full tamil-font"
+                    value={q.question || ""}
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)}
+                  />
+                ) : (
+                  q.question
+                )}
+              </div>
+              {deleteBtn}
+            </div>
+            <div className={`${compact ? "ml-4 space-y-2" : "ml-6 space-y-3"}`}>
+              <div className={`border-b-2 border-gray-300 ${compact ? "h-5" : "h-8"} print:border-gray-500`} />
+              <div className={`border-b-2 border-gray-300 ${compact ? "h-5" : "h-8"} print:border-gray-500`} />
+              {!compact && ["LKG", "UKG", "1st", "2nd"].includes(formData.grade) && (
                 <div className="border-b-2 border-gray-300 h-8 print:border-gray-500" />
               )}
             </div>
-            {showAnswers && <p className="text-green-700 text-sm mt-2 ml-6 print:text-green-900 font-semibold">✓ {q.answer}</p>}
+            {(showAnswers || editMode) && (
+              <div className="text-green-700 text-xs sm:text-sm mt-1.5 ml-6 print:text-green-900 font-semibold flex items-center gap-1.5">
+                <span>✓</span>
+                {editMode ? (
+                  <input
+                    className="border-b border-green-400 bg-green-50/60 rounded px-2 py-0.5 outline-none flex-1 text-green-800 tamil-font"
+                    value={q.answer || ""}
+                    placeholder="Sample answer"
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "answer", e.target.value)}
+                  />
+                ) : (
+                  <span>{q.answer}</span>
+                )}
+              </div>
+            )}
           </div>
-        ));
+        );
 
       case "true_false":
-        return section.questions.map((q, qIdx) => (
-          <div key={q.id} className={`mb-5 ${gradeLineHeight}`}>
-            <div className={`flex items-start gap-3 font-medium text-gray-800 print:text-black ${gradeFontSize} leading-relaxed`}>
+        return (
+          <div key={`${sIdx}-${qIdx}`} className={`${spacingMb} ${lineHt}`}>
+            <div className={`flex items-start gap-2 font-medium text-gray-800 print:text-black ${fontSz} leading-relaxed`}>
               <span className="font-bold text-sky-700 print:text-black shrink-0">{q.id}.</span>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 {editMode ? (
-                  <input className="border-b border-gray-400 outline-none w-full bg-transparent tamil-font" value={q.question || ""} onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)} />
-                ) : <span>{q.question}</span>}
-                <div className="flex gap-6 mt-2 ml-1">
-                  <label className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-gray-400 rounded-sm print:border-black" />
+                  <input
+                    className="border-b border-amber-400 bg-amber-50/50 rounded px-2 py-0.5 outline-none w-full tamil-font"
+                    value={q.question || ""}
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)}
+                  />
+                ) : (
+                  <span>{q.question}</span>
+                )}
+                <div className={`flex gap-5 ${compact ? "mt-1" : "mt-2"} ml-1`}>
+                  <label className="flex items-center gap-1.5">
+                    <div className={`${compact ? "w-3.5 h-3.5" : "w-5 h-5"} border-2 border-gray-400 rounded-sm print:border-black`} />
                     <span className="font-semibold print:text-black">✓ True / சரி</span>
                   </label>
-                  <label className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-gray-400 rounded-sm print:border-black" />
+                  <label className="flex items-center gap-1.5">
+                    <div className={`${compact ? "w-3.5 h-3.5" : "w-5 h-5"} border-2 border-gray-400 rounded-sm print:border-black`} />
                     <span className="font-semibold print:text-black">✗ False / தவறு</span>
                   </label>
                 </div>
               </div>
+              {deleteBtn}
             </div>
-            {showAnswers && <p className="text-green-700 text-sm mt-1 ml-6 print:text-green-900 font-semibold">✓ {q.answer}</p>}
+            {(showAnswers || editMode) && (
+              <div className="text-green-700 text-xs sm:text-sm mt-1 ml-6 print:text-green-900 font-semibold flex items-center gap-1.5">
+                <span>✓</span>
+                {editMode ? (
+                  <input
+                    className="border-b border-green-400 bg-green-50/60 rounded px-2 py-0.5 outline-none w-36 text-green-800 tamil-font"
+                    value={q.answer || ""}
+                    placeholder="True or False"
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "answer", e.target.value)}
+                  />
+                ) : (
+                  <span>{q.answer}</span>
+                )}
+              </div>
+            )}
           </div>
-        ));
+        );
 
       case "diagram":
-        return section.questions.map((q) => (
-          <div key={q.id} className="mb-8">
-            <p className={`font-medium text-gray-800 print:text-black mb-4 tamil-font ${gradeFontSize} leading-relaxed`}>
-              <span className="font-bold mr-2 text-sky-700 print:text-black">{q.id}.</span>
-              {q.question}
-            </p>
-            <div className="ml-4">
+        return (
+          <div key={`${sIdx}-${qIdx}`} className={compact ? "mb-4" : "mb-8"}>
+            <div className={`flex items-start font-medium text-gray-800 print:text-black ${compact ? "mb-2" : "mb-4"} tamil-font ${fontSz} leading-relaxed`}>
+              <span className="font-bold mr-2 text-sky-700 print:text-black shrink-0">{q.id}.</span>
+              <div className="flex-1 min-w-0">
+                {editMode ? (
+                  <input
+                    className="border-b border-amber-400 bg-amber-50/50 rounded px-2 py-0.5 outline-none w-full tamil-font"
+                    value={q.question || ""}
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "question", e.target.value)}
+                  />
+                ) : (
+                  q.question
+                )}
+              </div>
+              {deleteBtn}
+            </div>
+            <div className={compact ? "ml-2" : "ml-4"}>
               {(() => {
                 const lower = formData.topic.toLowerCase();
-                const isKnown = ["plant","flower","தாவரம்","செடி","மரம்","பூ","body","human","உடல்","மனித","solar","planet","சூரிய","கோள்","water cycle","நீர் சுழற்சி","rain","cloud"].some(k => lower.includes(k));
+                const isKnown = ["plant", "flower", "தாவரம்", "செடி", "மரம்", "பூ", "body", "human", "உடல்", "மனித", "solar", "planet", "சூரிய", "கோள்", "water cycle", "நீர் சுழற்சி", "rain", "cloud"].some((k) => lower.includes(k));
+                const labels = q.diagramLabels && q.diagramLabels.length > 0 ? q.diagramLabels : ["Part 1", "Part 2", "Part 3", "Part 4"];
                 return isKnown ? (
-                  <DiagramBox topic={formData.topic} labels={q.diagramLabels} />
+                  <DiagramBox topic={formData.topic} labels={labels} />
                 ) : (
                   <div className="border-2 border-dashed border-gray-400 print:border-gray-600 rounded-xl bg-gray-50 print:bg-white overflow-hidden">
-                    <div className="w-full h-52 print:h-64 flex flex-col items-center justify-center text-gray-300 print:text-gray-400 gap-2 border-b-2 border-dashed border-gray-300 print:border-gray-500">
-                      <PenLine className="h-12 w-12 opacity-30" />
-                      <p className="text-base font-bold text-gray-400 print:text-gray-600">[ Draw here / இங்கே வரைக ]</p>
+                    <div className={`w-full ${compact ? "h-28" : "h-52 print:h-64"} flex flex-col items-center justify-center text-gray-300 print:text-gray-400 gap-1 border-b-2 border-dashed border-gray-300 print:border-gray-500`}>
+                      <PenLine className={`${compact ? "h-6 w-6" : "h-12 w-12"} opacity-30`} />
+                      <p className={`${compact ? "text-xs" : "text-base"} font-bold text-gray-400 print:text-gray-600`}>[ Draw here / இங்கே வரைக ]</p>
                       <p className="text-xs text-gray-300 print:text-gray-500 tamil-font">Draw and label the diagram in the box above</p>
                     </div>
-                    <div className="px-6 py-4">
-                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Label the parts below / கீழே பாகங்களை எழுதுக:</p>
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-3">
-                        {(q.diagramLabels && q.diagramLabels.length > 0 ? q.diagramLabels : ["Part 1", "Part 2", "Part 3", "Part 4"]).map((lbl, i) => (
+                    <div className={compact ? "px-3 py-2" : "px-6 py-4"}>
+                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Label the parts below / கீழே பாகங்களை எழுதுக:</p>
+                      <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                        {labels.map((lbl, i) => (
                           <div key={i} className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-gray-500 w-5 shrink-0">{i + 1}.</span>
-                            <div className="flex-1 border-b-2 border-dashed border-gray-400 print:border-gray-600 min-h-[1.5rem]" />
+                            <span className="text-xs sm:text-sm font-bold text-gray-500 w-5 shrink-0">{i + 1}.</span>
+                            {editMode ? (
+                              <div className="flex items-center gap-1 flex-1">
+                                <input
+                                  className="border-b border-amber-400 bg-amber-50/50 rounded px-1.5 py-0.5 text-xs outline-none flex-1"
+                                  value={lbl}
+                                  onChange={(e) => updateDiagramLabel(sIdx, qIdx, i, e.target.value)}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => deleteDiagramLabel(sIdx, qIdx, i)}
+                                  className="no-print text-red-400 hover:text-red-600 text-xs"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex-1 border-b-2 border-dashed border-gray-400 print:border-gray-600 min-h-[1.5rem]" />
+                            )}
                           </div>
                         ))}
                       </div>
+                      {editMode && (
+                        <button
+                          type="button"
+                          onClick={() => addDiagramLabel(sIdx, qIdx)}
+                          className="no-print mt-2 text-xs text-sky-600 hover:text-sky-800 font-semibold inline-flex items-center gap-1"
+                        >
+                          <Plus className="h-3 w-3" /> Add Label Line
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
               })()}
             </div>
-            {showAnswers && q.answer && (
-              <p className="text-green-700 text-sm mt-2 ml-6 print:text-green-900 font-semibold">✓ {q.answer}</p>
+            {(showAnswers || editMode) && (
+              <div className="text-green-700 text-xs sm:text-sm mt-2 ml-6 print:text-green-900 font-semibold flex items-center gap-1.5">
+                <span>✓</span>
+                {editMode ? (
+                  <input
+                    className="border-b border-green-400 bg-green-50/60 rounded px-2 py-0.5 outline-none flex-1 text-green-800 tamil-font"
+                    value={q.answer || ""}
+                    placeholder="Diagram answer / key labels"
+                    onChange={(e) => updateQuestion(sIdx, qIdx, "answer", e.target.value)}
+                  />
+                ) : (
+                  q.answer && <span>{q.answer}</span>
+                )}
+              </div>
             )}
           </div>
-        ));
+        );
 
       default:
         return null;
     }
   };
+
+  const renderSection = (section: Section, sIdx: number, compact = false) =>
+    section.questions.map((q, qIdx) => renderQuestionItem(section.type, q, sIdx, qIdx, compact));
 
   const isTamil = formData.language === "Tamil";
   const fontClass = isTamil ? "tamil-font" : "";
@@ -1189,7 +1753,39 @@ export default function WorksheetMaker() {
           .min-h-screen { min-height: auto !important; background: white !important; padding: 0 !important; }
           .max-w-4xl { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
           .worksheet-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-          @page { margin: 1.2cm 1.5cm; size: A4 portrait; }
+          @page {
+            margin: ${layout === "booklet" ? "0.6cm" : layout === "landscape" ? "1cm 1.2cm" : "1.2cm 1.5cm"};
+            size: ${layout === "portrait" ? "A4 portrait" : "A4 landscape"};
+          }
+          .booklet-sheet {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 0 !important;
+            page-break-after: always !important;
+            break-after: page !important;
+            height: 19.2cm !important;
+            border: none !important;
+            margin: 0 !important;
+          }
+          .booklet-sheet:last-of-type {
+            page-break-after: auto !important;
+            break-after: auto !important;
+          }
+          .booklet-page-panel {
+            padding: 10px 16px !important;
+            border: none !important;
+            overflow: hidden !important;
+          }
+          .booklet-page-panel:first-child {
+            border-right: 1px dashed #94a3b8 !important;
+          }
+          .landscape-sections-grid {
+            column-count: 2 !important;
+            column-gap: 24px !important;
+          }
+          .landscape-sections-grid > div {
+            break-inside: avoid !important;
+          }
           img { max-height: 70px !important; max-width: 70px !important; }
           .worksheet-card, .worksheet-card * { color: #111 !important; }
           .worksheet-card h2, .worksheet-card h3 { color: #000 !important; }
@@ -1244,7 +1840,7 @@ export default function WorksheetMaker() {
         />
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className={`${layout === "portrait" ? "max-w-4xl" : "max-w-6xl"} mx-auto px-4 py-8 transition-all duration-200`}>
 
         {/* ── Form Card ── */}
         <div className="no-print bg-white rounded-2xl shadow-lg border border-sky-100 p-6 mb-8">
@@ -1706,7 +2302,7 @@ export default function WorksheetMaker() {
               <Button onClick={() => setEditMode(!editMode)} variant="outline"
                 className={`gap-2 ${editMode ? "border-amber-400 bg-amber-50 text-amber-700" : "border-gray-300"}`}>
                 <FileText className="h-4 w-4" />
-                {editMode ? "Done Editing" : "Edit"}
+                {editMode ? "Done Editing" : "Full Edit"}
               </Button>
               <Button onClick={saveWorksheet} variant="outline" className="gap-2 border-gray-300">
                 <Save className="h-4 w-4" /> Save
@@ -1757,112 +2353,542 @@ export default function WorksheetMaker() {
               />
             </div>
 
+            {/* Layout / View Options Bar */}
+            <div className="no-print mb-4 bg-white rounded-2xl border border-sky-100 p-3.5 shadow-sm flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-bold text-gray-600 uppercase tracking-wider mr-1">Page View & Print Layout:</span>
+                <button
+                  type="button"
+                  onClick={() => setLayout("portrait")}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold border-2 transition-all ${
+                    layout === "portrait"
+                      ? "border-sky-600 bg-sky-600 text-white shadow-sm"
+                      : "border-gray-200 bg-gray-50 text-gray-700 hover:border-sky-300"
+                  }`}
+                >
+                  <RectangleVertical className="h-3.5 w-3.5" /> Portrait (A4)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLayout("landscape")}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold border-2 transition-all ${
+                    layout === "landscape"
+                      ? "border-sky-600 bg-sky-600 text-white shadow-sm"
+                      : "border-gray-200 bg-gray-50 text-gray-700 hover:border-sky-300"
+                  }`}
+                >
+                  <RectangleHorizontal className="h-3.5 w-3.5" /> Landscape (2-Col)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLayout("booklet")}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold border-2 transition-all ${
+                    layout === "booklet"
+                      ? "border-emerald-600 bg-emerald-600 text-white shadow-sm"
+                      : "border-gray-200 bg-gray-50 text-gray-700 hover:border-emerald-300"
+                  }`}
+                >
+                  <BookOpenCheck className="h-3.5 w-3.5" /> Folded 4-Page Booklet (1 Sheet)
+                </button>
+              </div>
+              {layout === "booklet" && (
+                <div className="flex items-center gap-1.5 text-xs">
+                  <span className="text-gray-500 font-medium">Preview:</span>
+                  <button
+                    type="button"
+                    onClick={() => setBookletViewOrder("imposition")}
+                    className={`px-2.5 py-1 rounded-md font-semibold border transition-all ${
+                      bookletViewOrder === "imposition"
+                        ? "bg-emerald-50 border-emerald-400 text-emerald-800"
+                        : "bg-white border-gray-200 text-gray-600"
+                    }`}
+                  >
+                    Print Sheet (4|1, 2|3)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBookletViewOrder("reading")}
+                    className={`px-2.5 py-1 rounded-md font-semibold border transition-all ${
+                      bookletViewOrder === "reading"
+                        ? "bg-emerald-50 border-emerald-400 text-emerald-800"
+                        : "bg-white border-gray-200 text-gray-600"
+                    }`}
+                  >
+                    Reading Order (1→4)
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {editMode && (
+              <div className="no-print mb-4 bg-amber-50 border-2 border-amber-300 rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-amber-900">
+                <span>
+                  <strong>✏️ Full Edit Mode Active:</strong> Edit the header, title, badges, student info, instructions, section headings, questions, options, match tables, answers, or footer anywhere below.
+                </span>
+                <Button size="sm" onClick={() => setEditMode(false)} className="bg-amber-600 hover:bg-amber-700 text-white h-8">
+                  Done Editing
+                </Button>
+              </div>
+            )}
+
             {/* Worksheet document */}
-            <div className="worksheet-card bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden" id="worksheet">
-              {/* Header */}
-              <div className="bg-gradient-to-r from-sky-600 to-emerald-600 print:bg-none print:border-b-4 print:border-sky-700 text-white print:text-black px-6 py-5 print:py-3 relative">
-                {/* Logo — absolutely positioned top-left */}
-                <img
-                  src="/nethaji_logo_print.webp"
-                  alt="Nethaji Vidhyalayam"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 h-28 w-28 object-contain print:h-16 print:w-16"
-                  style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}
-                />
-                {/* Centered title content */}
-                <div className="text-center px-32">
-                  <p className="text-xs text-sky-200 print:text-gray-600 mb-1 font-semibold">
-                    {formData.curriculum === "Oxford Merry Birds (Integrated Term Course)"
-                      ? "Oxford Merry Birds • Integrated Term Course • OUP"
-                      : "Tamil Nadu Samacheer Kalvi • தமிழ்நாடு சமச்சீர் கல்வி"}
-                  </p>
-                  <h2 className={`tamil-font text-base md:text-lg font-extrabold leading-tight print:text-black`}
-                    style={{ fontFamily: "'Baloo 2', 'Noto Sans Tamil', serif" }}>
-                    {displayedWorksheet.title}
-                  </h2>
-                  <div className="flex flex-wrap justify-center gap-2 mt-2">
-                    <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-3 py-0.5 text-xs font-semibold">{formData.grade}</span>
-                    <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-3 py-0.5 text-xs font-semibold">{formData.subject}</span>
-                    <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-3 py-0.5 text-xs font-semibold">{formData.difficulty}</span>
-                    <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-3 py-0.5 text-xs font-semibold">{formData.language === "bilingual" ? "Bilingual" : formData.language === "tamil" ? "Tamil" : "English"}</span>
-                    {displayedWorksheet._hasDiagram && (
-                      <span className="bg-amber-400/40 print:bg-transparent print:border print:border-amber-600 print:text-amber-800 text-white rounded-full px-3 py-0.5 text-xs font-semibold">
-                        📐 Includes Diagram
-                      </span>
+            {(() => {
+              const defaultSubtitle =
+                formData.curriculum === "Oxford Merry Birds (Integrated Term Course)"
+                  ? "Oxford Merry Birds • Integrated Term Course • OUP"
+                  : "Tamil Nadu Samacheer Kalvi • தமிழ்நாடு சமச்சீர் கல்வி";
+              const defaultFooter1 = `${
+                formData.curriculum === "Oxford Merry Birds (Integrated Term Course)"
+                  ? "Oxford Merry Birds • Integrated Term Course (Pre-KG to 5th) • OUP"
+                  : "Tamil Nadu Samacheer Kalvi Curriculum (Pre-KG to 5th)"
+              } • Generated by Worksheet Maker • Nethaji Vidhyalayam`;
+              const defaultFooter2 =
+                formData.curriculum === "Oxford Merry Birds (Integrated Term Course)"
+                  ? `${formData.term} • Class ${formData.grade} • ${formData.subject}`
+                  : "தமிழ்நாடு சமச்சீர் பாடத்திட்டம் • AI தொழில்நுட்பத்தால் உருவாக்கப்பட்டது";
+
+              const renderHeaderBlock = (compact = false) => (
+                <div className={`bg-gradient-to-r from-sky-600 to-emerald-600 print:bg-none print:border-b-4 print:border-sky-700 text-white print:text-black ${compact ? "px-3 py-3" : "px-6 py-5 print:py-3"} relative`}>
+                  <img
+                    src="/nethaji_logo_print.webp"
+                    alt="Nethaji Vidhyalayam"
+                    className={`absolute ${compact ? "left-2.5 h-14 w-14" : "left-4 h-28 w-28 print:h-16 print:w-16"} top-1/2 -translate-y-1/2 object-contain`}
+                    style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}
+                  />
+                  <div className={`text-center ${compact ? "pl-16 pr-2" : "px-8 sm:px-32"}`}>
+                    {editMode ? (
+                      <input
+                        className="w-full text-center text-xs bg-white/20 text-white placeholder-white/70 rounded px-2 py-0.5 mb-1 outline-none border border-white/40"
+                        value={displayedWorksheet.subtitle ?? defaultSubtitle}
+                        onChange={(e) => updateWorksheetField("subtitle", e.target.value)}
+                      />
+                    ) : (
+                      <p className={`${compact ? "text-[10px]" : "text-xs"} text-sky-100 print:text-gray-600 mb-1 font-semibold`}>
+                        {displayedWorksheet.subtitle ?? defaultSubtitle}
+                      </p>
                     )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Student info strip */}
-              <div className="bg-sky-50 print:bg-transparent border-b border-sky-100 px-8 py-3">
-                <div className="flex flex-wrap gap-6 text-sm">
-                  <span className="text-gray-600 tamil-font">பெயர் / Name: <span className="inline-block w-48 border-b border-gray-500 ml-1" /></span>
-                  <span className="text-gray-600">Date: <span className="inline-block w-28 border-b border-gray-500 ml-1" /></span>
-                  <span className="text-gray-600">Score: <span className="inline-block w-20 border-b border-gray-500 ml-1" /> / {formData.numQuestions}</span>
-                </div>
-              </div>
-
-
-              {/* Sections */}
-              <div className={`px-8 py-6 space-y-10 ${isTamil ? "tamil-font" : ""}`}>
-                {displayedWorksheet.sections?.map((section, sIdx) => (
-                  <div key={sIdx}>
-                    <h3 className="tamil-font font-bold text-gray-900 text-base border-b-2 border-sky-200 print:border-gray-500 pb-2 mb-5 flex items-center gap-2"
-                      style={{ fontFamily: "'Baloo 2', 'Noto Sans Tamil', sans-serif" }}>
-                      {section.type === "fill_in_blanks" && <PenLine className="h-4 w-4 text-sky-500 print:hidden" />}
-                      {section.type === "multiple_choice" && <CheckSquare className="h-4 w-4 text-emerald-500 print:hidden" />}
-                      {section.type === "diagram" && <span className="print:hidden">📐</span>}
-                      {section.heading}
-                    </h3>
-                    <div className={`${isTamil ? "tamil-font" : ""} space-y-1`}>
-                      {renderSection(section, sIdx)}
+                    {editMode ? (
+                      <input
+                        className={`w-full text-center tamil-font ${compact ? "text-sm" : "text-base md:text-lg"} font-extrabold bg-white/20 text-white rounded px-2 py-1 outline-none border border-white/50`}
+                        value={displayedWorksheet.title}
+                        onChange={(e) => updateWorksheetField("title", e.target.value)}
+                      />
+                    ) : (
+                      <h2
+                        className={`tamil-font ${compact ? "text-sm" : "text-base md:text-lg"} font-extrabold leading-tight print:text-black`}
+                        style={{ fontFamily: "'Baloo 2', 'Noto Sans Tamil', serif" }}
+                      >
+                        {displayedWorksheet.title}
+                      </h2>
+                    )}
+                    <div className="flex flex-wrap justify-center gap-1.5 mt-2">
+                      {editMode ? (
+                        <>
+                          <input
+                            className="w-20 text-center bg-white/25 text-white rounded-full px-2 py-0.5 text-xs font-semibold outline-none border border-white/40"
+                            value={displayedWorksheet.grade || formData.grade}
+                            onChange={(e) => updateWorksheetField("grade", e.target.value)}
+                          />
+                          <input
+                            className="w-28 text-center bg-white/25 text-white rounded-full px-2 py-0.5 text-xs font-semibold outline-none border border-white/40"
+                            value={displayedWorksheet.subject || formData.subject}
+                            onChange={(e) => updateWorksheetField("subject", e.target.value)}
+                          />
+                          <input
+                            className="w-20 text-center bg-white/25 text-white rounded-full px-2 py-0.5 text-xs font-semibold outline-none border border-white/40"
+                            value={displayedWorksheet.difficultyLabel ?? formData.difficulty}
+                            onChange={(e) => updateWorksheetField("difficultyLabel", e.target.value)}
+                          />
+                          <input
+                            className="w-24 text-center bg-white/25 text-white rounded-full px-2 py-0.5 text-xs font-semibold outline-none border border-white/40"
+                            value={
+                              displayedWorksheet.languageLabel ??
+                              (formData.language === "bilingual" ? "Bilingual" : formData.language === "tamil" ? "Tamil" : "English")
+                            }
+                            onChange={(e) => updateWorksheetField("languageLabel", e.target.value)}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-2.5 py-0.5 text-[11px] font-semibold">
+                            {displayedWorksheet.grade || formData.grade}
+                          </span>
+                          <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-2.5 py-0.5 text-[11px] font-semibold">
+                            {displayedWorksheet.subject || formData.subject}
+                          </span>
+                          <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-2.5 py-0.5 text-[11px] font-semibold">
+                            {displayedWorksheet.difficultyLabel ?? formData.difficulty}
+                          </span>
+                          <span className="bg-white/20 print:bg-transparent print:border print:border-sky-700 print:text-sky-900 text-white rounded-full px-2.5 py-0.5 text-[11px] font-semibold">
+                            {displayedWorksheet.languageLabel ??
+                              (formData.language === "bilingual" ? "Bilingual" : formData.language === "tamil" ? "Tamil" : "English")}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              );
 
-              {/* Answer Key */}
-              {showAnswers && (
-                <div className="mx-8 mb-8 p-5 bg-green-50 print:bg-transparent border-2 border-green-200 print:border-green-700 rounded-xl">
-                  <h3 className="font-bold text-green-800 print:text-green-900 text-base mb-4"
-                    style={{ fontFamily: "'Baloo 2', 'Noto Sans Tamil', sans-serif" }}>
-                    ✅ Answer Key / விடை திறவு
-                  </h3>
-                  <div className="space-y-4">
-                    {displayedWorksheet.sections?.map((section, sIdx) => (
-                      <div key={sIdx}>
-                        <p className="text-xs font-bold text-green-700 print:text-green-900 uppercase tracking-wider mb-2 tamil-font">{section.heading}</p>
-                        <div className="tamil-font grid grid-cols-1 md:grid-cols-2 gap-2">
-                          {section.questions.filter(q => q.answer).map((q) => (
-                            <p key={q.id} className="text-sm text-green-800 print:text-black leading-relaxed">
-                              <strong>{q.id}.</strong>{" "}
-                              {section.type === "match_following"
-                                ? q.left?.map((l, i) => `${l} → ${q.answers?.[i]}`).join(" | ")
-                                : q.answer}
-                            </p>
-                          ))}
+              const renderStudentStrip = (compact = false) => (
+                <div className={`bg-sky-50 print:bg-transparent border-b border-sky-100 ${compact ? "px-3 py-2" : "px-8 py-3"}`}>
+                  <div className={`flex flex-wrap ${compact ? "gap-3 text-xs" : "gap-6 text-sm"}`}>
+                    <span className="text-gray-600 tamil-font inline-flex items-center">
+                      {editMode ? (
+                        <input
+                          className="w-28 border-b border-amber-400 bg-white rounded px-1 text-xs outline-none mr-1"
+                          value={displayedWorksheet.studentNameLabel ?? "பெயர் / Name:"}
+                          onChange={(e) => updateWorksheetField("studentNameLabel", e.target.value)}
+                        />
+                      ) : (
+                        <span>{displayedWorksheet.studentNameLabel ?? "பெயர் / Name:"}</span>
+                      )}
+                      <span className={`inline-block ${compact ? "w-28" : "w-48"} border-b border-gray-500 ml-1`} />
+                    </span>
+                    <span className="text-gray-600 inline-flex items-center">
+                      {editMode ? (
+                        <input
+                          className="w-16 border-b border-amber-400 bg-white rounded px-1 text-xs outline-none mr-1"
+                          value={displayedWorksheet.dateLabel ?? "Date:"}
+                          onChange={(e) => updateWorksheetField("dateLabel", e.target.value)}
+                        />
+                      ) : (
+                        <span>{displayedWorksheet.dateLabel ?? "Date:"}</span>
+                      )}
+                      <span className={`inline-block ${compact ? "w-16" : "w-28"} border-b border-gray-500 ml-1`} />
+                    </span>
+                    <span className="text-gray-600 inline-flex items-center">
+                      {editMode ? (
+                        <input
+                          className="w-24 border-b border-amber-400 bg-white rounded px-1 text-xs outline-none mr-1"
+                          value={displayedWorksheet.scoreLabel ?? `Score: _____ / ${formData.numQuestions}`}
+                          onChange={(e) => updateWorksheetField("scoreLabel", e.target.value)}
+                        />
+                      ) : (
+                        <span>
+                          {displayedWorksheet.scoreLabel ?? (
+                            <>
+                              Score: <span className={`inline-block ${compact ? "w-10" : "w-16"} border-b border-gray-500 mx-1`} /> / {formData.numQuestions}
+                            </>
+                          )}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  {(editMode || displayedWorksheet.instructions) && (
+                    <div className="mt-2 text-xs text-gray-600">
+                      {editMode ? (
+                        <input
+                          className="w-full border border-amber-300 bg-white rounded px-2 py-1 text-xs outline-none tamil-font"
+                          placeholder="Optional instructions (e.g., Read each question carefully before answering)"
+                          value={displayedWorksheet.instructions || ""}
+                          onChange={(e) => updateWorksheetField("instructions", e.target.value)}
+                        />
+                      ) : (
+                        <p className="italic tamil-font">📌 {displayedWorksheet.instructions}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+
+              const renderAnswerKeyBlock = (compact = false) =>
+                showAnswers ? (
+                  <div className={`${compact ? "mx-1 my-3 p-3" : "mx-8 mb-8 p-5"} bg-green-50 print:bg-transparent border-2 border-green-200 print:border-green-700 rounded-xl`}>
+                    <h3
+                      className={`font-bold text-green-800 print:text-green-900 ${compact ? "text-xs mb-2" : "text-base mb-4"}`}
+                      style={{ fontFamily: "'Baloo 2', 'Noto Sans Tamil', sans-serif" }}
+                    >
+                      ✅ Answer Key / விடை திறவு
+                    </h3>
+                    <div className={compact ? "space-y-2" : "space-y-4"}>
+                      {displayedWorksheet.sections?.map((section, sIdx) => (
+                        <div key={sIdx}>
+                          <p className="text-[11px] font-bold text-green-700 print:text-green-900 uppercase tracking-wider mb-1 tamil-font">{section.heading}</p>
+                          <div className={`tamil-font grid grid-cols-1 ${compact ? "" : "md:grid-cols-2"} gap-1.5`}>
+                            {section.questions
+                              .filter((q) => q.answer || (section.type === "match_following" && q.answers))
+                              .map((q) => (
+                                <p key={q.id} className={`${compact ? "text-xs" : "text-sm"} text-green-800 print:text-black leading-relaxed`}>
+                                  <strong>{q.id}.</strong>{" "}
+                                  {section.type === "match_following"
+                                    ? q.left?.map((l, i) => `${l} → ${q.answers?.[i]}`).join(" | ")
+                                    : q.answer}
+                                </p>
+                              ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null;
+
+              const renderFooterBlock = (compact = false) => (
+                <div className={`${compact ? "px-2 py-2 mt-auto" : "px-8 py-4"} border-t border-gray-100 bg-gray-50 print:bg-transparent text-center`}>
+                  {editMode ? (
+                    <div className="space-y-1.5 max-w-xl mx-auto">
+                      <input
+                        className="w-full text-center text-xs text-gray-700 bg-white border border-amber-300 rounded px-2 py-1 outline-none tamil-font"
+                        value={displayedWorksheet.footerLine1 ?? defaultFooter1}
+                        onChange={(e) => updateWorksheetField("footerLine1", e.target.value)}
+                      />
+                      <input
+                        className="w-full text-center text-xs text-gray-500 bg-white border border-amber-300 rounded px-2 py-1 outline-none tamil-font"
+                        value={displayedWorksheet.footerLine2 ?? defaultFooter2}
+                        onChange={(e) => updateWorksheetField("footerLine2", e.target.value)}
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <p className={`${compact ? "text-[10px]" : "text-xs"} text-gray-500 print:text-gray-600 tamil-font`}>
+                        {displayedWorksheet.footerLine1 ?? defaultFooter1}
+                      </p>
+                      <p className={`${compact ? "text-[10px]" : "text-xs"} text-gray-400 print:text-gray-500 mt-0.5 tamil-font`}>
+                        {displayedWorksheet.footerLine2 ?? defaultFooter2}
+                      </p>
+                    </>
+                  )}
+                </div>
+              );
+
+              const renderAddSectionControl = () =>
+                editMode ? (
+                  <div className="no-print mt-4 p-3 rounded-xl border-2 border-dashed border-sky-300 bg-sky-50/60 flex flex-wrap items-center gap-2 justify-center">
+                    <select
+                      value={newSectionType}
+                      onChange={(e) => setNewSectionType(e.target.value)}
+                      className="text-xs font-semibold rounded-lg border border-sky-300 bg-white px-2.5 py-1.5 text-gray-700 outline-none"
+                    >
+                      <option value="fill_in_blanks">Fill in the Blanks</option>
+                      <option value="multiple_choice">Multiple Choice (MCQ)</option>
+                      <option value="match_following">Match the Following</option>
+                      <option value="short_answer">Short Answer</option>
+                      <option value="true_false">True / False</option>
+                      <option value="diagram">Draw & Label Diagram</option>
+                    </select>
+                    <Button type="button" size="sm" onClick={() => addSection(newSectionType)} className="h-8 gap-1 bg-sky-600 hover:bg-sky-700 text-white">
+                      <Plus className="h-3.5 w-3.5" /> Add New Section
+                    </Button>
+                  </div>
+                ) : null;
+
+              if (layout === "booklet") {
+                const pages = distributeBookletPages(displayedWorksheet.sections || []);
+
+                const renderBookletSlices = (slices: BookletSlice[]) => (
+                  <div className={`space-y-3 ${isTamil ? "tamil-font" : ""}`}>
+                    {slices.map((slice, idx) => (
+                      <div key={`${slice.sectionIndex}-${idx}`}>
+                        <div className="border-b border-sky-200 print:border-gray-400 pb-1 mb-2 flex items-center justify-between gap-2">
+                          {editMode ? (
+                            <input
+                              className="flex-1 text-xs font-bold text-gray-900 bg-amber-50 border border-amber-300 rounded px-1.5 py-0.5 outline-none tamil-font"
+                              value={slice.heading}
+                              onChange={(e) => updateSectionHeading(slice.sectionIndex, e.target.value)}
+                            />
+                          ) : (
+                            <h3 className="tamil-font font-bold text-gray-900 text-xs">
+                              {slice.heading} {slice.isContinuation ? "(contd.)" : ""}
+                            </h3>
+                          )}
+                          {editMode && !slice.isContinuation && (
+                            <button
+                              type="button"
+                              onClick={() => addQuestion(slice.sectionIndex)}
+                              className="no-print text-[11px] font-semibold text-sky-700 hover:underline shrink-0"
+                            >
+                              + Q
+                            </button>
+                          )}
+                        </div>
+                        <div className="space-y-1">
+                          {slice.questions.map(({ question, qIdx }) =>
+                            renderQuestionItem(slice.sectionType, question, slice.sectionIndex, qIdx, true)
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                );
 
-              {/* Footer */}
-              <div className="px-8 py-4 border-t border-gray-100 bg-gray-50 print:bg-transparent text-center">
-                <p className="text-xs text-gray-400 print:text-gray-600 tamil-font">
-                  {formData.curriculum === "Oxford Merry Birds (Integrated Term Course)"
-                    ? "Oxford Merry Birds • Integrated Term Course (Pre-KG to 5th) • OUP"
-                    : "Tamil Nadu Samacheer Kalvi Curriculum (Pre-KG to 5th)"} • Generated by Worksheet Maker • Nethaji Vidhyalayam
-                </p>
-                <p className="text-xs text-gray-300 print:text-gray-500 mt-0.5 tamil-font">
-                  {formData.curriculum === "Oxford Merry Birds (Integrated Term Course)"
-                    ? `${formData.term} • Class ${formData.grade} • ${formData.subject}`
-                    : "தமிழ்நாடு சமச்சீர் பாடத்திட்டம் • AI தொழில்நுட்பத்தால் உருவாக்கப்பட்டது"}
-                  தமிழ்நாடு சமச்சீர் பாடத்திட்டம் • AI தொழில்நுட்பத்தால் உருவாக்கப்பட்டது
-                </p>
-              </div>
-            </div>
+                const renderBookletPage = (pageNum: 1 | 2 | 3 | 4) => {
+                  const badgeText =
+                    pageNum === 1
+                      ? "Page 1 — Front Cover"
+                      : pageNum === 2
+                      ? "Page 2 — Inside Left"
+                      : pageNum === 3
+                      ? "Page 3 — Inside Right"
+                      : "Page 4 — Back Cover";
+
+                  return (
+                    <div className="booklet-page-panel flex flex-col justify-between min-h-[540px] bg-white p-4 relative">
+                      <div>
+                        <div className="no-print flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-2 py-1 mb-2">
+                          <span>{badgeText}</span>
+                          <span>Folded Booklet ({pageNum}/4)</span>
+                        </div>
+
+                        {pageNum === 1 && (
+                          <div className="rounded-lg overflow-hidden border border-sky-100 mb-3">
+                            {renderHeaderBlock(true)}
+                            {renderStudentStrip(true)}
+                          </div>
+                        )}
+
+                        {pageNum === 1 && renderBookletSlices(pages.page1)}
+                        {pageNum === 2 && renderBookletSlices(pages.page2)}
+                        {pageNum === 3 && renderBookletSlices(pages.page3)}
+                        {pageNum === 4 && (
+                          <>
+                            {renderBookletSlices(pages.page4)}
+                            {renderAnswerKeyBlock(true)}
+                            <div className="mt-4 p-3 rounded-lg border border-gray-300 bg-gray-50/70 print:bg-transparent">
+                              {editMode ? (
+                                <input
+                                  className="w-full text-xs font-bold text-gray-800 bg-white border border-amber-300 rounded px-2 py-0.5 mb-2 outline-none"
+                                  value={displayedWorksheet.bookletRemarksTitle ?? "Teacher's Remarks & Parent Signature"}
+                                  onChange={(e) => updateWorksheetField("bookletRemarksTitle", e.target.value)}
+                                />
+                              ) : (
+                                <p className="text-xs font-bold text-gray-700 mb-2">
+                                  {displayedWorksheet.bookletRemarksTitle ?? "Teacher's Remarks & Parent Signature"}
+                                </p>
+                              )}
+                              <div className="space-y-3 my-2">
+                                <div className="border-b border-gray-300 h-4" />
+                                <div className="border-b border-gray-300 h-4" />
+                              </div>
+                              <div className="flex justify-between text-[11px] text-gray-600 pt-3">
+                                <span>Teacher Sign: _____________</span>
+                                <span>Parent Sign: _____________</span>
+                              </div>
+                            </div>
+                            {renderAddSectionControl()}
+                          </>
+                        )}
+                      </div>
+
+                      <div className="mt-3 pt-1.5 border-t border-gray-100">
+                        {pageNum === 4 ? (
+                          renderFooterBlock(true)
+                        ) : (
+                          <p className="text-[10px] text-gray-400 text-center">
+                            Nethaji Vidhyalayam • Page {pageNum} of 4
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                };
+
+                const sheetPairs: [1 | 2 | 3 | 4, 1 | 2 | 3 | 4][] =
+                  bookletViewOrder === "imposition"
+                    ? getBookletImpositionOrder()
+                    : [
+                        [1, 2],
+                        [3, 4],
+                      ];
+
+                return (
+                  <div className="worksheet-card space-y-6" id="worksheet">
+                    <div className="no-print bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 text-xs text-emerald-900 flex flex-wrap items-center justify-between gap-2">
+                      <span>
+                        <strong>📖 Folded 4-Page Booklet (1 Sheet Folded in Half):</strong> Print double-sided on A4 Landscape (<em>Flip on short edge</em>), then fold along the center dashed line.
+                      </span>
+                    </div>
+
+                    {sheetPairs.map(([leftPage, rightPage], sheetIdx) => (
+                      <div key={sheetIdx} className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                        <div className="no-print bg-slate-800 text-white text-xs font-bold px-4 py-1.5 flex items-center justify-between">
+                          <span>
+                            {bookletViewOrder === "imposition"
+                              ? sheetIdx === 0
+                                ? "Sheet Side 1 (Outside — Print Front): Back Cover [Page 4]  |  Front Cover [Page 1]"
+                                : "Sheet Side 2 (Inside — Print Back): Inside Left [Page 2]  |  Inside Right [Page 3]"
+                              : sheetIdx === 0
+                              ? "Pages 1 & 2 (Reading Order)"
+                              : "Pages 3 & 4 (Reading Order)"}
+                          </span>
+                          <span className="text-slate-300 text-[11px]">✂️ Center Fold Line</span>
+                        </div>
+                        <div className="booklet-sheet grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x-2 md:divide-dashed divide-slate-300">
+                          {renderBookletPage(leftPage)}
+                          {renderBookletPage(rightPage)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+
+              return (
+                <div className="worksheet-card bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden" id="worksheet">
+                  {renderHeaderBlock(false)}
+                  {renderStudentStrip(false)}
+
+                  {/* Sections */}
+                  <div
+                    className={`px-6 sm:px-8 py-6 ${
+                      layout === "landscape"
+                        ? "landscape-sections-grid grid grid-cols-1 lg:grid-cols-2 gap-8 items-start"
+                        : "space-y-10"
+                    } ${isTamil ? "tamil-font" : ""}`}
+                  >
+                    {displayedWorksheet.sections?.map((section, sIdx) => (
+                      <div key={sIdx} className={layout === "landscape" ? "bg-gray-50/40 print:bg-transparent rounded-xl p-4 border border-gray-100 print:border-0" : ""}>
+                        <div className="border-b-2 border-sky-200 print:border-gray-500 pb-2 mb-5 flex items-center justify-between gap-2">
+                          <h3
+                            className="tamil-font font-bold text-gray-900 text-base flex items-center gap-2 flex-1 min-w-0"
+                            style={{ fontFamily: "'Baloo 2', 'Noto Sans Tamil', sans-serif" }}
+                          >
+                            {section.type === "fill_in_blanks" && <PenLine className="h-4 w-4 text-sky-500 print:hidden shrink-0" />}
+                            {section.type === "multiple_choice" && <CheckSquare className="h-4 w-4 text-emerald-500 print:hidden shrink-0" />}
+                            {section.type === "diagram" && <span className="print:hidden shrink-0">📐</span>}
+                            {editMode ? (
+                              <input
+                                className="flex-1 bg-amber-50 border border-amber-300 rounded px-2 py-0.5 text-base font-bold text-gray-900 outline-none tamil-font"
+                                value={section.heading}
+                                onChange={(e) => updateSectionHeading(sIdx, e.target.value)}
+                              />
+                            ) : (
+                              <span>{section.heading}</span>
+                            )}
+                          </h3>
+                          {editMode && (
+                            <div className="no-print flex items-center gap-1.5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => addQuestion(sIdx)}
+                                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-md bg-sky-100 text-sky-800 hover:bg-sky-200"
+                              >
+                                <Plus className="h-3 w-3" /> Add Q
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteSection(sIdx)}
+                                className="p-1 text-red-500 hover:bg-red-50 rounded-md"
+                                title="Delete section"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <div className={`${isTamil ? "tamil-font" : ""} space-y-1`}>
+                          {renderSection(section, sIdx, false)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {editMode && <div className="px-8 pb-4">{renderAddSectionControl()}</div>}
+
+                  {renderAnswerKeyBlock(false)}
+                  {renderFooterBlock(false)}
+                </div>
+              );
+            })()}
           </>
         )}
       </div>
