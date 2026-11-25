@@ -11,7 +11,8 @@ serve(async (req) => {
   }
 
   try {
-    const { action, chapterTitle, chapterType, grade, curriculum } = await req.json();
+    const body = await req.json();
+    const { action, chapterTitle, chapterType, grade, curriculum } = body;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -41,10 +42,28 @@ Rules:
 - Keep language simple for the grade level
 - Each sentence should be clear, complete, and educational`;
     } else if (action === "word_meaning") {
-      const { word, sentence } = await req.json();
+      const { word, sentence } = body;
       systemPrompt = `You are a bilingual English-Tamil dictionary for school students. Give clear, simple meanings.`;
       userPrompt = `Give the Tamil meaning and simple English explanation for the word "${word}" in the context: "${sentence}".
 Return JSON: {"word": "${word}", "tamil": "தமிழ் meaning", "meaning": "simple English meaning", "example": "example sentence"}`;
+    } else if (action === "translate_segments") {
+      const segments = Array.isArray(body.segments)
+        ? body.segments.map((s: unknown) => String(s ?? "")).slice(0, 60)
+        : [];
+      const targetLanguage = String(body.targetLanguage || "ta");
+      const targetLanguageName = String(body.targetLanguageName || targetLanguage);
+      if (segments.length === 0) {
+        return new Response(JSON.stringify({ translations: [] }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      systemPrompt = `You are a careful, fluent school-friendly translator. Translate every item in the input JSON array into ${targetLanguageName} (code: ${targetLanguage}) using natural native script. Preserve meaning, tone, and item count exactly. Return ONLY valid JSON with shape {"translations": ["..."]}.`;
+      userPrompt = `Translate each item in this JSON array into ${targetLanguageName}. Keep the exact same number of items (${segments.length}) in the same order. If an item is already in ${targetLanguageName}, keep it natural and clear in ${targetLanguageName}.\n\n${JSON.stringify(segments)}`;
+    } else {
+      return new Response(JSON.stringify({ error: "Unsupported action" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -59,7 +78,7 @@ Return JSON: {"word": "${word}", "tamil": "தமிழ் meaning", "meaning": 
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        temperature: 0.7,
+        temperature: action === "translate_segments" ? 0.2 : 0.7,
       }),
     });
 

@@ -20,6 +20,8 @@ interface BookPageContentProps {
   fontSerif: boolean;
   magazineColumns?: boolean;
   activeParagraphIndex: number;
+  badgeLabel?: string;
+  isTranslating?: boolean;
 }
 
 const BookPageContent = ({
@@ -32,6 +34,8 @@ const BookPageContent = ({
   fontSerif,
   magazineColumns = false,
   activeParagraphIndex,
+  badgeLabel,
+  isTranslating = false,
 }: BookPageContentProps) => {
   const [pdfImageUrl, setPdfImageUrl] = useState<string>("");
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -76,9 +80,16 @@ const BookPageContent = ({
   return (
     <div className={`flex flex-col h-full ${fontClass}`}>
       <div className={`flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b ${theme.border}`}>
-        <h3 dir="auto" className="text-base sm:text-lg font-bold leading-snug break-words">
-          {page.title && page.title !== docTitle ? page.title : docTitle}
-        </h3>
+        <div className="flex flex-wrap items-center gap-2 min-w-0">
+          {badgeLabel && (
+            <span className="inline-flex items-center rounded-md bg-primary/15 text-primary px-2 py-0.5 text-[11px] font-bold shrink-0">
+              {badgeLabel}
+            </span>
+          )}
+          <h3 dir="auto" className="text-base sm:text-lg font-bold leading-snug break-words">
+            {page.title && page.title !== docTitle ? page.title : docTitle}
+          </h3>
+        </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {page.renderVisualPage && (
             <div className="inline-flex rounded-md border border-current/20 overflow-hidden text-[11px] font-semibold">
@@ -204,6 +215,12 @@ const BookPageContent = ({
           style={{ fontSize: `${fontSize}px` }}
           className={`space-y-4 leading-relaxed ${magazineColumns ? "md:columns-2 md:gap-8" : ""}`}
         >
+          {isTranslating && (
+            <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-xs font-semibold text-primary">
+              <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
+              <span>Translating page…</span>
+            </div>
+          )}
           {page.paragraphs.map((para, i) => {
             const isSpoken = activeParagraphIndex === i;
             return (

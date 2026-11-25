@@ -31,13 +31,20 @@ function loadSavedPrefs(): { mode: VoicePresetMode; voiceURI: string } {
 
 interface VoiceReaderProps {
   /** Flat text segments to read — caller extracts from their data model */
-  getTextSegments: (includeAnswers: boolean, language?: SpeechLanguage) => string[];
+  getTextSegments: (
+    includeAnswers: boolean,
+    language?: SpeechLanguage,
+  ) => string[] | Promise<string[]>;
   /** Label shown on the toggle */
   label?: string;
   /** Whether to show the "Include Answers" switch (for worksheets/question papers) */
   showAnswersToggle?: boolean;
   /** Optional list of reading languages (e.g. English, Tamil, Hindi on blogs) */
   availableLanguages?: SpeechLanguage[];
+  /** Optional controlled reading language (synced with parent view) */
+  selectedLanguage?: SpeechLanguage;
+  /** Optional callback fired when user selects a language */
+  onLanguageChange?: (language: SpeechLanguage) => void;
   /** Align toggle and panel to the left or right edge, or stretch full width */
   align?: "left" | "right" | "full";
   /** Optional helper text shown on the full-width toggle bar when collapsed */
@@ -54,6 +61,8 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   label = "🔊 Voice Reader",
   showAnswersToggle = true,
   availableLanguages,
+  selectedLanguage,
+  onLanguageChange,
   align = "left",
   hintText = "Tap to listen in English, Tamil or Hindi",
   defaultExpanded = false,
@@ -62,12 +71,15 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const [includeAnswers, setIncludeAnswers] = useState(false);
-  const [language, setLanguage] = useState<SpeechLanguage>("en");
+  const [internalLanguage, setInternalLanguage] = useState<SpeechLanguage>(selectedLanguage ?? "en");
+  const language = selectedLanguage ?? internalLanguage;
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [totalSegments, setTotalSegments] = useState(0);
   const [currentText, setCurrentText] = useState("");
+  const [isPreparing, setIsPreparing] = useState(false);
+  const [prepareError, setPrepareError] = useState("");
   const [mode, setMode] = useState<VoicePresetMode>(() => loadSavedPrefs().mode);
   const [speed, setSpeed] = useState(() =>
     loadSavedPrefs().mode === "storyteller" ? STORYTELLER_CONFIG.defaultSpeed : 1,
@@ -209,7 +221,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     speakPhrase(0);
   }, [speed, mode, language, resolveSelectedVoice, onSegmentChange]);
 
-  const handlePlay = useCallback(() => {
+  const handlePlay = useCallback(async () => {
     if (isPaused) {
       window.speechSynthesis.resume();
       setIsPaused(false);
@@ -221,7 +233,23 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     window.speechSynthesis.cancel();
     stoppedRef.current = false;
 
-    const segments = getTextSegments(includeAnswers, language);
+    setPrepareError("");
+    let segments: string[];
+    try {
+      const result = getTextSegments(includeAnswers, language);
+      if (result instanceof Promise) {
+        setIsPreparing(true);
+        segments = await result;
+      } else {
+        segments = result;
+      }
+    } catch (err) {
+      setPrepareError(err instanceof Error ? err.message : "Could not prepare the reading.");
+      setIsPreparing(false);
+      return;
+    }
+    setIsPreparing(false);
+    if (stoppedRef.current) return;
     segmentsRef.current = segments;
     setTotalSegments(segments.length);
     setCurrentIdx(0);
@@ -252,7 +280,8 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   }, [clearPauseTimer, onSegmentChange]);
 
   const handleLanguageChange = (nextLang: SpeechLanguage) => {
-    setLanguage(nextLang);
+    setInternalLanguage(nextLang);
+    onLanguageChange?.(nextLang);
     setSelectedVoiceURI("");
     if (isPlaying || isPaused) handleStop();
   };
@@ -487,11 +516,12 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
               {!isPlaying ? (
                 <Button
                   size="sm"
-                  onClick={handlePlay}
+                  onClick={() => void handlePlay()}
+                  disabled={isPreparing}
                   className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white"
                 >
                   <Play className="h-4 w-4" />
-                  {isPaused ? "Resume" : "Play"}
+                  {isPreparing ? "Translating…" : isPaused ? "Resume" : "Play"}
                 </Button>
               ) : (
                 <Button
@@ -516,6 +546,9 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
                 </Button>
               )}
             </div>
+            {prepareError && (
+              <p role="alert" className="text-xs font-semibold text-red-600">{prepareError}</p>
+            )}
 
             {(isPlaying || isPaused) && totalSegments > 0 && (
               <div className={`space-y-2 ${full ? "flex-1" : ""}`}>
@@ -529,7 +562,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                {hasLanguageSelector && language !== "en" && currentText && (
+                {hasLanguageSelector && currentText && (
                   <p className="text-xs text-gray-700 bg-white/80 border border-violet-100 rounded-lg p-2 leading-relaxed">
                     {currentText}
                   </p>

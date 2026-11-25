@@ -9,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { KindleDocument } from "@/lib/kindleFileParser";
+import type { KindleDocument, KindlePage } from "@/lib/kindleFileParser";
 import BookPageContent, { type ThemeColors } from "./BookPageContent";
 
 export type BookStyle = "hardcover" | "paperback" | "spiral" | "magazine" | "fullpage";
@@ -24,6 +24,10 @@ interface BookFlipViewerProps {
   readScope: "page" | "book";
   activeSegmentIdx: number;
   formatLabel: string;
+  bilingualMode?: boolean;
+  translatedPages?: Record<number, KindlePage>;
+  translationBadge?: string;
+  isTranslating?: boolean;
   onPageChange: (nextIdx: number) => void;
   onClose: () => void;
 }
@@ -38,6 +42,10 @@ const BookFlipViewer = ({
   readScope,
   activeSegmentIdx,
   formatLabel,
+  bilingualMode = false,
+  translatedPages,
+  translationBadge,
+  isTranslating = false,
   onPageChange,
   onClose,
 }: BookFlipViewerProps) => {
@@ -56,7 +64,11 @@ const BookFlipViewer = ({
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const showTwoPageSpread = bookStyle === "hardcover" && isDesktop && doc.pages.length > 1;
+  const isSideBySideBilingual = Boolean(
+    bookStyle === "hardcover" && bilingualMode && translationBadge,
+  );
+  const showTwoPageSpread =
+    !isSideBySideBilingual && bookStyle === "hardcover" && isDesktop && doc.pages.length > 1;
   const step = showTwoPageSpread ? 2 : 1;
   const leftIdx = showTwoPageSpread ? Math.floor(pageIdx / 2) * 2 : pageIdx;
   const rightIdx = showTwoPageSpread && leftIdx + 1 < doc.pages.length ? leftIdx + 1 : null;
@@ -101,8 +113,16 @@ const BookFlipViewer = ({
   const flipClass =
     flipDir === "next" ? "kindle-flip-next" : flipDir === "prev" ? "kindle-flip-prev" : "";
 
-  const leftPage = doc.pages[leftIdx] ?? doc.pages[0]!;
-  const rightPage = rightIdx !== null ? doc.pages[rightIdx] : null;
+  const rawLeftPage = doc.pages[leftIdx] ?? doc.pages[0]!;
+  const rawRightPage = rightIdx !== null ? doc.pages[rightIdx] : null;
+  const leftPage = isSideBySideBilingual
+    ? rawLeftPage
+    : (translatedPages?.[leftIdx] ?? rawLeftPage);
+  const rightPage = isSideBySideBilingual
+    ? (translatedPages?.[leftIdx] ?? rawLeftPage)
+    : (rightIdx !== null ? (translatedPages?.[rightIdx] ?? rawRightPage) : null);
+  const leftBadge = isSideBySideBilingual ? "Original" : translationBadge;
+  const rightBadge = isSideBySideBilingual ? translationBadge : translationBadge;
 
   const widthClass =
     bookStyle === "fullpage" || isFullscreen
@@ -123,7 +143,9 @@ const BookFlipViewer = ({
             <span>{doc.wordCount} words</span>
             <span>·</span>
             <span>
-              {rightPage
+              {isSideBySideBilingual
+                ? `Page ${leftIdx + 1} of ${doc.pages.length} · Side-by-Side`
+                : rightPage
                 ? `Pages ${leftIdx + 1}–${rightIdx! + 1} of ${doc.pages.length}`
                 : `Page ${leftIdx + 1} of ${doc.pages.length}`}
             </span>
@@ -180,6 +202,8 @@ const BookFlipViewer = ({
                 fontSize={fontSize}
                 fontSerif={fontSerif}
                 activeParagraphIndex={getActiveParaIdx(leftIdx)}
+                badgeLabel={leftBadge}
+                isTranslating={!isSideBySideBilingual && isTranslating && !translatedPages?.[leftIdx]}
               />
             </div>
             {rightPage && (
@@ -187,12 +211,17 @@ const BookFlipViewer = ({
                 <BookPageContent
                   page={rightPage}
                   docTitle={doc.title}
-                  pageNumber={rightIdx! + 1}
+                  pageNumber={isSideBySideBilingual ? leftIdx + 1 : rightIdx! + 1}
                   totalPages={doc.pages.length}
                   theme={theme}
                   fontSize={fontSize}
                   fontSerif={fontSerif}
-                  activeParagraphIndex={getActiveParaIdx(rightIdx!)}
+                  activeParagraphIndex={getActiveParaIdx(isSideBySideBilingual ? leftIdx : rightIdx!)}
+                  badgeLabel={rightBadge}
+                  isTranslating={
+                    isTranslating &&
+                    !translatedPages?.[isSideBySideBilingual ? leftIdx : rightIdx!]
+                  }
                 />
               </div>
             )}
@@ -224,6 +253,8 @@ const BookFlipViewer = ({
               fontSize={fontSize}
               fontSerif={fontSerif}
               activeParagraphIndex={getActiveParaIdx(leftIdx)}
+              badgeLabel={translationBadge}
+              isTranslating={isTranslating && !translatedPages?.[leftIdx]}
             />
           </div>
         </div>
@@ -246,6 +277,8 @@ const BookFlipViewer = ({
             fontSerif={fontSerif}
             magazineColumns
             activeParagraphIndex={getActiveParaIdx(leftIdx)}
+            badgeLabel={translationBadge}
+            isTranslating={isTranslating && !translatedPages?.[leftIdx]}
           />
         </article>
       ) : (
@@ -264,6 +297,8 @@ const BookFlipViewer = ({
             fontSize={fontSize}
             fontSerif={fontSerif}
             activeParagraphIndex={getActiveParaIdx(leftIdx)}
+            badgeLabel={translationBadge}
+            isTranslating={isTranslating && !translatedPages?.[leftIdx]}
           />
         </article>
       )}

@@ -1,19 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BookOpen, Loader2, Minus, Plus, Upload } from "lucide-react";
+import { BookOpen, Columns2, Languages, Loader2, Minus, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VoiceReader from "@/components/ui/VoiceReader";
 import BookFlipViewer, { type BookStyle } from "@/components/kindle/BookFlipViewer";
 import type { ThemeColors } from "@/components/kindle/BookPageContent";
-import { ALL_SPEECH_LANGUAGES } from "@/lib/speechText";
+import { ALL_SPEECH_LANGUAGES, SPEECH_LANGUAGE_META, type SpeechLanguage } from "@/lib/speechText";
 import {
   extractKindleSpeechSegments,
   parseKindleFile,
   type KindleDocument,
+  type KindlePage,
 } from "@/lib/kindleFileParser";
 import { KINDLE_SAMPLE_BOOKS } from "@/lib/kindleSamples";
+import {
+  buildTranslatedPage,
+  detectDocumentLanguage,
+  translateKindlePage,
+} from "@/lib/kindleTranslation";
 
 type PaperTheme = "light" | "sepia" | "dark";
 type ReadScope = "page" | "book";
+type ViewLanguage = "original" | SpeechLanguage;
+
+const QUICK_TRANSLATE_LANGS: SpeechLanguage[] = ["en", "ta", "hi"];
 
 const THEME_STYLES: Record<PaperTheme, ThemeColors> = {
   light: {
@@ -63,6 +72,12 @@ const KindleReader = () => {
   const [fontSerif, setFontSerif] = useState(true);
   const [readScope, setReadScope] = useState<ReadScope>("page");
   const [activeSegmentIdx, setActiveSegmentIdx] = useState(-1);
+  const [viewLang, setViewLang] = useState<ViewLanguage>("original");
+  const [voiceLang, setVoiceLang] = useState<SpeechLanguage>("en");
+  const [bilingualSplit, setBilingualSplit] = useState(true);
+  const [translatedPages, setTranslatedPages] = useState<Record<number, KindlePage>>({});
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translationError, setTranslationError] = useState("");
   const [loadingMsg, setLoadingMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [isDragging, setIsDragging] = useState(false);
@@ -83,6 +98,10 @@ const KindleReader = () => {
     setDoc(nextDoc);
     setPageIdx(0);
     setActiveSegmentIdx(-1);
+    setViewLang("original");
+    setVoiceLang(detectDocumentLanguage(nextDoc));
+    setTranslatedPages({});
+    setTranslationError("");
     setErrorMsg("");
     if (defaultStyle) setBookStyle(defaultStyle);
   };
@@ -96,6 +115,9 @@ const KindleReader = () => {
     setDoc(null);
     setPageIdx(0);
     setActiveSegmentIdx(-1);
+    setViewLang("original");
+    setTranslatedPages({});
+    setTranslationError("");
   };
 
   const handleFile = async (file: File | undefined) => {
@@ -121,10 +143,114 @@ const KindleReader = () => {
   };
 
   const theme = THEME_STYLES[paperTheme];
+  const docNativeLang = doc ? detectDocumentLanguage(doc) : "en";
+
+  // Translate visible page(s) whenever viewLang or current page changes
+  useEffect(() => {
+    if (!doc || viewLang === "original") {
+      setTranslatedPages({});
+      setIsTranslating(false);
+      setTranslationError("");
+      return;
+    }
+
+    let cancelled = false;
+    const indices =
+      bookStyle === "hardcover" && !bilingualSplit && pageIdx + 1 < doc.pages.length
+        ? [Math.floor(pageIdx / 2) * 2, Math.floor(pageIdx / 2) * 2 + 1].filter(
+            (i) => i < doc.pages.length,
+          )
+        : [pageIdx];
+
+    setIsTranslating(true);
+    setTranslationError("");
+
+    Promise.all(
+      indices.map(async (idx) => {
+        const translated = await translateKindlePage(doc, idx, viewLang);
+        return [idx, buildTranslatedPage(doc.pages[idx]!, translated)] as const;
+      }),
+    )
+      .then((entries) => {
+        if (cancelled) return;
+        setTranslatedPages((prev) => {
+          const next = { ...prev };
+          for (const [idx, p] of entries) next[idx] = p;
+          return next;
+        });
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setTranslationError(
+            err instanceof Error ? err.message : "Could not translate this page.",
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsTranslating(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [doc, viewLang, pageIdx, bookStyle, bilingualSplit]);
+
+  const handleSelectViewLang = (next: ViewLanguage) => {
+    setTranslatedPages({});
+    setTranslationError("");
+    setViewLang(next);
+    setVoiceLang(next === "original" ? docNativeLang : next);
+  };
+
+  const handleVoiceLangChange = (nextLang: SpeechLanguage) => {
+    setVoiceLang(nextLang);
+    if (nextLang !== viewLang) {
+      setTranslatedPages({});
+      setTranslationError("");
+      setViewLang(nextLang);
+    }
+  };
 
   const getSpeechSegments = useCallback(
-    () => (doc ? extractKindleSpeechSegments(doc, readScope === "page" ? pageIdx : undefined) : []),
-    [doc, readScope, pageIdx],
+    async (_includeAnswers: boolean, language: SpeechLanguage = voiceLang) => {
+      if (!doc) return [];
+      const targetIndices =
+        readScope === "page" ? [pageIdx] : doc.pages.map((_, idx) => idx);
+
+      // Use original text directly when speaking in the document's own language and no translation is active
+      if (viewLang === "original" && language === docNativeLang) {
+        return extractKindleSpeechSegments(doc, readScope === "page" ? pageIdx : undefined);
+      }
+
+      const translatedDocPages = await Promise.all(
+        targetIndices.map(async (idx) => {
+          const translated = await translateKindlePage(doc, idx, language);
+          return [idx, buildTranslatedPage(doc.pages[idx]!, translated)] as const;
+        }),
+      );
+
+      if (language === viewLang) {
+        setTranslatedPages((prev) => {
+          const next = { ...prev };
+          for (const [idx, p] of translatedDocPages) next[idx] = p;
+          return next;
+        });
+      }
+
+      const segments: string[] = [];
+      for (const [idx, page] of translatedDocPages) {
+        if (idx === 0 && (!page.title || page.title === doc.title)) {
+          segments.push(doc.title);
+        }
+        if (page.title && page.title !== doc.title) segments.push(page.title);
+        for (const para of page.paragraphs) {
+          const clean = para.trim();
+          if (clean) segments.push(clean);
+        }
+      }
+      return segments;
+    },
+    [doc, readScope, pageIdx, voiceLang, viewLang, docNativeLang],
   );
 
   const handleSegmentChange = useCallback((idx: number, isSpeaking: boolean) => {
@@ -152,13 +278,15 @@ const KindleReader = () => {
       <div className="container-custom py-8 space-y-6">
         {/* Full-width Voice Reader matching all blog pages */}
         <VoiceReader
-          key={`${doc?.id ?? "closed"}-${pageIdx}-${readScope}`}
+          key={`${doc?.id ?? "closed"}-${pageIdx}-${readScope}-${voiceLang}`}
           getTextSegments={getSpeechSegments}
           showAnswersToggle={false}
           availableLanguages={ALL_SPEECH_LANGUAGES}
+          selectedLanguage={voiceLang}
+          onLanguageChange={handleVoiceLangChange}
           align="full"
           defaultExpanded
-          hintText="Listen in 28 Indian & World Foreign Languages"
+          hintText="Listen & Translate in Tamil, English, Hindi & 25+ Languages"
           onSegmentChange={handleSegmentChange}
         />
 
@@ -257,6 +385,73 @@ const KindleReader = () => {
                 ))}
               </div>
 
+              {/* Translation View Toggle (Option 2) + Side-by-Side Bilingual Toggle (Option 1) */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/60">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs font-semibold text-muted-foreground inline-flex items-center gap-1 mr-1">
+                    <Languages className="h-3.5 w-3.5 text-primary" /> Read &amp; Translate:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectViewLang("original")}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ${
+                      viewLang === "original"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-foreground border-border hover:border-primary/40"
+                    }`}
+                  >
+                    Original
+                  </button>
+                  {QUICK_TRANSLATE_LANGS.map((code) => (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => handleSelectViewLang(code)}
+                      className={`font-multilingual-sans px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ${
+                        viewLang === code
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-foreground border-border hover:border-primary/40"
+                      }`}
+                    >
+                      {SPEECH_LANGUAGE_META[code].nativeLabel} ({SPEECH_LANGUAGE_META[code].label})
+                    </button>
+                  ))}
+                  {viewLang !== "original" && !QUICK_TRANSLATE_LANGS.includes(viewLang) && (
+                    <span className="font-multilingual-sans px-2.5 py-1 rounded-lg text-xs font-semibold bg-primary text-primary-foreground border border-primary">
+                      {SPEECH_LANGUAGE_META[viewLang].nativeLabel} ({SPEECH_LANGUAGE_META[viewLang].label})
+                    </span>
+                  )}
+                </div>
+
+                {bookStyle === "hardcover" && viewLang !== "original" && (
+                  <div className="inline-flex rounded-lg border border-border overflow-hidden text-xs font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => setBilingualSplit(true)}
+                      className={`px-2.5 py-1 inline-flex items-center gap-1 ${
+                        bilingualSplit ? "bg-accent text-accent-foreground" : "bg-background text-foreground"
+                      }`}
+                    >
+                      <Columns2 className="h-3.5 w-3.5" /> Side-by-Side
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBilingualSplit(false)}
+                      className={`px-2.5 py-1 ${
+                        !bilingualSplit ? "bg-accent text-accent-foreground" : "bg-background text-foreground"
+                      }`}
+                    >
+                      Full Page
+                    </button>
+                  </div>
+                )}
+              </div>
+              {translationError && (
+                <p role="alert" className="text-xs font-semibold text-destructive">
+                  {translationError}
+                </p>
+              )}
+
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/60">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs font-semibold text-muted-foreground">Paper:</span>
@@ -335,6 +530,14 @@ const KindleReader = () => {
               readScope={readScope}
               activeSegmentIdx={activeSegmentIdx}
               formatLabel={FORMAT_LABELS[doc.format]}
+              bilingualMode={bookStyle === "hardcover" && viewLang !== "original" && bilingualSplit}
+              translatedPages={viewLang !== "original" ? translatedPages : undefined}
+              translationBadge={
+                viewLang !== "original"
+                  ? `${SPEECH_LANGUAGE_META[viewLang].nativeLabel} (${SPEECH_LANGUAGE_META[viewLang].label})`
+                  : undefined
+              }
+              isTranslating={isTranslating}
               onPageChange={goToPage}
               onClose={closeDocument}
             />
