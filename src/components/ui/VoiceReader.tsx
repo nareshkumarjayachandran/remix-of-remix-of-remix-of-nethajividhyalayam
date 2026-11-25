@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Volume2, VolumeX, Pause, Play, Square, ChevronDown, ChevronUp } from "lucide-react";
+import { isSpeechSilent, sanitizeForSpeech } from "@/lib/speechText";
 
 interface VoiceReaderProps {
   /** Flat text segments to read — caller extracts from their data model */
@@ -39,8 +40,10 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({ getTextSegments, label = "�
       return;
     }
 
-    const text = segments[idx];
-    if (!text?.trim()) {
+    // Blank lines such as `________` must be read as one "dash", not
+    // "underscore, underscore, …" — and blank-only segments are skipped.
+    const text = sanitizeForSpeech(segments[idx]);
+    if (isSpeechSilent(text)) {
       idxRef.current = idx + 1;
       setCurrentIdx(idx + 1);
       speakSegment(segments, idx + 1);
