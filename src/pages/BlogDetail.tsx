@@ -59,7 +59,7 @@ const BlogDetail = () => {
         </div>
       </section>
       <div className="container-custom py-8">
-        <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <div className="mb-6">
           <Link to="/blog" className="inline-flex items-center gap-2 text-primary font-semibold hover:text-accent py-2">
             <ArrowLeft className="h-4 w-4" /> Back to Blog
           </Link>
@@ -68,8 +68,8 @@ const BlogDetail = () => {
             getTextSegments={getBlogSpeechSegments}
             showAnswersToggle={false}
             availableLanguages={["en", "ta", "hi"]}
-            align="right"
-            className="max-w-full"
+            align="full"
+            className="mt-2"
           />
         </div>
         <iframe ref={frame} title={post.title} srcDoc={fonts + post.content} style={{ height: h }}

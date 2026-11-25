@@ -38,8 +38,8 @@ interface VoiceReaderProps {
   showAnswersToggle?: boolean;
   /** Optional list of reading languages (e.g. English, Tamil, Hindi on blogs) */
   availableLanguages?: SpeechLanguage[];
-  /** Align toggle and panel to the left or right edge */
-  align?: "left" | "right";
+  /** Align toggle and panel to the left or right edge, or stretch full width */
+  align?: "left" | "right" | "full";
   className?: string;
 }
 
@@ -252,27 +252,64 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
 
   const progress = totalSegments > 0 ? Math.round((currentIdx / totalSegments) * 100) : 0;
 
+  const full = align === "full";
+  const groupClass = `rounded-xl border border-violet-100 bg-white/70 p-3 space-y-2 ${
+    full ? "h-full" : ""
+  }`;
+
   return (
-    <div className={`no-print ${align === "right" ? "flex flex-col items-end" : ""} ${className}`}>
+    <div
+      className={`no-print ${
+        align === "right"
+          ? "flex flex-col items-end"
+          : full
+            ? "flex flex-col w-full"
+            : ""
+      } ${className}`}
+    >
       {/* Toggle button */}
       <Button
         variant="outline"
         onClick={() => setExpanded(!expanded)}
-        className="gap-2 border-gray-300"
+        className={`gap-2 border-gray-300 ${
+          align === "full" ? "w-full justify-between px-4 h-11 bg-white hover:bg-violet-50" : ""
+        }`}
       >
-        <Volume2 className="h-4 w-4" />
-        {label}
+        <span className="inline-flex items-center gap-2">
+          <Volume2 className="h-4 w-4" />
+          {label}
+        </span>
+        {align === "full" && (
+          <span className="hidden sm:inline text-xs font-medium text-gray-500">
+            {expanded ? "Hide controls" : "Tap to listen in English, Tamil or Hindi"}
+          </span>
+        )}
         {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
       </Button>
 
       {/* Expanded panel */}
       {expanded && (
-        <div className={`mt-3 p-4 bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-xl shadow-sm space-y-3 ${align === "right" ? "w-full sm:w-80 text-left" : ""}`}>
+        <div
+          className={`mt-3 p-4 bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-xl shadow-sm ${
+            align === "right"
+              ? "w-full sm:w-80 text-left space-y-3"
+              : full
+                ? "w-full text-left space-y-3"
+                : "space-y-3"
+          }`}
+        >
+          <div
+            className={
+              full
+                ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-4 items-stretch"
+                : "space-y-3"
+            }
+          >
           {/* Language Selector (blogs only) */}
           {hasLanguageSelector && availableLanguages && (
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-semibold text-gray-700">🌐 Language</span>
-              <div className="flex gap-1" role="group" aria-label="Reading language">
+            <div className={groupClass}>
+              <span className="block text-sm font-semibold text-gray-700">🌐 Language</span>
+              <div className="flex flex-wrap gap-1" role="group" aria-label="Reading language">
                 {availableLanguages.map((code) => (
                   <button
                     key={code}
@@ -292,9 +329,9 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
           )}
 
           {/* Reading Style: Standard vs Storyteller */}
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-sm font-semibold text-gray-700">🎭 Style</span>
-            <div className="flex gap-1.5" role="group" aria-label="Reading style">
+          <div className={groupClass}>
+            <span className="block text-sm font-semibold text-gray-700">🎭 Style</span>
+            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Reading style">
               <button
                 type="button"
                 onClick={() => handleModeChange("standard")}
@@ -321,7 +358,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
           </div>
 
           {/* Voice Selector */}
-          <div className="space-y-1">
+          <div className={`${groupClass} space-y-1`}>
             <label htmlFor="voice-reader-select" className="block text-sm font-semibold text-gray-700">
               🗣️ Voice
             </label>
@@ -354,9 +391,9 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
 
           {/* With/Without Answers toggle */}
           {showAnswersToggle && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-gray-700">📝 Include Answers</span>
-              <div className="flex items-center gap-2">
+            <div className={groupClass}>
+              <span className="block text-sm font-semibold text-gray-700">📝 Include Answers</span>
+              <div className="flex items-center justify-between gap-2">
                 <span className="text-xs text-gray-500">{includeAnswers ? "With Answers" : "Questions Only"}</span>
                 <Switch
                   checked={includeAnswers}
@@ -370,9 +407,9 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
           )}
 
           {/* Speed */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-gray-700">🐢 Speed</span>
-            <div className="flex gap-1.5">
+          <div className={groupClass}>
+            <span className="block text-sm font-semibold text-gray-700">🐢 Speed</span>
+            <div className="flex flex-wrap gap-1.5">
               {[0.7, 0.85, 1, 1.2].map((s) => (
                 <button
                   key={s}
@@ -391,62 +428,68 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
               ))}
             </div>
           </div>
-
-          {/* Controls */}
-          <div className="flex items-center gap-2">
-            {!isPlaying ? (
-              <Button
-                size="sm"
-                onClick={handlePlay}
-                className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white"
-              >
-                <Play className="h-4 w-4" />
-                {isPaused ? "Resume" : "Play"}
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                onClick={handlePause}
-                variant="outline"
-                className="gap-1.5 border-violet-300 text-violet-700"
-              >
-                <Pause className="h-4 w-4" />
-                Pause
-              </Button>
-            )}
-            {(isPlaying || isPaused) && (
-              <Button
-                size="sm"
-                onClick={handleStop}
-                variant="outline"
-                className="gap-1.5 border-red-300 text-red-600 hover:bg-red-50"
-              >
-                <Square className="h-4 w-4" />
-                Stop
-              </Button>
-            )}
           </div>
 
-          {/* Progress */}
-          {(isPlaying || isPaused) && totalSegments > 0 && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-gray-500 mb-1">
-                <span>Reading… {currentIdx}/{totalSegments}</span>
-                <span>{progress}%</span>
-              </div>
-              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              {hasLanguageSelector && language !== "en" && currentText && (
-                <p className="text-xs text-gray-700 bg-white/80 border border-violet-100 rounded-lg p-2 leading-relaxed">
-                  {currentText}
-                </p>
+          {/* Controls + Progress */}
+          <div
+            className={`flex flex-col gap-3 ${
+              full ? "sm:flex-row sm:items-center" : ""
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              {!isPlaying ? (
+                <Button
+                  size="sm"
+                  onClick={handlePlay}
+                  className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white"
+                >
+                  <Play className="h-4 w-4" />
+                  {isPaused ? "Resume" : "Play"}
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  onClick={handlePause}
+                  variant="outline"
+                  className="gap-1.5 border-violet-300 text-violet-700"
+                >
+                  <Pause className="h-4 w-4" />
+                  Pause
+                </Button>
+              )}
+              {(isPlaying || isPaused) && (
+                <Button
+                  size="sm"
+                  onClick={handleStop}
+                  variant="outline"
+                  className="gap-1.5 border-red-300 text-red-600 hover:bg-red-50"
+                >
+                  <Square className="h-4 w-4" />
+                  Stop
+                </Button>
               )}
             </div>
-          )}
+
+            {(isPlaying || isPaused) && totalSegments > 0 && (
+              <div className={`space-y-2 ${full ? "flex-1" : ""}`}>
+                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <span>Reading… {currentIdx}/{totalSegments}</span>
+                  <span>{progress}%</span>
+                </div>
+                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-300"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                {hasLanguageSelector && language !== "en" && currentText && (
+                  <p className="text-xs text-gray-700 bg-white/80 border border-violet-100 rounded-lg p-2 leading-relaxed">
+                    {currentText}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
 
           <p className="text-xs text-gray-400 italic">
             {mode === "storyteller"
