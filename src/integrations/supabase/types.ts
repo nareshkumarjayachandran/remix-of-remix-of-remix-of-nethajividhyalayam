@@ -203,6 +203,54 @@ export type Database = {
         }
         Relationships: []
       }
+      kindle_library_items: {
+        Row: {
+          category: string
+          created_at: string
+          file_format: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          page_count: number
+          standard: string
+          title: string
+          uploaded_by: string | null
+          uploaded_by_email: string | null
+          word_count: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          file_format: string
+          file_name: string
+          file_path: string
+          file_size?: number
+          id?: string
+          page_count?: number
+          standard?: string
+          title: string
+          uploaded_by?: string | null
+          uploaded_by_email?: string | null
+          word_count?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          file_format?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          page_count?: number
+          standard?: string
+          title?: string
+          uploaded_by?: string | null
+          uploaded_by_email?: string | null
+          word_count?: number
+        }
+        Relationships: []
+      }
       pending_fee_payments: {
         Row: {
           amount: string | null

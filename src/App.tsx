@@ -29,6 +29,7 @@ const VideoGallery = lazy(() => import("./pages/VideoGallery"));
 const WorksheetMaker = lazy(() => import("./pages/WorksheetMaker"));
 const SpokenEnglish = lazy(() => import("./pages/SpokenEnglish"));
 const KindleReader = lazy(() => import("./pages/KindleReader"));
+const KindleLibraryAdmin = lazy(() => import("./pages/KindleLibraryAdmin"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogDetail = lazy(() => import("./pages/BlogDetail"));
 const QuestionPaper = lazy(() => import("./pages/QuestionPaper"));
@@ -78,6 +79,7 @@ const App = () => {
               <Route path="/worksheet-maker" element={<WorksheetMaker />} />
               <Route path="/spoken-english" element={<SpokenEnglish />} />
               <Route path="/kindle-reader" element={<KindleReader />} />
+              <Route path="/kindle-admin" element={<KindleLibraryAdmin />} />
               <Route path="/question-paper" element={<QuestionPaper />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

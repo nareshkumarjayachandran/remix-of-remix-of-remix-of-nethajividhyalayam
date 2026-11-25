@@ -15,6 +15,13 @@
       "when": 1794658006335,
       "tag": "0001_allow_blank_optional_admission_email",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795626494832,
+      "tag": "0002_create_kindle_library_items",
+      "breakpoints": true
     }
   ]
 }

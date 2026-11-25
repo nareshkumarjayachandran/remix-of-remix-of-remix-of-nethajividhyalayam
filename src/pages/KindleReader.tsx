@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Bookmark, BookOpen, ChevronDown, Columns2, Languages, Loader2, Minus, Plus, Search, Upload, X } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Bookmark, BookOpen, ChevronDown, Columns2, Languages, Loader2, Minus, Plus, Search, ShieldCheck, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import VoiceReader from "@/components/ui/VoiceReader";
@@ -20,6 +21,11 @@ import {
   type KindlePage,
 } from "@/lib/kindleFileParser";
 import { KINDLE_SAMPLE_BOOKS } from "@/lib/kindleSamples";
+import {
+  fetchKindleLibraryItems,
+  openKindleLibraryItem,
+  type KindleLibraryItem,
+} from "@/lib/kindleLibrary";
 import {
   buildTranslatedPage,
   detectDocumentLanguage,
@@ -88,7 +94,9 @@ const BOOK_STYLES: { id: BookStyle; label: string }[] = [
 ];
 
 const KindleReader = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [doc, setDoc] = useState<KindleDocument | null>(KINDLE_SAMPLE_BOOKS[0] ?? null);
+  const [libraryItems, setLibraryItems] = useState<KindleLibraryItem[]>([]);
   const [pageIdx, setPageIdx] = useState(0);
   const [bookStyle, setBookStyle] = useState<BookStyle>("hardcover");
   const [paperTheme, setPaperTheme] = useState<PaperTheme>("sepia");
@@ -111,6 +119,7 @@ const KindleReader = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const objectUrlsRef = useRef<string[]>([]);
   const activeCleanupRef = useRef<(() => void) | undefined>(undefined);
+  const openedQueryItemRef = useRef<string | null>(null);
 
   useEffect(() => {
     return () => {
@@ -133,6 +142,46 @@ const KindleReader = () => {
     setSearchQuery("");
     setBookStyle(defaultStyle ?? "hardcover");
   };
+
+  const handleOpenLibraryItem = useCallback(async (item: KindleLibraryItem) => {
+    setErrorMsg("");
+    setLoadingMsg(`Opening ${item.title}…`);
+    try {
+      const parsed = await openKindleLibraryItem(item, (status) => setLoadingMsg(status));
+      parsed.pages.forEach((p) => {
+        if (p.imageUrl) objectUrlsRef.current.push(p.imageUrl);
+      });
+      openDocument(parsed, "hardcover");
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Could not open this library item.");
+    } finally {
+      setLoadingMsg("");
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchKindleLibraryItems()
+      .then((items) => {
+        if (!cancelled) setLibraryItems(items);
+      })
+      .catch(() => {
+        // Keep starter books available even if library fetch fails
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const itemId = searchParams.get("item");
+    if (!itemId || openedQueryItemRef.current === itemId || libraryItems.length === 0) return;
+    const found = libraryItems.find((item) => item.id === itemId);
+    if (found) {
+      openedQueryItemRef.current = itemId;
+      void handleOpenLibraryItem(found);
+    }
+  }, [searchParams, libraryItems, handleOpenLibraryItem]);
 
   const closeDocument = () => {
     activeCleanupRef.current?.();
@@ -406,26 +455,74 @@ const KindleReader = () => {
             )}
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2" aria-label="Starter Books">
-                <BookOpen className="h-4 w-4" /> Starter Books
-                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="max-w-[calc(100vw-2rem)]">
-              <DropdownMenuRadioGroup value={doc?.id ?? ""} onValueChange={(id) => {
-                const sample = KINDLE_SAMPLE_BOOKS.find((book) => book.id === id);
-                if (sample) openDocument(sample);
-              }}>
-                {KINDLE_SAMPLE_BOOKS.map((sample) => (
-                  <DropdownMenuRadioItem key={sample.id} value={sample.id} className="font-multilingual-sans whitespace-normal">
-                    {sample.title}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2" aria-label="Starter Books">
+                  <BookOpen className="h-4 w-4" />
+                  {libraryItems.length > 0 ? `School Library (${libraryItems.length}) & Starter Books` : "Starter Books"}
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="max-w-[calc(100vw-2rem)] max-h-80 overflow-y-auto">
+                {libraryItems.length > 0 && (
+                  <>
+                    <DropdownMenuLabel className="text-xs">School Library (Books &amp; Worksheets)</DropdownMenuLabel>
+                    <DropdownMenuRadioGroup
+                      value={doc?.id ?? ""}
+                      onValueChange={(id) => {
+                        const item = libraryItems.find((entry) => `library-${entry.id}` === id);
+                        if (item) {
+                          setSearchParams({ item: item.id }, { replace: true });
+                          void handleOpenLibraryItem(item);
+                        }
+                      }}
+                    >
+                      {libraryItems.map((item) => (
+                        <DropdownMenuRadioItem
+                          key={item.id}
+                          value={`library-${item.id}`}
+                          className="font-multilingual-sans whitespace-normal"
+                        >
+                          <span className="flex flex-col">
+                            <span>{item.title}</span>
+                            <span className="text-[11px] text-muted-foreground">
+                              {item.category === "worksheet" ? "Worksheet" : "Book"}
+                              {item.standard !== "All" ? ` · Class ${item.standard}` : ""}
+                            </span>
+                          </span>
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                <DropdownMenuLabel className="text-xs">Starter Books</DropdownMenuLabel>
+                <DropdownMenuRadioGroup
+                  value={doc?.id ?? ""}
+                  onValueChange={(id) => {
+                    const sample = KINDLE_SAMPLE_BOOKS.find((book) => book.id === id);
+                    if (sample) {
+                      if (searchParams.has("item")) setSearchParams({}, { replace: true });
+                      openDocument(sample);
+                    }
+                  }}
+                >
+                  {KINDLE_SAMPLE_BOOKS.map((sample) => (
+                    <DropdownMenuRadioItem key={sample.id} value={sample.id} className="font-multilingual-sans whitespace-normal">
+                      {sample.title}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button asChild variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground">
+              <Link to="/kindle-admin">
+                <ShieldCheck className="h-3.5 w-3.5" /> Staff Upload
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {doc ? (
