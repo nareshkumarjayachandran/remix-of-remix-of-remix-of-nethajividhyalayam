@@ -1,8 +1,31 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Volume2, VolumeX, Pause, Play, Square, ChevronDown, ChevronUp } from "lucide-react";
-import { isSpeechSilent, sanitizeForSpeech } from "@/lib/speechText";
+import { Volume2, Pause, Play, Square, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  isSpeechSilent,
+  rankVoicesForReader,
+  sanitizeForSpeech,
+  splitForStoryteller,
+  STORYTELLER_CONFIG,
+  type VoicePresetMode,
+} from "@/lib/speechText";
+
+const PREFS_STORAGE_KEY = "nv-voice-reader-prefs";
+
+function loadSavedPrefs(): { mode: VoicePresetMode; voiceURI: string } {
+  try {
+    const raw = localStorage.getItem(PREFS_STORAGE_KEY);
+    if (!raw) return { mode: "standard", voiceURI: "" };
+    const parsed = JSON.parse(raw) as Partial<{ mode: VoicePresetMode; voiceURI: string }>;
+    return {
+      mode: parsed.mode === "storyteller" ? "storyteller" : "standard",
+      voiceURI: typeof parsed.voiceURI === "string" ? parsed.voiceURI : "",
+    };
+  } catch {
+    return { mode: "standard", voiceURI: "" };
+  }
+}
 
 interface VoiceReaderProps {
   /** Flat text segments to read — caller extracts from their data model */
@@ -29,18 +52,67 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [totalSegments, setTotalSegments] = useState(0);
-  const [speed, setSpeed] = useState(1);
+  const [mode, setMode] = useState<VoicePresetMode>(() => loadSavedPrefs().mode);
+  const [speed, setSpeed] = useState(() =>
+    loadSavedPrefs().mode === "storyteller" ? STORYTELLER_CONFIG.defaultSpeed : 1,
+  );
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>(() => loadSavedPrefs().voiceURI);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const segmentsRef = useRef<string[]>([]);
   const idxRef = useRef(0);
   const stoppedRef = useRef(false);
+  const pauseTimerRef = useRef<number | null>(null);
+
+  const clearPauseTimer = useCallback(() => {
+    if (pauseTimerRef.current !== null) {
+      window.clearTimeout(pauseTimerRef.current);
+      pauseTimerRef.current = null;
+    }
+  }, []);
+
+  // Load available browser voices
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const updateVoices = () => {
+      const ranked = rankVoicesForReader(window.speechSynthesis.getVoices());
+      setVoices(ranked);
+    };
+    updateVoices();
+    window.speechSynthesis.addEventListener?.("voiceschanged", updateVoices);
+    return () => {
+      window.speechSynthesis.removeEventListener?.("voiceschanged", updateVoices);
+    };
+  }, []);
+
+  // Persist voice & mode preferences
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        PREFS_STORAGE_KEY,
+        JSON.stringify({ mode, voiceURI: selectedVoiceURI }),
+      );
+    } catch {
+      // Ignore storage errors in restricted contexts
+    }
+  }, [mode, selectedVoiceURI]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      clearPauseTimer();
       window.speechSynthesis.cancel();
     };
-  }, []);
+  }, [clearPauseTimer]);
+
+  const resolveSelectedVoice = useCallback((): SpeechSynthesisVoice | null => {
+    if (!voices.length) return null;
+    if (selectedVoiceURI) {
+      const match = voices.find((v) => v.voiceURI === selectedVoiceURI);
+      if (match) return match;
+    }
+    return voices[0] ?? null;
+  }, [voices, selectedVoiceURI]);
 
   const speakSegment = useCallback((segments: string[], idx: number) => {
     if (idx >= segments.length || stoppedRef.current) {
@@ -60,26 +132,56 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       return;
     }
 
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.rate = speed;
-    utt.lang = "en-IN";
-    utt.onend = () => {
-      if (!stoppedRef.current) {
-        idxRef.current = idx + 1;
-        setCurrentIdx(idx + 1);
-        speakSegment(segments, idx + 1);
+    const phrases = mode === "storyteller" ? splitForStoryteller(text) : [text];
+    const chosenVoice = resolveSelectedVoice();
+
+    const speakPhrase = (phraseIdx: number) => {
+      if (stoppedRef.current) return;
+      if (phraseIdx >= phrases.length) {
+        const advance = () => {
+          if (stoppedRef.current) return;
+          idxRef.current = idx + 1;
+          setCurrentIdx(idx + 1);
+          speakSegment(segments, idx + 1);
+        };
+        if (mode === "storyteller" && idx + 1 < segments.length) {
+          pauseTimerRef.current = window.setTimeout(advance, STORYTELLER_CONFIG.segmentPauseMs);
+        } else {
+          advance();
+        }
+        return;
       }
-    };
-    utt.onerror = () => {
-      if (!stoppedRef.current) {
-        idxRef.current = idx + 1;
-        setCurrentIdx(idx + 1);
-        speakSegment(segments, idx + 1);
+
+      const utt = new SpeechSynthesisUtterance(phrases[phraseIdx]);
+      utt.rate = speed;
+      utt.pitch = mode === "storyteller" ? STORYTELLER_CONFIG.pitch : 1;
+      if (chosenVoice) {
+        utt.voice = chosenVoice;
+        utt.lang = chosenVoice.lang;
+      } else {
+        utt.lang = "en-IN";
       }
+
+      const handleNextPhrase = () => {
+        if (stoppedRef.current) return;
+        if (mode === "storyteller" && phraseIdx + 1 < phrases.length) {
+          pauseTimerRef.current = window.setTimeout(
+            () => speakPhrase(phraseIdx + 1),
+            STORYTELLER_CONFIG.phrasePauseMs,
+          );
+        } else {
+          speakPhrase(phraseIdx + 1);
+        }
+      };
+
+      utt.onend = handleNextPhrase;
+      utt.onerror = handleNextPhrase;
+      utteranceRef.current = utt;
+      window.speechSynthesis.speak(utt);
     };
-    utteranceRef.current = utt;
-    window.speechSynthesis.speak(utt);
-  }, [speed]);
+
+    speakPhrase(0);
+  }, [speed, mode, resolveSelectedVoice]);
 
   const handlePlay = useCallback(() => {
     if (isPaused) {
@@ -89,6 +191,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       return;
     }
 
+    clearPauseTimer();
     window.speechSynthesis.cancel();
     stoppedRef.current = false;
 
@@ -101,22 +204,30 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     setIsPaused(false);
 
     speakSegment(segments, 0);
-  }, [isPaused, getTextSegments, includeAnswers, speakSegment]);
+  }, [isPaused, clearPauseTimer, getTextSegments, includeAnswers, speakSegment]);
 
   const handlePause = useCallback(() => {
+    clearPauseTimer();
     window.speechSynthesis.pause();
     setIsPaused(true);
     setIsPlaying(false);
-  }, []);
+  }, [clearPauseTimer]);
 
   const handleStop = useCallback(() => {
     stoppedRef.current = true;
+    clearPauseTimer();
     window.speechSynthesis.cancel();
     setIsPlaying(false);
     setIsPaused(false);
     setCurrentIdx(0);
     idxRef.current = 0;
-  }, []);
+  }, [clearPauseTimer]);
+
+  const handleModeChange = (nextMode: VoicePresetMode) => {
+    setMode(nextMode);
+    setSpeed(nextMode === "storyteller" ? STORYTELLER_CONFIG.defaultSpeed : 1);
+    if (isPlaying || isPaused) handleStop();
+  };
 
   const progress = totalSegments > 0 ? Math.round((currentIdx / totalSegments) * 100) : 0;
 
@@ -136,6 +247,60 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       {/* Expanded panel */}
       {expanded && (
         <div className={`mt-3 p-4 bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-xl shadow-sm space-y-3 ${align === "right" ? "w-full sm:w-80 text-left" : ""}`}>
+          {/* Reading Style: Standard vs Storyteller */}
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-gray-700">🎭 Style</span>
+            <div className="flex gap-1.5" role="group" aria-label="Reading style">
+              <button
+                type="button"
+                onClick={() => handleModeChange("standard")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
+                  mode === "standard"
+                    ? "border-violet-500 bg-violet-500 text-white"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-violet-300"
+                }`}
+              >
+                Standard
+              </button>
+              <button
+                type="button"
+                onClick={() => handleModeChange("storyteller")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
+                  mode === "storyteller"
+                    ? "border-violet-500 bg-violet-500 text-white"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-violet-300"
+                }`}
+              >
+                ✨ Storyteller
+              </button>
+            </div>
+          </div>
+
+          {/* Voice Selector */}
+          <div className="space-y-1">
+            <label htmlFor="voice-reader-select" className="block text-sm font-semibold text-gray-700">
+              🗣️ Voice
+            </label>
+            <select
+              id="voice-reader-select"
+              value={selectedVoiceURI}
+              onChange={(e) => {
+                setSelectedVoiceURI(e.target.value);
+                if (isPlaying || isPaused) handleStop();
+              }}
+              className="w-full rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-700 focus:border-violet-400 focus:outline-none"
+            >
+              <option value="">
+                {voices.length > 0 ? `Auto — ${voices[0].name}` : "Default Browser Voice"}
+              </option>
+              {voices.map((v) => (
+                <option key={v.voiceURI} value={v.voiceURI}>
+                  {v.name} ({v.lang})
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* With/Without Answers toggle */}
           {showAnswersToggle && (
             <div className="flex items-center justify-between">
@@ -228,7 +393,9 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
           )}
 
           <p className="text-xs text-gray-400 italic">
-            Uses browser voice · Free & unlimited · Works offline too
+            {mode === "storyteller"
+              ? "Storyteller mode · Gentler pace, warmer tone & rhythmic pauses"
+              : "Uses browser voice · Free & unlimited · Works offline too"}
           </p>
         </div>
       )}

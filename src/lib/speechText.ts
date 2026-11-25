@@ -74,3 +74,65 @@ export function extractHtmlSpeechSegments(
 
   return segments;
 }
+
+export type VoicePresetMode = "standard" | "storyteller";
+
+export const STORYTELLER_CONFIG = {
+  defaultSpeed: 0.85,
+  pitch: 1.08,
+  phrasePauseMs: 320,
+  segmentPauseMs: 550,
+} as const;
+
+export interface VoiceOptionLike {
+  name: string;
+  lang: string;
+  voiceURI: string;
+  default?: boolean;
+}
+
+function scoreVoice(v: VoiceOptionLike): number {
+  const name = v.name.toLowerCase();
+  const lang = v.lang.toLowerCase();
+  let score = 0;
+  if (name.includes("natural") || name.includes("neural") || name.includes("enhanced") || name.includes("premium")) {
+    score += 40;
+  }
+  if (name.includes("aria") || name.includes("jenny") || name.includes("samantha") || name.includes("siri") || name.includes("ava")) {
+    score += 20;
+  }
+  if (name.includes("google") || name.includes("microsoft")) {
+    score += 10;
+  }
+  if (lang === "en-in") score += 25;
+  else if (lang.startsWith("en-gb") || lang.startsWith("en-us")) score += 20;
+  else if (lang.startsWith("en")) score += 15;
+  else if (lang.startsWith("ta") || lang.startsWith("hi")) score += 10;
+  if (v.default) score += 5;
+  return score;
+}
+
+/**
+ * Filters and ranks device voices so expressive Natural/Enhanced English and
+ * local-language voices appear first in the Voice Selector.
+ */
+export function rankVoicesForReader<T extends VoiceOptionLike>(voices: T[]): T[] {
+  if (!voices.length) return [];
+  const preferred = voices.filter((v) => /^(en|ta|hi)\b/i.test(v.lang));
+  const pool = preferred.length > 0 ? preferred : voices;
+  return [...pool].sort((a, b) => scoreVoice(b) - scoreVoice(a) || a.name.localeCompare(b.name));
+}
+
+/**
+ * Breaks a paragraph into rhythmic phrases at sentence endings, semicolons, and
+ * em-dashes so Storyteller mode can breathe gently between beats.
+ */
+export function splitForStoryteller(text: string): string[] {
+  const clean = sanitizeForSpeech(text);
+  if (!clean) return [];
+  const parts = clean
+    .split(/(?<=[.!?;—])\s+/)
+    .map((p) => p.trim())
+    .filter((p) => !isSpeechSilent(p));
+  return parts.length > 0 ? parts : [clean];
+}

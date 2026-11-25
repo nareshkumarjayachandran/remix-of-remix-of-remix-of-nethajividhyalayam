@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { extractHtmlSpeechSegments, isSpeechSilent, sanitizeForSpeech } from "./speechText";
+import {
+  extractHtmlSpeechSegments,
+  isSpeechSilent,
+  rankVoicesForReader,
+  sanitizeForSpeech,
+  splitForStoryteller,
+} from "./speechText";
 
 describe("sanitizeForSpeech", () => {
   it("reads a fill-in-the-blank line as one dash, not repeated underscores", () => {
@@ -91,6 +97,30 @@ describe("extractHtmlSpeechSegments", () => {
     expect(extractHtmlSpeechSegments(html, "School Annual Day")).toEqual([
       "School Annual Day",
       "Welcome to our school blog.",
+    ]);
+  });
+});
+
+describe("rankVoicesForReader", () => {
+  it("places Natural/Enhanced English voices ahead of robotic defaults and excludes unrelated languages", () => {
+    const voices = [
+      { name: "eSpeak Basic", lang: "en-US", voiceURI: "espeak" },
+      { name: "French Voice", lang: "fr-FR", voiceURI: "fr" },
+      { name: "Microsoft Aria Online (Natural)", lang: "en-US", voiceURI: "aria" },
+      { name: "Google Indian English", lang: "en-IN", voiceURI: "google-in" },
+    ];
+    const ranked = rankVoicesForReader(voices);
+    expect(ranked.map((v) => v.voiceURI)).toEqual(["aria", "google-in", "espeak"]);
+  });
+});
+
+describe("splitForStoryteller", () => {
+  it("splits paragraphs into rhythmic phrases at sentence endings and em-dashes", () => {
+    const text = "Once upon a time, a little bird sang. The moon smiled — and the stars danced!";
+    expect(splitForStoryteller(text)).toEqual([
+      "Once upon a time, a little bird sang.",
+      "The moon smiled —",
+      "and the stars danced!",
     ]);
   });
 });
