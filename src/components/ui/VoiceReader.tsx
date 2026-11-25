@@ -40,6 +40,12 @@ interface VoiceReaderProps {
   availableLanguages?: SpeechLanguage[];
   /** Align toggle and panel to the left or right edge, or stretch full width */
   align?: "left" | "right" | "full";
+  /** Optional helper text shown on the full-width toggle bar when collapsed */
+  hintText?: string;
+  /** Start with the controls panel expanded */
+  defaultExpanded?: boolean;
+  /** Optional callback notified whenever the spoken segment index changes */
+  onSegmentChange?: (segmentIndex: number, isSpeaking: boolean) => void;
   className?: string;
 }
 
@@ -49,9 +55,12 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   showAnswersToggle = true,
   availableLanguages,
   align = "left",
+  hintText = "Tap to listen in English, Tamil or Hindi",
+  defaultExpanded = false,
+  onSegmentChange,
   className = "",
 }) => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(defaultExpanded);
   const [includeAnswers, setIncludeAnswers] = useState(false);
   const [language, setLanguage] = useState<SpeechLanguage>("en");
   const [isPlaying, setIsPlaying] = useState(false);
@@ -72,6 +81,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   const pauseTimerRef = useRef<number | null>(null);
 
   const hasLanguageSelector = Boolean(availableLanguages && availableLanguages.length > 1);
+  const useLanguageDropdown = Boolean(availableLanguages && availableLanguages.length > 6);
   const voices = React.useMemo(
     () => rankVoicesForReader(allVoices, hasLanguageSelector ? language : undefined),
     [allVoices, hasLanguageSelector, language],
@@ -132,6 +142,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       setIsPaused(false);
       setCurrentIdx(0);
       setCurrentText("");
+      onSegmentChange?.(-1, false);
       return;
     }
 
@@ -146,6 +157,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     }
 
     setCurrentText(text);
+    onSegmentChange?.(idx, true);
     const phrases = mode === "storyteller" ? splitForStoryteller(text) : [text];
     const chosenVoice = resolveSelectedVoice();
 
@@ -195,7 +207,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     };
 
     speakPhrase(0);
-  }, [speed, mode, language, resolveSelectedVoice]);
+  }, [speed, mode, language, resolveSelectedVoice, onSegmentChange]);
 
   const handlePlay = useCallback(() => {
     if (isPaused) {
@@ -236,7 +248,8 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     setCurrentIdx(0);
     setCurrentText("");
     idxRef.current = 0;
-  }, [clearPauseTimer]);
+    onSegmentChange?.(-1, false);
+  }, [clearPauseTimer, onSegmentChange]);
 
   const handleLanguageChange = (nextLang: SpeechLanguage) => {
     setLanguage(nextLang);
@@ -272,7 +285,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
         variant="outline"
         onClick={() => setExpanded(!expanded)}
         className={`gap-2 border-gray-300 ${
-          align === "full" ? "w-full justify-between px-4 h-11 bg-white hover:bg-violet-50" : ""
+          align === "full" ? "w-full justify-between px-4 h-11 bg-white text-gray-800 hover:bg-violet-50 hover:text-gray-900" : ""
         }`}
       >
         <span className="inline-flex items-center gap-2">
@@ -281,7 +294,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
         </span>
         {align === "full" && (
           <span className="hidden sm:inline text-xs font-medium text-gray-500">
-            {expanded ? "Hide controls" : "Tap to listen in English, Tamil or Hindi"}
+            {expanded ? "Hide controls" : hintText}
           </span>
         )}
         {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
@@ -305,26 +318,60 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
                 : "space-y-3"
             }
           >
-          {/* Language Selector (blogs only) */}
+          {/* Language Selector */}
           {hasLanguageSelector && availableLanguages && (
             <div className={groupClass}>
-              <span className="block text-sm font-semibold text-gray-700">🌐 Language</span>
-              <div className="flex flex-wrap gap-1" role="group" aria-label="Reading language">
-                {availableLanguages.map((code) => (
-                  <button
-                    key={code}
-                    type="button"
-                    onClick={() => handleLanguageChange(code)}
-                    className={`px-2 py-1 rounded-lg text-xs font-bold border transition-all ${
-                      language === code
-                        ? "border-violet-500 bg-violet-500 text-white"
-                        : "border-gray-200 bg-white text-gray-600 hover:border-violet-300"
-                    }`}
-                  >
-                    {SPEECH_LANGUAGE_META[code].nativeLabel}
-                  </button>
-                ))}
-              </div>
+              <label
+                htmlFor={useLanguageDropdown ? "voice-reader-lang-select" : undefined}
+                className="block text-sm font-semibold text-gray-700"
+              >
+                🌐 Language
+              </label>
+              {useLanguageDropdown ? (
+                <select
+                  id="voice-reader-lang-select"
+                  aria-label="Reading language"
+                  value={language}
+                  onChange={(e) => handleLanguageChange(e.target.value as SpeechLanguage)}
+                  className="w-full rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-700 focus:border-violet-400 focus:outline-none"
+                >
+                  <optgroup label="Indian Languages">
+                    {availableLanguages
+                      .filter((code) => SPEECH_LANGUAGE_META[code].group === "indian")
+                      .map((code) => (
+                        <option key={code} value={code}>
+                          {SPEECH_LANGUAGE_META[code].label} — {SPEECH_LANGUAGE_META[code].nativeLabel}
+                        </option>
+                      ))}
+                  </optgroup>
+                  <optgroup label="World Foreign Languages">
+                    {availableLanguages
+                      .filter((code) => SPEECH_LANGUAGE_META[code].group === "foreign")
+                      .map((code) => (
+                        <option key={code} value={code}>
+                          {SPEECH_LANGUAGE_META[code].label} — {SPEECH_LANGUAGE_META[code].nativeLabel}
+                        </option>
+                      ))}
+                  </optgroup>
+                </select>
+              ) : (
+                <div className="flex flex-wrap gap-1" role="group" aria-label="Reading language">
+                  {availableLanguages.map((code) => (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => handleLanguageChange(code)}
+                      className={`px-2 py-1 rounded-lg text-xs font-bold border transition-all ${
+                        language === code
+                          ? "border-violet-500 bg-violet-500 text-white"
+                          : "border-gray-200 bg-white text-gray-600 hover:border-violet-300"
+                      }`}
+                    >
+                      {SPEECH_LANGUAGE_META[code].nativeLabel}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -495,7 +542,9 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
             {mode === "storyteller"
               ? "Storyteller mode · Gentler pace, warmer tone & rhythmic pauses"
               : hasLanguageSelector && language !== "en"
-                ? `Pre-saved ${SPEECH_LANGUAGE_META[language].label} translation · Instant & offline`
+                ? useLanguageDropdown
+                  ? `Reading in ${SPEECH_LANGUAGE_META[language].label} (${SPEECH_LANGUAGE_META[language].bcp47}) · Uses device voice`
+                  : `Pre-saved ${SPEECH_LANGUAGE_META[language].label} translation · Instant & offline`
                 : "Uses browser voice · Free & unlimited · Works offline too"}
           </p>
         </div>

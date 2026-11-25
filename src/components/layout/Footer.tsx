@@ -16,6 +16,7 @@ const Footer = () => {
     { label: "Contact Us", path: "/contact" },
     { label: "Vidhyalayam Worksheet Maker", path: "/worksheet-maker" },
     { label: "Spoken English Practice", path: "/spoken-english" },
+    { label: "Kindle Reader", path: "/kindle-reader" },
   ];
 
   const socialLinks = [

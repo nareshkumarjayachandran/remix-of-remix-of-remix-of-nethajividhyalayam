@@ -28,6 +28,7 @@ const FeeDesk = lazy(() => import("./pages/FeeDesk"));
 const VideoGallery = lazy(() => import("./pages/VideoGallery"));
 const WorksheetMaker = lazy(() => import("./pages/WorksheetMaker"));
 const SpokenEnglish = lazy(() => import("./pages/SpokenEnglish"));
+const KindleReader = lazy(() => import("./pages/KindleReader"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogDetail = lazy(() => import("./pages/BlogDetail"));
 const QuestionPaper = lazy(() => import("./pages/QuestionPaper"));
@@ -76,6 +77,7 @@ const App = () => {
               <Route path="/video-gallery" element={<VideoGallery />} />
               <Route path="/worksheet-maker" element={<WorksheetMaker />} />
               <Route path="/spoken-english" element={<SpokenEnglish />} />
+              <Route path="/kindle-reader" element={<KindleReader />} />
               <Route path="/question-paper" element={<QuestionPaper />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

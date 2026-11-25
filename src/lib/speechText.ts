@@ -76,16 +76,87 @@ export function extractHtmlSpeechSegments(
 }
 
 export type VoicePresetMode = "standard" | "storyteller";
-export type SpeechLanguage = "en" | "ta" | "hi";
+export type SpeechLanguage =
+  | "en"
+  | "ta"
+  | "hi"
+  | "te"
+  | "kn"
+  | "ml"
+  | "bn"
+  | "mr"
+  | "gu"
+  | "pa"
+  | "ur"
+  | "or"
+  | "as"
+  | "sa"
+  | "fr"
+  | "es"
+  | "de"
+  | "it"
+  | "pt"
+  | "ru"
+  | "ja"
+  | "zh"
+  | "ko"
+  | "ar"
+  | "nl"
+  | "tr"
+  | "sv"
+  | "th";
 
-export const SPEECH_LANGUAGE_META: Record<
-  SpeechLanguage,
-  { code: SpeechLanguage; label: string; nativeLabel: string; bcp47: string }
-> = {
-  en: { code: "en", label: "English", nativeLabel: "English", bcp47: "en-IN" },
-  ta: { code: "ta", label: "Tamil", nativeLabel: "தமிழ்", bcp47: "ta-IN" },
-  hi: { code: "hi", label: "Hindi", nativeLabel: "हिन्दी", bcp47: "hi-IN" },
+export interface SpeechLanguageMeta {
+  code: SpeechLanguage;
+  label: string;
+  nativeLabel: string;
+  bcp47: string;
+  group: "indian" | "foreign";
+}
+
+export const SPEECH_LANGUAGE_META: Record<SpeechLanguage, SpeechLanguageMeta> = {
+  en: { code: "en", label: "English", nativeLabel: "English", bcp47: "en-IN", group: "indian" },
+  ta: { code: "ta", label: "Tamil", nativeLabel: "தமிழ்", bcp47: "ta-IN", group: "indian" },
+  hi: { code: "hi", label: "Hindi", nativeLabel: "हिन्दी", bcp47: "hi-IN", group: "indian" },
+  te: { code: "te", label: "Telugu", nativeLabel: "తెలుగు", bcp47: "te-IN", group: "indian" },
+  kn: { code: "kn", label: "Kannada", nativeLabel: "ಕನ್ನಡ", bcp47: "kn-IN", group: "indian" },
+  ml: { code: "ml", label: "Malayalam", nativeLabel: "മലയാളം", bcp47: "ml-IN", group: "indian" },
+  bn: { code: "bn", label: "Bengali", nativeLabel: "বাংলা", bcp47: "bn-IN", group: "indian" },
+  mr: { code: "mr", label: "Marathi", nativeLabel: "मराठी", bcp47: "mr-IN", group: "indian" },
+  gu: { code: "gu", label: "Gujarati", nativeLabel: "ગુજરાતી", bcp47: "gu-IN", group: "indian" },
+  pa: { code: "pa", label: "Punjabi", nativeLabel: "ਪੰਜਾਬੀ", bcp47: "pa-IN", group: "indian" },
+  ur: { code: "ur", label: "Urdu", nativeLabel: "اردو", bcp47: "ur-IN", group: "indian" },
+  or: { code: "or", label: "Odia", nativeLabel: "ଓଡ଼ିଆ", bcp47: "or-IN", group: "indian" },
+  as: { code: "as", label: "Assamese", nativeLabel: "অসমীয়া", bcp47: "as-IN", group: "indian" },
+  sa: { code: "sa", label: "Sanskrit", nativeLabel: "संस्कृतम्", bcp47: "sa-IN", group: "indian" },
+  fr: { code: "fr", label: "French", nativeLabel: "Français", bcp47: "fr-FR", group: "foreign" },
+  es: { code: "es", label: "Spanish", nativeLabel: "Español", bcp47: "es-ES", group: "foreign" },
+  de: { code: "de", label: "German", nativeLabel: "Deutsch", bcp47: "de-DE", group: "foreign" },
+  it: { code: "it", label: "Italian", nativeLabel: "Italiano", bcp47: "it-IT", group: "foreign" },
+  pt: { code: "pt", label: "Portuguese", nativeLabel: "Português", bcp47: "pt-BR", group: "foreign" },
+  ru: { code: "ru", label: "Russian", nativeLabel: "Русский", bcp47: "ru-RU", group: "foreign" },
+  ja: { code: "ja", label: "Japanese", nativeLabel: "日本語", bcp47: "ja-JP", group: "foreign" },
+  zh: { code: "zh", label: "Chinese (Mandarin)", nativeLabel: "中文", bcp47: "zh-CN", group: "foreign" },
+  ko: { code: "ko", label: "Korean", nativeLabel: "한국어", bcp47: "ko-KR", group: "foreign" },
+  ar: { code: "ar", label: "Arabic", nativeLabel: "العربية", bcp47: "ar-SA", group: "foreign" },
+  nl: { code: "nl", label: "Dutch", nativeLabel: "Nederlands", bcp47: "nl-NL", group: "foreign" },
+  tr: { code: "tr", label: "Turkish", nativeLabel: "Türkçe", bcp47: "tr-TR", group: "foreign" },
+  sv: { code: "sv", label: "Swedish", nativeLabel: "Svenska", bcp47: "sv-SE", group: "foreign" },
+  th: { code: "th", label: "Thai", nativeLabel: "ไทย", bcp47: "th-TH", group: "foreign" },
 };
+
+export const INDIAN_SPEECH_LANGUAGES: SpeechLanguage[] = [
+  "en", "ta", "hi", "te", "kn", "ml", "bn", "mr", "gu", "pa", "ur", "or", "as", "sa",
+];
+
+export const FOREIGN_SPEECH_LANGUAGES: SpeechLanguage[] = [
+  "fr", "es", "de", "it", "pt", "ru", "ja", "zh", "ko", "ar", "nl", "tr", "sv", "th",
+];
+
+export const ALL_SPEECH_LANGUAGES: SpeechLanguage[] = [
+  ...INDIAN_SPEECH_LANGUAGES,
+  ...FOREIGN_SPEECH_LANGUAGES,
+];
 
 export const STORYTELLER_CONFIG = {
   defaultSpeed: 0.85,
@@ -114,12 +185,10 @@ function scoreVoice(v: VoiceOptionLike, targetLang?: SpeechLanguage): number {
   if (name.includes("google") || name.includes("microsoft")) {
     score += 10;
   }
-  if (targetLang === "ta") {
-    if (lang === "ta-in") score += 30;
-    else if (lang.startsWith("ta")) score += 20;
-  } else if (targetLang === "hi") {
-    if (lang === "hi-in") score += 30;
-    else if (lang.startsWith("hi")) score += 20;
+  if (targetLang && targetLang !== "en") {
+    const exact = SPEECH_LANGUAGE_META[targetLang].bcp47.toLowerCase();
+    if (lang === exact) score += 30;
+    else if (lang.startsWith(targetLang)) score += 20;
   } else {
     if (lang === "en-in") score += 25;
     else if (lang.startsWith("en-gb") || lang.startsWith("en-us")) score += 20;
@@ -160,7 +229,7 @@ export function splitForStoryteller(text: string): string[] {
   const clean = sanitizeForSpeech(text);
   if (!clean) return [];
   const parts = clean
-    .split(/(?<=[.!?;—।])\s+/)
+    .split(/(?<=[.!?;—।。！？؟])\s*/)
     .map((p) => p.trim())
     .filter((p) => !isSpeechSilent(p));
   return parts.length > 0 ? parts : [clean];

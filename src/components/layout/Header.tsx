@@ -44,6 +44,7 @@ const navItems = [
       { label: "Our Facilities", path: "/facilities" },
       { label: "Worksheet Maker", path: "/worksheet-maker" },
       { label: "Spoken English", path: "/spoken-english" },
+      { label: "Kindle Reader", path: "/kindle-reader" },
     ],
   },
   {
