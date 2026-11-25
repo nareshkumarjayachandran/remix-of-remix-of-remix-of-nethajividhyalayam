@@ -28,3 +28,7 @@
 - [x] Update the existing deployment workflow for automatic main-branch updates, manual retries, secure uploads, and missing-setting checks.
 - [x] Document GitHub settings and the hosting directory selection.
 - [ ] Verify a live deployment after the owner adds the required GitHub secrets and confirms the FTP destination; external credentials and GitHub Actions access are not available here.
+
+# Kindle Reader compact controls
+- [x] Collapse starter titles into an icon-labelled menu while keeping the rabbit story open by default.
+- [x] Align book style/translation and paper/reading controls at opposite edges; verify selection and small-screen fit.

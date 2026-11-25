@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BookOpen, Columns2, Languages, Loader2, Minus, Plus, Upload } from "lucide-react";
+import { BookOpen, ChevronDown, Columns2, Languages, Loader2, Minus, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import VoiceReader from "@/components/ui/VoiceReader";
 import BookFlipViewer, { type BookStyle } from "@/components/kindle/BookFlipViewer";
 import type { ThemeColors } from "@/components/kindle/BookPageContent";
@@ -64,7 +65,7 @@ const BOOK_STYLES: { id: BookStyle; label: string }[] = [
 ];
 
 const KindleReader = () => {
-  const [doc, setDoc] = useState<KindleDocument | null>(KINDLE_SAMPLE_BOOKS[0]!);
+  const [doc, setDoc] = useState<KindleDocument | null>(KINDLE_SAMPLE_BOOKS[0] ?? null);
   const [pageIdx, setPageIdx] = useState(0);
   const [bookStyle, setBookStyle] = useState<BookStyle>("hardcover");
   const [paperTheme, setPaperTheme] = useState<PaperTheme>("sepia");
@@ -342,182 +343,107 @@ const KindleReader = () => {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-muted-foreground inline-flex items-center gap-1.5 mr-1">
-              <BookOpen className="h-3.5 w-3.5" /> Starter Books:
-            </span>
-            {KINDLE_SAMPLE_BOOKS.map((sample) => (
-              <button
-                key={sample.id}
-                type="button"
-                onClick={() => openDocument(sample)}
-                className={`font-multilingual-sans px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                  doc?.id === sample.id
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background text-foreground border-border hover:border-primary/50"
-                }`}
-              >
-                {sample.title}
-              </button>
-            ))}
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2" aria-label="Starter Books">
+                <BookOpen className="h-4 w-4" /> Starter Books
+                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="max-w-[calc(100vw-2rem)]">
+              <DropdownMenuRadioGroup value={doc?.id ?? ""} onValueChange={(id) => {
+                const sample = KINDLE_SAMPLE_BOOKS.find((book) => book.id === id);
+                if (sample) openDocument(sample);
+              }}>
+                {KINDLE_SAMPLE_BOOKS.map((sample) => (
+                  <DropdownMenuRadioItem key={sample.id} value={sample.id} className="font-multilingual-sans whitespace-normal">
+                    {sample.title}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {doc ? (
           <>
-            {/* Hard-Copy Book Style & Reading Controls */}
-            <div className="bg-card border border-border rounded-2xl p-3 sm:p-4 space-y-3 shadow-sm">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-muted-foreground">Book Style:</span>
-                {BOOK_STYLES.map((style) => (
-                  <button
-                    key={style.id}
-                    type="button"
-                    onClick={() => setBookStyle(style.id)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ${
-                      bookStyle === style.id
-                        ? "bg-accent text-accent-foreground border-accent"
-                        : "bg-background text-foreground border-border hover:border-primary/40"
-                    }`}
-                  >
-                    {style.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Translation View Toggle (Option 2) + Side-by-Side Bilingual Toggle (Option 1) */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/60">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs font-semibold text-muted-foreground inline-flex items-center gap-1 mr-1">
-                    <Languages className="h-3.5 w-3.5 text-primary" /> Read &amp; Translate:
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleSelectViewLang("original")}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ${
-                      viewLang === "original"
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background text-foreground border-border hover:border-primary/40"
-                    }`}
-                  >
-                    Original
-                  </button>
-                  {QUICK_TRANSLATE_LANGS.map((code) => (
-                    <button
-                      key={code}
-                      type="button"
-                      onClick={() => handleSelectViewLang(code)}
-                      className={`font-multilingual-sans px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ${
-                        viewLang === code
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background text-foreground border-border hover:border-primary/40"
-                      }`}
-                    >
-                      {SPEECH_LANGUAGE_META[code].nativeLabel} ({SPEECH_LANGUAGE_META[code].label})
-                    </button>
-                  ))}
-                  {viewLang !== "original" && !QUICK_TRANSLATE_LANGS.includes(viewLang) && (
-                    <span className="font-multilingual-sans px-2.5 py-1 rounded-lg text-xs font-semibold bg-primary text-primary-foreground border border-primary">
-                      {SPEECH_LANGUAGE_META[viewLang].nativeLabel} ({SPEECH_LANGUAGE_META[viewLang].label})
-                    </span>
-                  )}
+            {/* Compact, edge-aligned reading toolbar */}
+            <div role="toolbar" aria-label="Book reading controls" className="space-y-3 border-y border-border py-3">
+              <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="text-xs font-semibold text-muted-foreground">Book Style:</span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 gap-2 text-xs">
+                        <BookOpen className="h-3.5 w-3.5" />
+                        {BOOK_STYLES.find((style) => style.id === bookStyle)?.label}
+                        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      <DropdownMenuRadioGroup value={bookStyle} onValueChange={(value) => {
+                        const style = BOOK_STYLES.find((item) => item.id === value);
+                        if (style) setBookStyle(style.id);
+                      }}>
+                        {BOOK_STYLES.map((style) => (
+                          <DropdownMenuRadioItem key={style.id} value={style.id}>{style.label}</DropdownMenuRadioItem>
+                        ))}
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
 
-                {bookStyle === "hardcover" && viewLang !== "original" && (
-                  <div className="inline-flex rounded-lg border border-border overflow-hidden text-xs font-semibold">
-                    <button
-                      type="button"
-                      onClick={() => setBilingualSplit(true)}
-                      className={`px-2.5 py-1 inline-flex items-center gap-1 ${
-                        bilingualSplit ? "bg-accent text-accent-foreground" : "bg-background text-foreground"
-                      }`}
-                    >
-                      <Columns2 className="h-3.5 w-3.5" /> Side-by-Side
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setBilingualSplit(false)}
-                      className={`px-2.5 py-1 ${
-                        !bilingualSplit ? "bg-accent text-accent-foreground" : "bg-background text-foreground"
-                      }`}
-                    >
-                      Full Page
-                    </button>
+                <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:ml-auto">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                    <Languages className="h-3.5 w-3.5" /> Read &amp; Translate:
+                  </span>
+                  <div className="flex flex-wrap items-center gap-1">
+                    <Button variant={viewLang === "original" ? "default" : "ghost"} size="sm" className="h-8 px-2 text-xs" aria-pressed={viewLang === "original"} onClick={() => handleSelectViewLang("original")}>Original</Button>
+                    {QUICK_TRANSLATE_LANGS.map((code) => (
+                      <Button key={code} variant={viewLang === code ? "default" : "ghost"} size="sm" className="font-multilingual-sans h-8 px-2 text-xs" aria-pressed={viewLang === code} onClick={() => handleSelectViewLang(code)}>
+                        {code === "en" ? "English" : SPEECH_LANGUAGE_META[code].nativeLabel}
+                      </Button>
+                    ))}
+                    {viewLang !== "original" && !QUICK_TRANSLATE_LANGS.includes(viewLang) && (
+                      <span className="font-multilingual-sans text-xs font-semibold text-primary">{SPEECH_LANGUAGE_META[viewLang].nativeLabel}</span>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
-              {translationError && (
-                <p role="alert" className="text-xs font-semibold text-destructive">
-                  {translationError}
-                </p>
-              )}
 
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/60">
+              <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-border/60 pt-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs font-semibold text-muted-foreground">Paper:</span>
                   {(["light", "sepia", "dark"] as PaperTheme[]).map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setPaperTheme(t)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold capitalize border transition-colors ${
-                        paperTheme === t
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background text-foreground border-border hover:border-primary/40"
-                      }`}
-                    >
+                    <Button key={t} variant={paperTheme === t ? "secondary" : "ghost"} size="sm" className="h-8 px-2 text-xs" aria-pressed={paperTheme === t} onClick={() => setPaperTheme(t)}>
                       {t === "light" ? "Paper" : t === "sepia" ? "Kindle Sepia" : "Night"}
-                    </button>
+                    </Button>
                   ))}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center border border-border rounded-lg overflow-hidden">
-                    <button
-                      type="button"
-                      aria-label="Decrease font size"
-                      onClick={() => setFontSize((s) => Math.max(14, s - 2))}
-                      className="px-2 py-1 hover:bg-muted"
-                    >
-                      <Minus className="h-3.5 w-3.5" />
-                    </button>
-                    <span className="px-2 text-xs font-semibold">{fontSize}px</span>
-                    <button
-                      type="button"
-                      aria-label="Increase font size"
-                      onClick={() => setFontSize((s) => Math.min(28, s + 2))}
-                      className="px-2 py-1 hover:bg-muted"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                    </button>
+                <div className="flex flex-wrap items-center justify-end gap-2 sm:ml-auto">
+                  <div className="inline-flex h-8 items-center overflow-hidden rounded-md border border-border">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none" aria-label="Decrease font size" title="Decrease font size" onClick={() => setFontSize((s) => Math.max(14, s - 2))}><Minus className="h-3.5 w-3.5" /></Button>
+                    <span className="w-10 text-center text-xs font-semibold tabular-nums">{fontSize}px</span>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none" aria-label="Increase font size" title="Increase font size" onClick={() => setFontSize((s) => Math.min(28, s + 2))}><Plus className="h-3.5 w-3.5" /></Button>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setFontSerif((v) => !v)}
-                    className="px-2.5 py-1 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted"
-                  >
-                    {fontSerif ? "Serif" : "Sans"}
-                  </button>
-
-                  <div className="inline-flex rounded-lg border border-border overflow-hidden text-xs font-semibold">
-                    <button
-                      type="button"
-                      onClick={() => setReadScope("page")}
-                      className={`px-2.5 py-1 ${readScope === "page" ? "bg-primary text-primary-foreground" : "bg-background"}`}
-                    >
-                      Read Page
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setReadScope("book")}
-                      className={`px-2.5 py-1 ${readScope === "book" ? "bg-primary text-primary-foreground" : "bg-background"}`}
-                    >
-                      Full Book
-                    </button>
+                  <Button variant="outline" size="sm" className="h-8 w-14 px-2 text-xs" onClick={() => setFontSerif((v) => !v)}>{fontSerif ? "Serif" : "Sans"}</Button>
+                  <div className="inline-flex overflow-hidden rounded-md border border-border">
+                    <Button variant={readScope === "page" ? "default" : "ghost"} size="sm" className="h-8 rounded-none px-2 text-xs" aria-pressed={readScope === "page"} onClick={() => setReadScope("page")}>Read Page</Button>
+                    <Button variant={readScope === "book" ? "default" : "ghost"} size="sm" className="h-8 rounded-none px-2 text-xs" aria-pressed={readScope === "book"} onClick={() => setReadScope("book")}>Full Book</Button>
                   </div>
                 </div>
               </div>
+
+              {bookStyle === "hardcover" && viewLang !== "original" && (
+                <div className="flex justify-end">
+                  <div className="inline-flex overflow-hidden rounded-md border border-border">
+                    <Button variant={bilingualSplit ? "secondary" : "ghost"} size="sm" className="h-8 gap-1 rounded-none px-2 text-xs" aria-pressed={bilingualSplit} onClick={() => setBilingualSplit(true)}><Columns2 className="h-3.5 w-3.5" /> Side-by-Side</Button>
+                    <Button variant={!bilingualSplit ? "secondary" : "ghost"} size="sm" className="h-8 rounded-none px-2 text-xs" aria-pressed={!bilingualSplit} onClick={() => setBilingualSplit(false)}>Full Page</Button>
+                  </div>
+                </div>
+              )}
+              {translationError && <p role="alert" className="text-xs font-semibold text-destructive">{translationError}</p>}
             </div>
 
             <BookFlipViewer
