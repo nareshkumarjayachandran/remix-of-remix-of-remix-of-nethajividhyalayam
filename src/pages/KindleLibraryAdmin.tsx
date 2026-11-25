@@ -75,7 +75,7 @@ const KindleLibraryAdmin = () => {
   const loadItems = useCallback(async () => {
     setItemsLoading(true);
     try {
-      setItems(await fetchKindleLibraryItems());
+      setItems(await fetchKindleLibraryItems(true));
     } catch (err) {
       toast({
         title: "Could not load library",
@@ -155,7 +155,7 @@ const KindleLibraryAdmin = () => {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !isStaff || !selectedFile) return;
     const validationError = validateKindleUploadInput(title, selectedFile);
     if (validationError) {
       setFormError(validationError);
@@ -166,7 +166,7 @@ const KindleLibraryAdmin = () => {
     setUploadStatus("Preparing upload…");
     try {
       const created = await uploadKindleLibraryItem({
-        file: selectedFile!,
+        file: selectedFile,
         title,
         category,
         standard,

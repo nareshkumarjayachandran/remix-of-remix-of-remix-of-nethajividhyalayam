@@ -26,13 +26,13 @@ export interface KindleLibraryItem {
   category: KindleLibraryCategory;
   standard: string;
   file_name: string;
-  file_path: string;
+  file_path?: string;
   file_format: KindleFormat;
   file_size: number;
   page_count: number;
   word_count: number;
-  uploaded_by: string | null;
-  uploaded_by_email: string | null;
+  uploaded_by?: string | null;
+  uploaded_by_email?: string | null;
   created_at: string;
 }
 
@@ -70,11 +70,10 @@ export function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export async function fetchKindleLibraryItems(): Promise<KindleLibraryItem[]> {
-  const { data, error } = await supabase
-    .from("kindle_library_items")
-    .select("*")
-    .order("created_at", { ascending: false });
+export async function fetchKindleLibraryItems(staffOnly = false): Promise<KindleLibraryItem[]> {
+  const { data, error } = staffOnly
+    ? await supabase.from("kindle_library_items").select("*").order("created_at", { ascending: false })
+    : await supabase.rpc("get_public_kindle_catalog");
   if (error) throw new Error(error.message);
   return (data ?? []) as KindleLibraryItem[];
 }
@@ -146,6 +145,7 @@ export async function uploadKindleLibraryItem({
 export async function deleteKindleLibraryItem(
   item: Pick<KindleLibraryItem, "id" | "file_path">,
 ): Promise<void> {
+  if (!item.file_path) throw new Error("Staff access is required to remove a library file.");
   const { error: deleteError } = await supabase
     .from("kindle_library_items")
     .delete()
@@ -165,12 +165,15 @@ export async function openKindleLibraryItem(
   onStatus?: (msg: string) => void,
 ): Promise<KindleDocument> {
   onStatus?.(`Downloading ${item.title}…`);
-  const { data, error } = await supabase.storage
-    .from(KINDLE_LIBRARY_BUCKET)
-    .download(item.file_path);
-  if (error || !data) {
-    throw new Error(error?.message || "Could not download this library item.");
+  const { data: access, error } = await supabase.functions.invoke("kindle-library-download", {
+    body: { itemId: item.id },
+  });
+  if (error || !access?.signedUrl) {
+    throw new Error("This library item is unavailable or no longer published.");
   }
+  const response = await fetch(access.signedUrl);
+  if (!response.ok) throw new Error("Could not download this library item.");
+  const data = await response.blob();
   const file = new File([data], item.file_name, { type: data.type });
   const parsed = await parseKindleFile(file, onStatus);
   return {

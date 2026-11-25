@@ -32,3 +32,8 @@
 # Kindle Reader compact controls
 - [x] Collapse starter titles into an icon-labelled menu while keeping the rabbit story open by default.
 - [x] Align book style/translation and paper/reading controls at opposite edges; verify selection and small-screen fit.
+
+# Library security blockers
+- [x] Keep uploader identities private while preserving the public library catalog.
+- [x] Restrict direct file access and allow visitor downloads only for published library items.
+- [x] Verify staff uploads, visitor reading, and rejected unauthorized access; recheck both findings.

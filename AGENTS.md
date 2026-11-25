@@ -6,3 +6,4 @@
 - Keep Chennai panchangam calculations in `src/lib/panchangam.ts`, using Astronomy Engine and Lahiri sidereal longitudes; derive civil dates in Asia/Kolkata so visitors' timezones never change the school date.
 - Format outgoing form-email timestamps through `supabase/functions/_shared/emailDates.ts` so server timezone cannot alter the school submission time.
 - Keep Hostinger deployment in a single GitHub Actions workflow that builds locked dependencies and uploads only `dist/` over FTPS using repository secrets; serialize uploads to avoid overlapping production releases.
+- Keep Kindle uploader identities and storage private; expose only safe catalog fields through the catalog function and issue short-lived downloads by published item ID so visitors cannot read unfinished uploads or staff details.

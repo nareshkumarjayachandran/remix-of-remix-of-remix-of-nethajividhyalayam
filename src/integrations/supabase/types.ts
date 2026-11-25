@@ -445,6 +445,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_public_kindle_catalog: {
+        Args: never
+        Returns: {
+          category: string
+          created_at: string
+          file_format: string
+          file_name: string
+          file_size: number
+          id: string
+          page_count: number
+          standard: string
+          title: string
+          word_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
