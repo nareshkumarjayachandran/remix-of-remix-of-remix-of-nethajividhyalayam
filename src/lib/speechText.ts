@@ -153,6 +153,16 @@ export const FOREIGN_SPEECH_LANGUAGES: SpeechLanguage[] = [
   "fr", "es", "de", "it", "pt", "ru", "ja", "zh", "ko", "ar", "nl", "tr", "sv", "th",
 ];
 
+/** Formats a language display name without duplicating identical English/native labels (e.g. "English" instead of "English (English)"). */
+export function formatSpeechLanguageDisplay(
+  code: SpeechLanguage,
+  style: "option" | "badge" = "option",
+): string {
+  const { label, nativeLabel } = SPEECH_LANGUAGE_META[code];
+  if (label.toLowerCase() === nativeLabel.toLowerCase()) return label;
+  return style === "badge" ? `${nativeLabel} (${label})` : `${label} — ${nativeLabel}`;
+}
+
 export const ALL_SPEECH_LANGUAGES: SpeechLanguage[] = [
   ...INDIAN_SPEECH_LANGUAGES,
   ...FOREIGN_SPEECH_LANGUAGES,

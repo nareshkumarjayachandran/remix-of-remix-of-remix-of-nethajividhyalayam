@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import {
+  Bookmark,
   ChevronLeft,
   ChevronRight,
   FileText,
@@ -28,6 +29,8 @@ interface BookFlipViewerProps {
   translatedPages?: Record<number, KindlePage>;
   translationBadge?: string;
   isTranslating?: boolean;
+  isBookmarked?: boolean;
+  onToggleBookmark?: () => void;
   onPageChange: (nextIdx: number) => void;
   onClose: () => void;
 }
@@ -46,6 +49,8 @@ const BookFlipViewer = ({
   translatedPages,
   translationBadge,
   isTranslating = false,
+  isBookmarked = false,
+  onToggleBookmark,
   onPageChange,
   onClose,
 }: BookFlipViewerProps) => {
@@ -123,6 +128,9 @@ const BookFlipViewer = ({
     : (rightIdx !== null ? (translatedPages?.[rightIdx] ?? rawRightPage) : null);
   const leftBadge = isSideBySideBilingual ? "Original" : translationBadge;
   const rightBadge = isSideBySideBilingual ? translationBadge : translationBadge;
+  const visibleEndPage = !isSideBySideBilingual && rightIdx !== null ? rightIdx + 1 : leftIdx + 1;
+  const readingProgressPct = Math.min(100, Math.round((visibleEndPage / Math.max(1, doc.pages.length)) * 100));
+  const estimatedMinutes = Math.max(1, Math.round(doc.wordCount / 180));
 
   const widthClass =
     bookStyle === "fullpage" || isFullscreen
@@ -142,6 +150,8 @@ const BookFlipViewer = ({
             <span>·</span>
             <span>{doc.wordCount} words</span>
             <span>·</span>
+            <span>~{estimatedMinutes} min read</span>
+            <span>·</span>
             <span>
               {isSideBySideBilingual
                 ? `Page ${leftIdx + 1} of ${doc.pages.length} · Side-by-Side`
@@ -156,6 +166,20 @@ const BookFlipViewer = ({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          {onToggleBookmark && (
+            <Button
+              type="button"
+              variant={isBookmarked ? "secondary" : "outline"}
+              size="sm"
+              onClick={onToggleBookmark}
+              aria-pressed={isBookmarked}
+              aria-label={isBookmarked ? "Remove page bookmark" : "Bookmark this page"}
+              className="gap-1.5"
+            >
+              <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} />
+              <span className="hidden sm:inline">{isBookmarked ? "Bookmarked" : "Bookmark"}</span>
+            </Button>
+          )}
           <Button
             type="button"
             variant="outline"
@@ -183,6 +207,24 @@ const BookFlipViewer = ({
             <span>Close</span>
           </Button>
         </div>
+      </div>
+
+      {/* Subtle Reading Progress Bar */}
+      <div className="flex items-center gap-3 px-1">
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border/80">
+          <div
+            className="h-full rounded-full bg-primary transition-all duration-300"
+            style={{ width: `${readingProgressPct}%` }}
+            role="progressbar"
+            aria-label="Reading progress"
+            aria-valuenow={readingProgressPct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          />
+        </div>
+        <span className="text-[11px] font-semibold tabular-nums text-muted-foreground shrink-0">
+          {readingProgressPct}% read
+        </span>
       </div>
 
       {/* Hard-copy Book Surface */}

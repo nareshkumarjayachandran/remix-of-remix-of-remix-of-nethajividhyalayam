@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { SPEECH_LANGUAGE_META, type SpeechLanguage } from "@/lib/speechText";
+import { formatSpeechLanguageDisplay, SPEECH_LANGUAGE_META, type SpeechLanguage } from "@/lib/speechText";
 import type { KindleDocument, KindlePage } from "@/lib/kindleFileParser";
 
 export interface TranslatedPageContent {
@@ -362,7 +362,7 @@ export async function translateKindlePage(
       action: "translate_segments",
       segments: texts,
       targetLanguage: targetLang,
-      targetLanguageName: `${meta.label} (${meta.nativeLabel})`,
+      targetLanguageName: formatSpeechLanguageDisplay(targetLang, "badge"),
     },
   });
 

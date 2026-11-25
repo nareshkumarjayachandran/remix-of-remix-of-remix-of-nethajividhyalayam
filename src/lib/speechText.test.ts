@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   extractHtmlSpeechSegments,
+  formatSpeechLanguageDisplay,
   isSpeechSilent,
   rankVoicesForReader,
   sanitizeForSpeech,
@@ -157,5 +158,18 @@ describe("pre-saved offline blog translations", () => {
       expect(ta!.length).toBeGreaterThan(20);
       expect(hi!.length).toBeGreaterThan(20);
     }
+  });
+});
+
+describe("formatSpeechLanguageDisplay", () => {
+  it("does not duplicate English as English (English) or English — English", () => {
+    expect(formatSpeechLanguageDisplay("en", "option")).toBe("English");
+    expect(formatSpeechLanguageDisplay("en", "badge")).toBe("English");
+  });
+
+  it("formats non-English languages with both English and native names", () => {
+    expect(formatSpeechLanguageDisplay("ta", "option")).toBe("Tamil — தமிழ்");
+    expect(formatSpeechLanguageDisplay("ta", "badge")).toBe("தமிழ் (Tamil)");
+    expect(formatSpeechLanguageDisplay("hi", "badge")).toBe("हिन्दी (Hindi)");
   });
 });

@@ -1,11 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { BookOpen, ChevronDown, Columns2, Languages, Loader2, Minus, Plus, Upload } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Bookmark, BookOpen, ChevronDown, Columns2, Languages, Loader2, Minus, Plus, Search, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import VoiceReader from "@/components/ui/VoiceReader";
 import BookFlipViewer, { type BookStyle } from "@/components/kindle/BookFlipViewer";
 import type { ThemeColors } from "@/components/kindle/BookPageContent";
-import { ALL_SPEECH_LANGUAGES, SPEECH_LANGUAGE_META, type SpeechLanguage } from "@/lib/speechText";
+import {
+  ALL_SPEECH_LANGUAGES,
+  FOREIGN_SPEECH_LANGUAGES,
+  formatSpeechLanguageDisplay,
+  INDIAN_SPEECH_LANGUAGES,
+  SPEECH_LANGUAGE_META,
+  type SpeechLanguage,
+} from "@/lib/speechText";
 import {
   extractKindleSpeechSegments,
   parseKindleFile,
@@ -24,6 +31,22 @@ type ReadScope = "page" | "book";
 type ViewLanguage = "original" | SpeechLanguage;
 
 const QUICK_TRANSLATE_LANGS: SpeechLanguage[] = ["en", "ta", "hi"];
+const BOOKMARKS_STORAGE_KEY = "nv-kindle-bookmarks-v1";
+
+function loadBookmarks(): Record<string, number[]> {
+  try {
+    const raw = localStorage.getItem(BOOKMARKS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const clean: Record<string, number[]> = {};
+    for (const [k, v] of Object.entries(parsed)) {
+      if (Array.isArray(v)) clean[k] = v.filter((n): n is number => typeof n === "number" && Number.isInteger(n) && n >= 0);
+    }
+    return clean;
+  } catch {
+    return {};
+  }
+}
 
 const THEME_STYLES: Record<PaperTheme, ThemeColors> = {
   light: {
@@ -82,6 +105,9 @@ const KindleReader = () => {
   const [loadingMsg, setLoadingMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [bookmarks, setBookmarks] = useState<Record<string, number[]>>(loadBookmarks);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const objectUrlsRef = useRef<string[]>([]);
   const activeCleanupRef = useRef<(() => void) | undefined>(undefined);
@@ -104,7 +130,8 @@ const KindleReader = () => {
     setTranslatedPages({});
     setTranslationError("");
     setErrorMsg("");
-    if (defaultStyle) setBookStyle(defaultStyle);
+    setSearchQuery("");
+    setBookStyle(defaultStyle ?? "hardcover");
   };
 
   const closeDocument = () => {
@@ -130,11 +157,7 @@ const KindleReader = () => {
       parsed.pages.forEach((p) => {
         if (p.imageUrl) objectUrlsRef.current.push(p.imageUrl);
       });
-      const preferredStyle: BookStyle =
-        parsed.format === "pdf" || parsed.format === "excel" || parsed.format === "image"
-          ? "fullpage"
-          : "hardcover";
-      openDocument(parsed, preferredStyle);
+      openDocument(parsed, "hardcover");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Could not open this file.");
     } finally {
@@ -145,10 +168,48 @@ const KindleReader = () => {
 
   const theme = THEME_STYLES[paperTheme];
   const docNativeLang = doc ? detectDocumentLanguage(doc) : "en";
+  const docBookmarks = useMemo(() => (doc ? bookmarks[doc.id] ?? [] : []), [bookmarks, doc]);
+  const isCurrentPageBookmarked = docBookmarks.includes(pageIdx);
+
+  const toggleBookmark = () => {
+    if (!doc) return;
+    setBookmarks((prev) => {
+      const existing = prev[doc.id] ?? [];
+      const nextList = existing.includes(pageIdx)
+        ? existing.filter((p) => p !== pageIdx)
+        : [...existing, pageIdx].sort((a, b) => a - b);
+      const next = { ...prev, [doc.id]: nextList };
+      try {
+        localStorage.setItem(BOOKMARKS_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // Ignore storage quota errors
+      }
+      return next;
+    });
+  };
+
+  const searchMatches = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!doc || !q) return [];
+    const results: { pageIndex: number; snippet: string }[] = [];
+    doc.pages.forEach((page, idx) => {
+      const activePage = viewLang !== "original" ? translatedPages[idx] ?? page : page;
+      const text = [activePage.title ?? "", ...activePage.paragraphs].join(" ");
+      const pos = text.toLowerCase().indexOf(q);
+      if (pos !== -1) {
+        const start = Math.max(0, pos - 30);
+        const end = Math.min(text.length, pos + q.length + 50);
+        const prefix = start > 0 ? "…" : "";
+        const suffix = end < text.length ? "…" : "";
+        results.push({ pageIndex: idx, snippet: `${prefix}${text.slice(start, end).trim()}${suffix}` });
+      }
+    });
+    return results;
+  }, [doc, searchQuery, viewLang, translatedPages]);
 
   // Translate visible page(s) whenever viewLang or current page changes
   useEffect(() => {
-    if (!doc || viewLang === "original") {
+    if (!doc || viewLang === "original" || viewLang === docNativeLang) {
       setTranslatedPages({});
       setIsTranslating(false);
       setTranslationError("");
@@ -194,21 +255,23 @@ const KindleReader = () => {
     return () => {
       cancelled = true;
     };
-  }, [doc, viewLang, pageIdx, bookStyle, bilingualSplit]);
+  }, [doc, viewLang, docNativeLang, pageIdx, bookStyle, bilingualSplit]);
 
   const handleSelectViewLang = (next: ViewLanguage) => {
+    const resolved: ViewLanguage = next === docNativeLang ? "original" : next;
     setTranslatedPages({});
     setTranslationError("");
-    setViewLang(next);
-    setVoiceLang(next === "original" ? docNativeLang : next);
+    setViewLang(resolved);
+    setVoiceLang(resolved === "original" ? docNativeLang : resolved);
   };
 
   const handleVoiceLangChange = (nextLang: SpeechLanguage) => {
+    const resolvedView: ViewLanguage = nextLang === docNativeLang ? "original" : nextLang;
     setVoiceLang(nextLang);
-    if (nextLang !== viewLang) {
+    if (resolvedView !== viewLang) {
       setTranslatedPages({});
       setTranslationError("");
-      setViewLang(nextLang);
+      setViewLang(resolvedView);
     }
   };
 
@@ -400,13 +463,51 @@ const KindleReader = () => {
                   <div className="flex flex-wrap items-center gap-1">
                     <Button variant={viewLang === "original" ? "default" : "ghost"} size="sm" className="h-8 px-2 text-xs" aria-pressed={viewLang === "original"} onClick={() => handleSelectViewLang("original")}>Original</Button>
                     {QUICK_TRANSLATE_LANGS.map((code) => (
-                      <Button key={code} variant={viewLang === code ? "default" : "ghost"} size="sm" className="font-multilingual-sans h-8 px-2 text-xs" aria-pressed={viewLang === code} onClick={() => handleSelectViewLang(code)}>
+                      <Button
+                        key={code}
+                        variant={viewLang === code || (viewLang === "original" && code === docNativeLang) ? "default" : "ghost"}
+                        size="sm"
+                        className="font-multilingual-sans h-8 px-2 text-xs"
+                        aria-pressed={viewLang === code || (viewLang === "original" && code === docNativeLang)}
+                        onClick={() => handleSelectViewLang(code)}
+                      >
                         {code === "en" ? "English" : SPEECH_LANGUAGE_META[code].nativeLabel}
                       </Button>
                     ))}
-                    {viewLang !== "original" && !QUICK_TRANSLATE_LANGS.includes(viewLang) && (
-                      <span className="font-multilingual-sans text-xs font-semibold text-primary">{SPEECH_LANGUAGE_META[viewLang].nativeLabel}</span>
-                    )}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant={viewLang !== "original" && !QUICK_TRANSLATE_LANGS.includes(viewLang) ? "default" : "outline"}
+                          size="sm"
+                          className="font-multilingual-sans h-8 gap-1 px-2 text-xs"
+                          aria-label="More translation languages"
+                        >
+                          {viewLang !== "original" && !QUICK_TRANSLATE_LANGS.includes(viewLang)
+                            ? SPEECH_LANGUAGE_META[viewLang].nativeLabel
+                            : "25+ More"}
+                          <ChevronDown className="h-3 w-3 opacity-75" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
+                        <DropdownMenuLabel className="text-xs">Indian Languages</DropdownMenuLabel>
+                        <DropdownMenuRadioGroup value={viewLang === "original" ? docNativeLang : viewLang} onValueChange={(val) => handleSelectViewLang(val as SpeechLanguage)}>
+                          {INDIAN_SPEECH_LANGUAGES.map((code) => (
+                            <DropdownMenuRadioItem key={code} value={code} className="font-multilingual-sans text-xs">
+                              {formatSpeechLanguageDisplay(code, "option")}
+                            </DropdownMenuRadioItem>
+                          ))}
+                        </DropdownMenuRadioGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel className="text-xs">World Foreign Languages</DropdownMenuLabel>
+                        <DropdownMenuRadioGroup value={viewLang === "original" ? docNativeLang : viewLang} onValueChange={(val) => handleSelectViewLang(val as SpeechLanguage)}>
+                          {FOREIGN_SPEECH_LANGUAGES.map((code) => (
+                            <DropdownMenuRadioItem key={code} value={code} className="font-multilingual-sans text-xs">
+                              {formatSpeechLanguageDisplay(code, "option")}
+                            </DropdownMenuRadioItem>
+                          ))}
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               </div>
@@ -422,6 +523,39 @@ const KindleReader = () => {
                 </div>
 
                 <div className="flex flex-wrap items-center justify-end gap-2 sm:ml-auto">
+                  <Button
+                    variant={searchOpen ? "secondary" : "outline"}
+                    size="sm"
+                    className="h-8 gap-1.5 px-2.5 text-xs"
+                    aria-expanded={searchOpen}
+                    onClick={() => setSearchOpen((o) => !o)}
+                  >
+                    <Search className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Find</span>
+                  </Button>
+                  {docBookmarks.length > 0 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 gap-1.5 px-2.5 text-xs" aria-label="Saved bookmarks">
+                          <Bookmark className="h-3.5 w-3.5 fill-current" />
+                          <span>{docBookmarks.length}</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel className="text-xs">Bookmarked Pages</DropdownMenuLabel>
+                        {docBookmarks.map((bIdx) => (
+                          <DropdownMenuRadioItem
+                            key={bIdx}
+                            value={String(bIdx)}
+                            onSelect={() => goToPage(bIdx)}
+                            className="text-xs"
+                          >
+                            Page {bIdx + 1}{doc.pages[bIdx]?.title ? ` · ${doc.pages[bIdx]?.title}` : ""}
+                          </DropdownMenuRadioItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                   <div className="inline-flex h-8 items-center overflow-hidden rounded-md border border-border">
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none" aria-label="Decrease font size" title="Decrease font size" onClick={() => setFontSize((s) => Math.max(14, s - 2))}><Minus className="h-3.5 w-3.5" /></Button>
                     <span className="w-10 text-center text-xs font-semibold tabular-nums">{fontSize}px</span>
@@ -434,6 +568,51 @@ const KindleReader = () => {
                   </div>
                 </div>
               </div>
+
+              {searchOpen && (
+                <div className="rounded-lg border border-border bg-card p-2.5 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search words or phrases in this book…"
+                      aria-label="Search in book"
+                      className="flex-1 bg-transparent text-xs sm:text-sm outline-none placeholder:text-muted-foreground"
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery("")}
+                        aria-label="Clear search"
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  {searchQuery.trim() && (
+                    <div className="max-h-40 overflow-y-auto space-y-1 border-t border-border/60 pt-2">
+                      {searchMatches.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">No matching passages found.</p>
+                      ) : (
+                        searchMatches.map((m) => (
+                          <button
+                            key={m.pageIndex}
+                            type="button"
+                            onClick={() => goToPage(m.pageIndex)}
+                            className="w-full text-left rounded-md px-2 py-1.5 text-xs hover:bg-muted transition-colors flex items-start gap-2"
+                          >
+                            <span className="font-semibold text-primary shrink-0">P.{m.pageIndex + 1}</span>
+                            <span className="text-muted-foreground line-clamp-1">{m.snippet}</span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {bookStyle === "hardcover" && viewLang !== "original" && (
                 <div className="flex justify-end">
@@ -460,10 +639,12 @@ const KindleReader = () => {
               translatedPages={viewLang !== "original" ? translatedPages : undefined}
               translationBadge={
                 viewLang !== "original"
-                  ? `${SPEECH_LANGUAGE_META[viewLang].nativeLabel} (${SPEECH_LANGUAGE_META[viewLang].label})`
+                  ? formatSpeechLanguageDisplay(viewLang, "badge")
                   : undefined
               }
               isTranslating={isTranslating}
+              isBookmarked={isCurrentPageBookmarked}
+              onToggleBookmark={toggleBookmark}
               onPageChange={goToPage}
               onClose={closeDocument}
             />

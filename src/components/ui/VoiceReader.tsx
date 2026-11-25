@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Volume2, Pause, Play, Square, ChevronDown, ChevronUp } from "lucide-react";
 import {
+  formatSpeechLanguageDisplay,
   isSpeechSilent,
   rankVoicesForReader,
   sanitizeForSpeech,
@@ -369,7 +370,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
                       .filter((code) => SPEECH_LANGUAGE_META[code].group === "indian")
                       .map((code) => (
                         <option key={code} value={code}>
-                          {SPEECH_LANGUAGE_META[code].label} — {SPEECH_LANGUAGE_META[code].nativeLabel}
+                          {formatSpeechLanguageDisplay(code, "option")}
                         </option>
                       ))}
                   </optgroup>
@@ -378,7 +379,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
                       .filter((code) => SPEECH_LANGUAGE_META[code].group === "foreign")
                       .map((code) => (
                         <option key={code} value={code}>
-                          {SPEECH_LANGUAGE_META[code].label} — {SPEECH_LANGUAGE_META[code].nativeLabel}
+                          {formatSpeechLanguageDisplay(code, "option")}
                         </option>
                       ))}
                   </optgroup>
