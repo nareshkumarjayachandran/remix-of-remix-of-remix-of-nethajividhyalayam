@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isSpeechSilent, sanitizeForSpeech } from "./speechText";
+import { extractHtmlSpeechSegments, isSpeechSilent, sanitizeForSpeech } from "./speechText";
 
 describe("sanitizeForSpeech", () => {
   it("reads a fill-in-the-blank line as one dash, not repeated underscores", () => {
@@ -61,5 +61,36 @@ describe("isSpeechSilent", () => {
   it("still reads real words", () => {
     expect(isSpeechSilent("Answer: Tiger")).toBe(false);
     expect(isSpeechSilent("The capital of India is dash.")).toBe(false);
+  });
+});
+
+describe("extractHtmlSpeechSegments", () => {
+  it("extracts headings, paragraphs, list items, and FAQ summaries while skipping CSS and SVG", () => {
+    const html = `
+      <style>.card { color: red; }</style>
+      <svg><path d="M0 0h10v10z" /></svg>
+      <article>
+        <h1>Sensory Play Ideas</h1>
+        <p>First paragraph for parents.</p>
+        <ul><li><p>Nested list item</p></li><li>Simple item</li></ul>
+        <details><summary>Is this safe?</summary><p>Yes, with supervision.</p></details>
+      </article>
+    `;
+    expect(extractHtmlSpeechSegments(html, "Sensory Play Ideas")).toEqual([
+      "Sensory Play Ideas",
+      "First paragraph for parents.",
+      "Nested list item",
+      "Simple item",
+      "Is this safe?",
+      "Yes, with supervision.",
+    ]);
+  });
+
+  it("prepends the fallback title when the HTML body does not start with it", () => {
+    const html = "<p>Welcome to our school blog.</p>";
+    expect(extractHtmlSpeechSegments(html, "School Annual Day")).toEqual([
+      "School Annual Day",
+      "Welcome to our school blog.",
+    ]);
   });
 });

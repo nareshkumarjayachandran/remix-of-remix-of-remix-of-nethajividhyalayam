@@ -36,3 +36,41 @@ export function isSpeechSilent(text: string | null | undefined): boolean {
   const clean = sanitizeForSpeech(text);
   return clean === "" || clean === "dash";
 }
+
+const READABLE_BLOCK_SELECTOR = "h1, h2, h3, h4, h5, h6, p, li, summary, blockquote";
+
+/**
+ * Extracts readable speech segments in document order from a blog post's HTML,
+ * skipping <style>, <script>, <svg>, and duplicate nested blocks.
+ */
+export function extractHtmlSpeechSegments(
+  html: string | null | undefined,
+  fallbackTitle?: string,
+): string[] {
+  if (!html) return fallbackTitle ? [sanitizeForSpeech(fallbackTitle)].filter(Boolean) : [];
+
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  doc.querySelectorAll("style, script, svg, noscript").forEach((el) => el.remove());
+
+  const segments: string[] = [];
+  const blocks = doc.body.querySelectorAll(READABLE_BLOCK_SELECTOR);
+
+  blocks.forEach((el) => {
+    if (el.querySelector(READABLE_BLOCK_SELECTOR)) return;
+    const clean = sanitizeForSpeech(el.textContent);
+    if (!isSpeechSilent(clean)) {
+      segments.push(clean);
+    }
+  });
+
+  const cleanTitle = sanitizeForSpeech(fallbackTitle);
+  if (cleanTitle) {
+    const normalize = (s: string) => s.toLowerCase().replace(/[’‘'"]/g, "'").trim();
+    const first = segments[0];
+    if (!first || normalize(first) !== normalize(cleanTitle)) {
+      segments.unshift(cleanTitle);
+    }
+  }
+
+  return segments;
+}

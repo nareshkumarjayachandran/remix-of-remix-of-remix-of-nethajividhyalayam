@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Calendar, User } from "lucide-react";
 import posts from "@/data/blogPosts.json";
 import { formatBlogDate } from "./Blog";
+import VoiceReader from "@/components/ui/VoiceReader";
+import { extractHtmlSpeechSegments } from "@/lib/speechText";
 
 const fonts = `<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Source+Serif+4:wght@400;600&family=IBM+Plex+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"><base target="_top">`;
 
@@ -22,6 +24,11 @@ const BlogDetail = () => {
     const t = setInterval(fit, 1000);
     return () => { el.removeEventListener("load", fit); clearInterval(t); };
   }, [slug]);
+
+  const getBlogSpeechSegments = useCallback(
+    () => (post ? extractHtmlSpeechSegments(post.content, post.title) : []),
+    [post],
+  );
 
   if (!post) return (
     <div className="container-custom py-24 text-center">
@@ -44,9 +51,18 @@ const BlogDetail = () => {
         </div>
       </section>
       <div className="container-custom py-8">
-        <Link to="/blog" className="inline-flex items-center gap-2 text-primary font-semibold hover:text-accent mb-6">
-          <ArrowLeft className="h-4 w-4" /> Back to Blog
-        </Link>
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+          <Link to="/blog" className="inline-flex items-center gap-2 text-primary font-semibold hover:text-accent py-2">
+            <ArrowLeft className="h-4 w-4" /> Back to Blog
+          </Link>
+          <VoiceReader
+            key={post.slug}
+            getTextSegments={getBlogSpeechSegments}
+            showAnswersToggle={false}
+            align="right"
+            className="max-w-full"
+          />
+        </div>
         <iframe ref={frame} title={post.title} srcDoc={fonts + post.content} style={{ height: h }}
           className="w-full border-0 rounded-2xl shadow-lg bg-card" />
         <div className="grid sm:grid-cols-2 gap-4 mt-10">

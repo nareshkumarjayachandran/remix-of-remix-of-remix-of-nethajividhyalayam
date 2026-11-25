@@ -9,10 +9,20 @@ interface VoiceReaderProps {
   getTextSegments: (includeAnswers: boolean) => string[];
   /** Label shown on the toggle */
   label?: string;
+  /** Whether to show the "Include Answers" switch (for worksheets/question papers) */
+  showAnswersToggle?: boolean;
+  /** Align toggle and panel to the left or right edge */
+  align?: "left" | "right";
   className?: string;
 }
 
-const VoiceReader: React.FC<VoiceReaderProps> = ({ getTextSegments, label = "🔊 Voice Reader", className = "" }) => {
+const VoiceReader: React.FC<VoiceReaderProps> = ({
+  getTextSegments,
+  label = "🔊 Voice Reader",
+  showAnswersToggle = true,
+  align = "left",
+  className = "",
+}) => {
   const [expanded, setExpanded] = useState(false);
   const [includeAnswers, setIncludeAnswers] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -111,7 +121,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({ getTextSegments, label = "�
   const progress = totalSegments > 0 ? Math.round((currentIdx / totalSegments) * 100) : 0;
 
   return (
-    <div className={`no-print ${className}`}>
+    <div className={`no-print ${align === "right" ? "flex flex-col items-end" : ""} ${className}`}>
       {/* Toggle button */}
       <Button
         variant="outline"
@@ -125,21 +135,23 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({ getTextSegments, label = "�
 
       {/* Expanded panel */}
       {expanded && (
-        <div className="mt-3 p-4 bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-xl shadow-sm space-y-3">
+        <div className={`mt-3 p-4 bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-xl shadow-sm space-y-3 ${align === "right" ? "w-full sm:w-80 text-left" : ""}`}>
           {/* With/Without Answers toggle */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-gray-700">📝 Include Answers</span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">{includeAnswers ? "With Answers" : "Questions Only"}</span>
-              <Switch
-                checked={includeAnswers}
-                onCheckedChange={(v) => {
-                  setIncludeAnswers(v);
-                  if (isPlaying || isPaused) handleStop();
-                }}
-              />
+          {showAnswersToggle && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-gray-700">📝 Include Answers</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">{includeAnswers ? "With Answers" : "Questions Only"}</span>
+                <Switch
+                  checked={includeAnswers}
+                  onCheckedChange={(v) => {
+                    setIncludeAnswers(v);
+                    if (isPlaying || isPaused) handleStop();
+                  }}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Speed */}
           <div className="flex items-center justify-between">
