@@ -5,6 +5,7 @@ import {
   paginateParagraphs,
   parseCsvRows,
   parseKindleFile,
+  sanitizeBookHtml,
   tableRowsToParagraphs,
 } from "./kindleFileParser";
 import { KINDLE_SAMPLE_BOOKS } from "./kindleSamples";
@@ -53,6 +54,18 @@ describe("Kindle Reader file parsing", () => {
   it("rejects empty files cleanly", async () => {
     const emptyFile = new File([], "empty.txt", { type: "text/plain" });
     await expect(parseKindleFile(emptyFile)).rejects.toThrow("empty");
+  });
+
+  it("sanitizes Word HTML by keeping tables/headings and stripping scripts and unsafe handlers", () => {
+    const dirty =
+      '<h2 onclick="alert(1)">Chapter 1</h2><script>evil()</script><p>Hello <strong>world</strong></p><img src="javascript:alert(1)" /><img src="data:image/png;base64,AAAA" alt="diagram" />';
+    const clean = sanitizeBookHtml(dirty);
+    expect(clean).toContain("<h2>Chapter 1</h2>");
+    expect(clean).toContain("<strong>world</strong>");
+    expect(clean).toContain('src="data:image/png;base64,AAAA"');
+    expect(clean).not.toContain("script");
+    expect(clean).not.toContain("onclick");
+    expect(clean).not.toContain("javascript:");
   });
 });
 

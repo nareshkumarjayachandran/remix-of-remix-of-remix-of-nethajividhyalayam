@@ -303,7 +303,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       {/* Expanded panel */}
       {expanded && (
         <div
-          className={`mt-3 p-4 bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-xl shadow-sm ${
+          className={`font-multilingual-sans mt-3 p-4 bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-xl shadow-sm ${
             align === "right"
               ? "w-full sm:w-80 text-left space-y-3"
               : full

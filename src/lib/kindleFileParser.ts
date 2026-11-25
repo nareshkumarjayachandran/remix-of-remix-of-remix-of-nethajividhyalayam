@@ -3,8 +3,10 @@ export type KindleFormat = "pdf" | "word" | "excel" | "epub" | "image" | "text" 
 export interface KindlePage {
   title: string;
   paragraphs: string[];
+  htmlContent?: string;
   tableRows?: string[][];
   imageUrl?: string;
+  renderVisualPage?: (scale?: number) => Promise<string>;
 }
 
 export interface KindleDocument {
@@ -14,6 +16,7 @@ export interface KindleDocument {
   format: KindleFormat;
   pages: KindlePage[];
   wordCount: number;
+  cleanup?: () => void;
 }
 
 export const MAX_KINDLE_FILE_BYTES = 50 * 1024 * 1024;
@@ -129,6 +132,40 @@ export function stripHtmlToParagraphs(html: string): string[] {
   return (doc.body.textContent ?? "").split(/\n+/).map((s) => s.trim()).filter(Boolean);
 }
 
+const ALLOWED_HTML_TAGS = new Set([
+  "P", "BR", "STRONG", "B", "EM", "I", "U", "S", "SUB", "SUP",
+  "H1", "H2", "H3", "H4", "H5", "H6",
+  "UL", "OL", "LI", "BLOCKQUOTE", "PRE", "CODE",
+  "TABLE", "THEAD", "TBODY", "TR", "TH", "TD", "IMG", "DIV", "SPAN",
+]);
+
+export function sanitizeBookHtml(html: string): string {
+  const parsed = new DOMParser().parseFromString(html, "text/html");
+  parsed.querySelectorAll("script, style, iframe, object, embed, form, svg, noscript").forEach((el) => el.remove());
+  const cleanNode = (node: Element) => {
+    Array.from(node.children).forEach((child) => {
+      if (!ALLOWED_HTML_TAGS.has(child.tagName)) {
+        const span = parsed.createElement("span");
+        span.textContent = child.textContent ?? "";
+        child.replaceWith(span);
+        return;
+      }
+      Array.from(child.attributes).forEach((attr) => {
+        const name = attr.name.toLowerCase();
+        if (child.tagName === "IMG" && name === "src" && /^data:image\/(png|jpe?g|webp|gif);base64,/i.test(attr.value)) {
+          return;
+        }
+        if (child.tagName === "IMG" && name === "alt") return;
+        if ((child.tagName === "TD" || child.tagName === "TH") && (name === "colspan" || name === "rowspan")) return;
+        child.removeAttribute(attr.name);
+      });
+      cleanNode(child);
+    });
+  };
+  cleanNode(parsed.body);
+  return parsed.body.innerHTML;
+}
+
 export function extractKindleSpeechSegments(doc: KindleDocument, pageIndex?: number): string[] {
   const targetPages =
     typeof pageIndex === "number" && doc.pages[pageIndex]
@@ -148,16 +185,23 @@ export function extractKindleSpeechSegments(doc: KindleDocument, pageIndex?: num
   return segments;
 }
 
-async function parsePdfFile(file: File, title: string, onProgress?: (s: string) => void): Promise<KindlePage[]> {
+async function parsePdfFile(
+  file: File,
+  title: string,
+  onProgress?: (s: string) => void,
+): Promise<{ pages: KindlePage[]; cleanup: () => void }> {
   onProgress?.("Loading PDF pages…");
-  const pdfjs = await import("pdfjs-dist");
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    "pdfjs-dist/build/pdf.worker.min.mjs",
-    import.meta.url,
-  ).toString();
+  const [pdfjs, workerModule] = await Promise.all([
+    import("pdfjs-dist"),
+    import("pdfjs-dist/build/pdf.worker.min.mjs?url"),
+  ]);
+  pdfjs.GlobalWorkerOptions.workerSrc = workerModule.default;
   const buffer = await file.arrayBuffer();
-  const pdf = await pdfjs.getDocument({ data: new Uint8Array(buffer) }).promise;
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });
+  const pdf = await loadingTask.promise;
   const pages: KindlePage[] = [];
+  const renderedCache = new Map<string, string>();
+
   for (let i = 1; i <= pdf.numPages; i++) {
     onProgress?.(`Reading PDF page ${i} of ${pdf.numPages}…`);
     const page = await pdf.getPage(i);
@@ -177,10 +221,29 @@ async function parsePdfFile(file: File, title: string, onProgress?: (s: string) 
     if (currentLine.trim()) lines.push(currentLine.trim());
     const paragraphs = lines.length > 0
       ? lines.join("\n").split(/\n{2,}/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean)
-      : ["(This PDF page appears to be a scanned image without selectable text.)"];
-    pages.push({ title: `${title} — Page ${i}`, paragraphs });
+      : ["(Scanned PDF page — full visual page is displayed above.)"];
+
+    const pageNum = i;
+    const renderVisualPage = async (scale = 1.6): Promise<string> => {
+      const cacheKey = `${pageNum}@${scale}`;
+      const cached = renderedCache.get(cacheKey);
+      if (cached) return cached;
+      const pdfPage = await pdf.getPage(pageNum);
+      const viewport = pdfPage.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Canvas context unavailable.");
+      await pdfPage.render({ canvasContext: ctx, viewport, canvas }).promise;
+      const dataUrl = canvas.toDataURL("image/png");
+      renderedCache.set(cacheKey, dataUrl);
+      return dataUrl;
+    };
+
+    pages.push({ title: `${title} — Page ${i}`, paragraphs, renderVisualPage });
   }
-  return pages;
+  return { pages, cleanup: () => void loadingTask.destroy() };
 }
 
 async function parseWordFile(file: File, title: string, onProgress?: (s: string) => void): Promise<KindlePage[]> {
@@ -196,8 +259,15 @@ async function parseWordFile(file: File, title: string, onProgress?: (s: string)
   }
   const mammoth = await import("mammoth");
   const buffer = await file.arrayBuffer();
-  const { value } = await mammoth.extractRawText({ arrayBuffer: buffer });
-  const paragraphs = value.split(/\n+/).map((p) => p.trim()).filter(Boolean);
+  const [{ value: htmlRaw }, { value: textRaw }] = await Promise.all([
+    mammoth.convertToHtml({ arrayBuffer: buffer }),
+    mammoth.extractRawText({ arrayBuffer: buffer }),
+  ]);
+  const paragraphs = textRaw.split(/\n+/).map((p) => p.trim()).filter(Boolean);
+  const safeHtml = sanitizeBookHtml(htmlRaw);
+  if (safeHtml.trim()) {
+    return [{ title, htmlContent: safeHtml, paragraphs: paragraphs.length > 0 ? paragraphs : ["Word document loaded."] }];
+  }
   return paginateParagraphs(paragraphs, title);
 }
 
@@ -306,9 +376,12 @@ export async function parseKindleFile(
   const title = file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim() || file.name;
   const format = detectFileFormat(file.name, file.type);
   let pages: KindlePage[];
+  let cleanup: (() => void) | undefined;
 
   if (format === "pdf") {
-    pages = await parsePdfFile(file, title, onProgress);
+    const pdfResult = await parsePdfFile(file, title, onProgress);
+    pages = pdfResult.pages;
+    cleanup = pdfResult.cleanup;
   } else if (format === "word") {
     pages = await parseWordFile(file, title, onProgress);
   } else if (format === "excel") {
@@ -337,5 +410,6 @@ export async function parseKindleFile(
     format,
     pages,
     wordCount: countWords(pages),
+    ...(cleanup ? { cleanup } : {}),
   };
 }
