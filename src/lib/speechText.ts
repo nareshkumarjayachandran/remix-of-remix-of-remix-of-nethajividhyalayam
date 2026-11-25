@@ -76,6 +76,16 @@ export function extractHtmlSpeechSegments(
 }
 
 export type VoicePresetMode = "standard" | "storyteller";
+export type SpeechLanguage = "en" | "ta" | "hi";
+
+export const SPEECH_LANGUAGE_META: Record<
+  SpeechLanguage,
+  { code: SpeechLanguage; label: string; nativeLabel: string; bcp47: string }
+> = {
+  en: { code: "en", label: "English", nativeLabel: "English", bcp47: "en-IN" },
+  ta: { code: "ta", label: "Tamil", nativeLabel: "தமிழ்", bcp47: "ta-IN" },
+  hi: { code: "hi", label: "Hindi", nativeLabel: "हिन्दी", bcp47: "hi-IN" },
+};
 
 export const STORYTELLER_CONFIG = {
   defaultSpeed: 0.85,
@@ -91,7 +101,7 @@ export interface VoiceOptionLike {
   default?: boolean;
 }
 
-function scoreVoice(v: VoiceOptionLike): number {
+function scoreVoice(v: VoiceOptionLike, targetLang?: SpeechLanguage): number {
   const name = v.name.toLowerCase();
   const lang = v.lang.toLowerCase();
   let score = 0;
@@ -104,20 +114,39 @@ function scoreVoice(v: VoiceOptionLike): number {
   if (name.includes("google") || name.includes("microsoft")) {
     score += 10;
   }
-  if (lang === "en-in") score += 25;
-  else if (lang.startsWith("en-gb") || lang.startsWith("en-us")) score += 20;
-  else if (lang.startsWith("en")) score += 15;
-  else if (lang.startsWith("ta") || lang.startsWith("hi")) score += 10;
+  if (targetLang === "ta") {
+    if (lang === "ta-in") score += 30;
+    else if (lang.startsWith("ta")) score += 20;
+  } else if (targetLang === "hi") {
+    if (lang === "hi-in") score += 30;
+    else if (lang.startsWith("hi")) score += 20;
+  } else {
+    if (lang === "en-in") score += 25;
+    else if (lang.startsWith("en-gb") || lang.startsWith("en-us")) score += 20;
+    else if (lang.startsWith("en")) score += 15;
+    else if (lang.startsWith("ta") || lang.startsWith("hi")) score += 10;
+  }
   if (v.default) score += 5;
   return score;
 }
 
 /**
  * Filters and ranks device voices so expressive Natural/Enhanced English and
- * local-language voices appear first in the Voice Selector.
+ * local-language voices appear first in the Voice Selector. When `language` is
+ * supplied, returns only voices matching that language (empty if none exist).
  */
-export function rankVoicesForReader<T extends VoiceOptionLike>(voices: T[]): T[] {
+export function rankVoicesForReader<T extends VoiceOptionLike>(
+  voices: T[],
+  language?: SpeechLanguage,
+): T[] {
   if (!voices.length) return [];
+  if (language) {
+    const pattern = new RegExp(`^${language}\\b`, "i");
+    const matched = voices.filter((v) => pattern.test(v.lang));
+    return [...matched].sort(
+      (a, b) => scoreVoice(b, language) - scoreVoice(a, language) || a.name.localeCompare(b.name),
+    );
+  }
   const preferred = voices.filter((v) => /^(en|ta|hi)\b/i.test(v.lang));
   const pool = preferred.length > 0 ? preferred : voices;
   return [...pool].sort((a, b) => scoreVoice(b) - scoreVoice(a) || a.name.localeCompare(b.name));
@@ -131,7 +160,7 @@ export function splitForStoryteller(text: string): string[] {
   const clean = sanitizeForSpeech(text);
   if (!clean) return [];
   const parts = clean
-    .split(/(?<=[.!?;—])\s+/)
+    .split(/(?<=[.!?;—।])\s+/)
     .map((p) => p.trim())
     .filter((p) => !isSpeechSilent(p));
   return parts.length > 0 ? parts : [clean];

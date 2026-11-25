@@ -6,8 +6,10 @@ import {
   isSpeechSilent,
   rankVoicesForReader,
   sanitizeForSpeech,
+  SPEECH_LANGUAGE_META,
   splitForStoryteller,
   STORYTELLER_CONFIG,
+  type SpeechLanguage,
   type VoicePresetMode,
 } from "@/lib/speechText";
 
@@ -29,11 +31,13 @@ function loadSavedPrefs(): { mode: VoicePresetMode; voiceURI: string } {
 
 interface VoiceReaderProps {
   /** Flat text segments to read — caller extracts from their data model */
-  getTextSegments: (includeAnswers: boolean) => string[];
+  getTextSegments: (includeAnswers: boolean, language?: SpeechLanguage) => string[];
   /** Label shown on the toggle */
   label?: string;
   /** Whether to show the "Include Answers" switch (for worksheets/question papers) */
   showAnswersToggle?: boolean;
+  /** Optional list of reading languages (e.g. English, Tamil, Hindi on blogs) */
+  availableLanguages?: SpeechLanguage[];
   /** Align toggle and panel to the left or right edge */
   align?: "left" | "right";
   className?: string;
@@ -43,26 +47,35 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   getTextSegments,
   label = "🔊 Voice Reader",
   showAnswersToggle = true,
+  availableLanguages,
   align = "left",
   className = "",
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [includeAnswers, setIncludeAnswers] = useState(false);
+  const [language, setLanguage] = useState<SpeechLanguage>("en");
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [totalSegments, setTotalSegments] = useState(0);
+  const [currentText, setCurrentText] = useState("");
   const [mode, setMode] = useState<VoicePresetMode>(() => loadSavedPrefs().mode);
   const [speed, setSpeed] = useState(() =>
     loadSavedPrefs().mode === "storyteller" ? STORYTELLER_CONFIG.defaultSpeed : 1,
   );
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [allVoices, setAllVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>(() => loadSavedPrefs().voiceURI);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const segmentsRef = useRef<string[]>([]);
   const idxRef = useRef(0);
   const stoppedRef = useRef(false);
   const pauseTimerRef = useRef<number | null>(null);
+
+  const hasLanguageSelector = Boolean(availableLanguages && availableLanguages.length > 1);
+  const voices = React.useMemo(
+    () => rankVoicesForReader(allVoices, hasLanguageSelector ? language : undefined),
+    [allVoices, hasLanguageSelector, language],
+  );
 
   const clearPauseTimer = useCallback(() => {
     if (pauseTimerRef.current !== null) {
@@ -75,8 +88,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     const updateVoices = () => {
-      const ranked = rankVoicesForReader(window.speechSynthesis.getVoices());
-      setVoices(ranked);
+      setAllVoices(window.speechSynthesis.getVoices());
     };
     updateVoices();
     window.speechSynthesis.addEventListener?.("voiceschanged", updateVoices);
@@ -119,6 +131,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       setIsPlaying(false);
       setIsPaused(false);
       setCurrentIdx(0);
+      setCurrentText("");
       return;
     }
 
@@ -132,6 +145,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       return;
     }
 
+    setCurrentText(text);
     const phrases = mode === "storyteller" ? splitForStoryteller(text) : [text];
     const chosenVoice = resolveSelectedVoice();
 
@@ -159,7 +173,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
         utt.voice = chosenVoice;
         utt.lang = chosenVoice.lang;
       } else {
-        utt.lang = "en-IN";
+        utt.lang = SPEECH_LANGUAGE_META[language].bcp47;
       }
 
       const handleNextPhrase = () => {
@@ -181,7 +195,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     };
 
     speakPhrase(0);
-  }, [speed, mode, resolveSelectedVoice]);
+  }, [speed, mode, language, resolveSelectedVoice]);
 
   const handlePlay = useCallback(() => {
     if (isPaused) {
@@ -195,7 +209,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     window.speechSynthesis.cancel();
     stoppedRef.current = false;
 
-    const segments = getTextSegments(includeAnswers);
+    const segments = getTextSegments(includeAnswers, language);
     segmentsRef.current = segments;
     setTotalSegments(segments.length);
     setCurrentIdx(0);
@@ -204,7 +218,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     setIsPaused(false);
 
     speakSegment(segments, 0);
-  }, [isPaused, clearPauseTimer, getTextSegments, includeAnswers, speakSegment]);
+  }, [isPaused, clearPauseTimer, getTextSegments, includeAnswers, language, speakSegment]);
 
   const handlePause = useCallback(() => {
     clearPauseTimer();
@@ -220,8 +234,15 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     setIsPlaying(false);
     setIsPaused(false);
     setCurrentIdx(0);
+    setCurrentText("");
     idxRef.current = 0;
   }, [clearPauseTimer]);
+
+  const handleLanguageChange = (nextLang: SpeechLanguage) => {
+    setLanguage(nextLang);
+    setSelectedVoiceURI("");
+    if (isPlaying || isPaused) handleStop();
+  };
 
   const handleModeChange = (nextMode: VoicePresetMode) => {
     setMode(nextMode);
@@ -247,6 +268,29 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       {/* Expanded panel */}
       {expanded && (
         <div className={`mt-3 p-4 bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-xl shadow-sm space-y-3 ${align === "right" ? "w-full sm:w-80 text-left" : ""}`}>
+          {/* Language Selector (blogs only) */}
+          {hasLanguageSelector && availableLanguages && (
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-semibold text-gray-700">🌐 Language</span>
+              <div className="flex gap-1" role="group" aria-label="Reading language">
+                {availableLanguages.map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => handleLanguageChange(code)}
+                    className={`px-2 py-1 rounded-lg text-xs font-bold border transition-all ${
+                      language === code
+                        ? "border-violet-500 bg-violet-500 text-white"
+                        : "border-gray-200 bg-white text-gray-600 hover:border-violet-300"
+                    }`}
+                  >
+                    {SPEECH_LANGUAGE_META[code].nativeLabel}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Reading Style: Standard vs Storyteller */}
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm font-semibold text-gray-700">🎭 Style</span>
@@ -283,7 +327,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
             </label>
             <select
               id="voice-reader-select"
-              value={selectedVoiceURI}
+              value={voices.some((v) => v.voiceURI === selectedVoiceURI) ? selectedVoiceURI : ""}
               onChange={(e) => {
                 setSelectedVoiceURI(e.target.value);
                 if (isPlaying || isPaused) handleStop();
@@ -291,7 +335,9 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
               className="w-full rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-700 focus:border-violet-400 focus:outline-none"
             >
               <option value="">
-                {voices.length > 0 ? `Auto — ${voices[0].name}` : "Default Browser Voice"}
+                {voices.length > 0
+                  ? `Auto — ${voices[0].name}`
+                  : `Default ${SPEECH_LANGUAGE_META[language].label} Voice`}
               </option>
               {voices.map((v) => (
                 <option key={v.voiceURI} value={v.voiceURI}>
@@ -299,6 +345,11 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
                 </option>
               ))}
             </select>
+            {hasLanguageSelector && language !== "en" && voices.length === 0 && (
+              <p className="text-[11px] text-amber-700">
+                No {SPEECH_LANGUAGE_META[language].label} voice detected on this device — using browser default ({SPEECH_LANGUAGE_META[language].bcp47}).
+              </p>
+            )}
           </div>
 
           {/* With/Without Answers toggle */}
@@ -378,7 +429,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
 
           {/* Progress */}
           {(isPlaying || isPaused) && totalSegments > 0 && (
-            <div>
+            <div className="space-y-2">
               <div className="flex justify-between text-xs text-gray-500 mb-1">
                 <span>Reading… {currentIdx}/{totalSegments}</span>
                 <span>{progress}%</span>
@@ -389,13 +440,20 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
                   style={{ width: `${progress}%` }}
                 />
               </div>
+              {hasLanguageSelector && language !== "en" && currentText && (
+                <p className="text-xs text-gray-700 bg-white/80 border border-violet-100 rounded-lg p-2 leading-relaxed">
+                  {currentText}
+                </p>
+              )}
             </div>
           )}
 
           <p className="text-xs text-gray-400 italic">
             {mode === "storyteller"
               ? "Storyteller mode · Gentler pace, warmer tone & rhythmic pauses"
-              : "Uses browser voice · Free & unlimited · Works offline too"}
+              : hasLanguageSelector && language !== "en"
+                ? `Pre-saved ${SPEECH_LANGUAGE_META[language].label} translation · Instant & offline`
+                : "Uses browser voice · Free & unlimited · Works offline too"}
           </p>
         </div>
       )}

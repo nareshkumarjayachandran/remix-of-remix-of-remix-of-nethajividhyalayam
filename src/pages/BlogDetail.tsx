@@ -4,7 +4,8 @@ import { ArrowLeft, Calendar, User } from "lucide-react";
 import posts from "@/data/blogPosts.json";
 import { formatBlogDate } from "./Blog";
 import VoiceReader from "@/components/ui/VoiceReader";
-import { extractHtmlSpeechSegments } from "@/lib/speechText";
+import { extractHtmlSpeechSegments, type SpeechLanguage } from "@/lib/speechText";
+import { getBlogTranslation } from "@/data/blogTranslations";
 
 const fonts = `<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Source+Serif+4:wght@400;600&family=IBM+Plex+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"><base target="_top">`;
 
@@ -26,7 +27,14 @@ const BlogDetail = () => {
   }, [slug]);
 
   const getBlogSpeechSegments = useCallback(
-    () => (post ? extractHtmlSpeechSegments(post.content, post.title) : []),
+    (_includeAnswers: boolean, language: SpeechLanguage = "en") => {
+      if (!post) return [];
+      if (language === "ta" || language === "hi") {
+        const translated = getBlogTranslation(post.slug, language);
+        if (translated && translated.length > 0) return translated;
+      }
+      return extractHtmlSpeechSegments(post.content, post.title);
+    },
     [post],
   );
 
@@ -59,6 +67,7 @@ const BlogDetail = () => {
             key={post.slug}
             getTextSegments={getBlogSpeechSegments}
             showAnswersToggle={false}
+            availableLanguages={["en", "ta", "hi"]}
             align="right"
             className="max-w-full"
           />

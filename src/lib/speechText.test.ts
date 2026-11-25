@@ -6,6 +6,8 @@ import {
   sanitizeForSpeech,
   splitForStoryteller,
 } from "./speechText";
+import posts from "@/data/blogPosts.json";
+import { getBlogTranslation } from "@/data/blogTranslations";
 
 describe("sanitizeForSpeech", () => {
   it("reads a fill-in-the-blank line as one dash, not repeated underscores", () => {
@@ -112,6 +114,20 @@ describe("rankVoicesForReader", () => {
     const ranked = rankVoicesForReader(voices);
     expect(ranked.map((v) => v.voiceURI)).toEqual(["aria", "google-in", "espeak"]);
   });
+
+  it("filters voices strictly to the requested Tamil or Hindi language when specified", () => {
+    const voices = [
+      { name: "Google Indian English", lang: "en-IN", voiceURI: "en-in" },
+      { name: "Google தமிழ்", lang: "ta-IN", voiceURI: "ta-in" },
+      { name: "Microsoft Valluvar Natural", lang: "ta-IN", voiceURI: "ta-natural" },
+      { name: "Google हिन्दी", lang: "hi-IN", voiceURI: "hi-in" },
+    ];
+    expect(rankVoicesForReader(voices, "ta").map((v) => v.voiceURI)).toEqual([
+      "ta-natural",
+      "ta-in",
+    ]);
+    expect(rankVoicesForReader(voices, "hi").map((v) => v.voiceURI)).toEqual(["hi-in"]);
+  });
 });
 
 describe("splitForStoryteller", () => {
@@ -122,5 +138,24 @@ describe("splitForStoryteller", () => {
       "The moon smiled —",
       "and the stars danced!",
     ]);
+  });
+
+  it("splits Hindi sentences on the Devanagari danda (।)", () => {
+    const text = "पहला वाक्य पूरा हुआ। दूसरा वाक्य शुरू हुआ।";
+    expect(splitForStoryteller(text)).toEqual(["पहला वाक्य पूरा हुआ।", "दूसरा वाक्य शुरू हुआ।"]);
+  });
+});
+
+describe("pre-saved offline blog translations", () => {
+  it("provides non-empty Tamil and Hindi translations for every blog post", () => {
+    expect(posts.length).toBeGreaterThan(0);
+    for (const post of posts) {
+      const ta = getBlogTranslation(post.slug, "ta");
+      const hi = getBlogTranslation(post.slug, "hi");
+      expect(ta, `Missing Tamil translation for ${post.slug}`).not.toBeNull();
+      expect(hi, `Missing Hindi translation for ${post.slug}`).not.toBeNull();
+      expect(ta!.length).toBeGreaterThan(20);
+      expect(hi!.length).toBeGreaterThan(20);
+    }
   });
 });
