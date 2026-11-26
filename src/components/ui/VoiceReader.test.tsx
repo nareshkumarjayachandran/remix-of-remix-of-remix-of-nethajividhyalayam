@@ -24,3 +24,31 @@ describe("Tamil speech fallback", () => {
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });
+
+describe("speech highlight synchronization", () => {
+  it("highlights at actual speech start, clears at end, and preserves indices past silent segments", () => {
+    const utterances: SpeechSynthesisUtterance[] = [];
+    vi.stubGlobal("SpeechSynthesisUtterance", class { constructor(public text: string) {} });
+    vi.stubGlobal("speechSynthesis", {
+      getVoices: () => [], cancel: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(),
+      speak: (utterance: SpeechSynthesisUtterance) => utterances.push(utterance),
+    });
+    const onSegmentChange = vi.fn();
+    render(<VoiceReader getTextSegments={() => ["First paragraph", "---", "Current paragraph"]} onSegmentChange={onSegmentChange} defaultExpanded />);
+    fireEvent.click(screen.getByRole("button", { name: "Play" }));
+    expect(onSegmentChange).not.toHaveBeenCalledWith(0, true);
+    const first = utterances[0];
+    if (!first) throw new Error("Speech did not start");
+    act(() => first.onstart?.({} as SpeechSynthesisEvent));
+    expect(onSegmentChange).toHaveBeenLastCalledWith(0, true);
+    act(() => first.onend?.({} as SpeechSynthesisEvent));
+    expect(onSegmentChange).toHaveBeenLastCalledWith(-1, false);
+    const next = utterances[1];
+    if (!next) throw new Error("Next paragraph not queued");
+    expect(next.text).toBe("Current paragraph");
+    act(() => next.onstart?.({} as SpeechSynthesisEvent));
+    expect(onSegmentChange).toHaveBeenLastCalledWith(2, true);
+    fireEvent.click(screen.getByRole("button", { name: "Stop" }));
+    expect(onSegmentChange).toHaveBeenLastCalledWith(-1, false);
+  });
+});

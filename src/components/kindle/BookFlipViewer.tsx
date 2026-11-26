@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { KindleDocument, KindlePage } from "@/lib/kindleFileParser";
+import type { KindleSpeechSegment } from "@/lib/kindleSpeech";
 import BookPageContent, { type ThemeColors } from "./BookPageContent";
 
 export type BookStyle = "hardcover" | "paperback" | "spiral" | "magazine" | "fullpage";
@@ -22,8 +23,7 @@ interface BookFlipViewerProps {
   theme: ThemeColors;
   fontSize: number;
   fontSerif: boolean;
-  readScope: "page" | "book";
-  activeSegmentIdx: number;
+  activeSpeechSegment: KindleSpeechSegment | null;
   formatLabel: string;
   bilingualMode?: boolean;
   translatedPages?: Record<number, KindlePage>;
@@ -44,8 +44,7 @@ const BookFlipViewer = ({
   theme,
   fontSize,
   fontSerif,
-  readScope,
-  activeSegmentIdx,
+  activeSpeechSegment,
   formatLabel,
   bilingualMode = false,
   translatedPages,
@@ -111,38 +110,10 @@ const BookFlipViewer = ({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isFullscreen, canNext, canPrev, leftIdx, step, onClose]);
 
-  const getActiveParaIdx = (idx: number) => {
-    if (readScope !== "page" || activeSegmentIdx < 0) return -1;
-    const p = doc.pages[idx];
-    if (!p) return -1;
-    const isOriginalSpread = showTwoPageSpread && !translationBadge;
-    if (!isOriginalSpread) {
-      if (idx !== pageIdx) return -1;
-      const offset = (idx === 0 ? 1 : 0) + (p.title && p.title !== doc.title ? 1 : 0);
-      const paraIdx = activeSegmentIdx - offset;
-      return paraIdx >= 0 && paraIdx < p.paragraphs.length ? paraIdx : -1;
-    }
-
-    if (idx === leftIdx) {
-      const offset = (leftIdx === 0 ? 1 : 0) + (p.title && p.title !== doc.title ? 1 : 0);
-      const paraIdx = activeSegmentIdx - offset;
-      return paraIdx >= 0 && paraIdx < p.paragraphs.length ? paraIdx : -1;
-    }
-
-    if (rightIdx !== null && idx === rightIdx) {
-      const leftDocPage = doc.pages[leftIdx];
-      if (!leftDocPage) return -1;
-      const leftNonEmptyParas = leftDocPage.paragraphs.filter((s) => s.trim().length > 0).length;
-      const leftTotal =
-        (leftIdx === 0 ? 1 : 0) +
-        (leftDocPage.title && leftDocPage.title !== doc.title ? 1 : 0) +
-        leftNonEmptyParas;
-      const rightOffset = leftTotal + (p.title && p.title !== doc.title ? 1 : 0);
-      const paraIdx = activeSegmentIdx - rightOffset;
-      return paraIdx >= 0 && paraIdx < p.paragraphs.length ? paraIdx : -1;
-    }
-
-    return -1;
+  const getActiveParaIdx = (idx: number, originalSide = false) => {
+    if (!activeSpeechSegment || activeSpeechSegment.pageIndex !== idx) return -1;
+    if (originalSide && activeSpeechSegment.translated) return -1;
+    return activeSpeechSegment.paragraphIndex ?? -1;
   };
 
   const flipClass =
@@ -273,7 +244,7 @@ const BookFlipViewer = ({
                 theme={theme}
                 fontSize={fontSize}
                 fontSerif={fontSerif}
-                activeParagraphIndex={getActiveParaIdx(leftIdx)}
+                activeParagraphIndex={getActiveParaIdx(leftIdx, isSideBySideBilingual)}
                 badgeLabel={leftBadge}
                 isTranslating={!isSideBySideBilingual && isTranslating && !translatedPages?.[leftIdx]}
                 translationError={!isSideBySideBilingual && !translatedPages?.[leftIdx] ? translationError : undefined}

@@ -15,12 +15,12 @@ import {
   type SpeechLanguage,
 } from "@/lib/speechText";
 import {
-  extractKindleSpeechSegments,
   parseKindleFile,
   type KindleDocument,
   type KindlePage,
 } from "@/lib/kindleFileParser";
 import { KINDLE_SAMPLE_BOOKS } from "@/lib/kindleSamples";
+import { buildKindleSpeechSegments, type KindleSpeechSegment } from "@/lib/kindleSpeech";
 import {
   fetchKindleLibraryItems,
   openKindleLibraryItem,
@@ -103,7 +103,9 @@ const KindleReader = () => {
   const [fontSize, setFontSize] = useState(18);
   const [fontSerif, setFontSerif] = useState(true);
   const [readScope, setReadScope] = useState<ReadScope>("page");
-  const [activeSegmentIdx, setActiveSegmentIdx] = useState(-1);
+  const [activeSpeechSegment, setActiveSpeechSegment] = useState<KindleSpeechSegment | null>(null);
+  const [spokenPageIdx, setSpokenPageIdx] = useState<number | null>(null);
+  const speechMapRef = useRef<KindleSpeechSegment[]>([]);
   const [viewLang, setViewLang] = useState<ViewLanguage>("original");
   const [voiceLang, setVoiceLang] = useState<SpeechLanguage>("en");
   const [bilingualSplit, setBilingualSplit] = useState(true);
@@ -145,7 +147,8 @@ const KindleReader = () => {
     activeCleanupRef.current = nextDoc.cleanup;
     setDoc(nextDoc);
     setPageIdx(0);
-    setActiveSegmentIdx(-1);
+    setActiveSpeechSegment(null);
+    setSpokenPageIdx(null);
     setViewLang("original");
     setVoiceLang(detectDocumentLanguage(nextDoc));
     setTranslatedPages({});
@@ -203,7 +206,7 @@ const KindleReader = () => {
     }
     setDoc(null);
     setPageIdx(0);
-    setActiveSegmentIdx(-1);
+    setActiveSpeechSegment(null);
     setViewLang("original");
     setTranslatedPages({});
     setTranslationError("");
@@ -347,19 +350,23 @@ const KindleReader = () => {
   const getSpeechSegments = useCallback(
     async (_includeAnswers: boolean, language: SpeechLanguage = voiceLang) => {
       if (!doc) return [];
+      const storeSegments = (segments: KindleSpeechSegment[]) => {
+        speechMapRef.current = segments;
+        return segments.map((segment) => segment.text);
+      };
 
       // Use original text directly when speaking in the document's own language and no translation is active
       if (viewLang === "original" && language === docNativeLang) {
         if (readScope === "book") {
-          return extractKindleSpeechSegments(doc);
+          return storeSegments(buildKindleSpeechSegments(doc, doc.pages.map((_, idx) => idx)));
         }
         if (isOriginalTwoPageSpread) {
           const leftIdx = Math.floor(pageIdx / 2) * 2;
           const spreadIndices =
             leftIdx + 1 < doc.pages.length ? [leftIdx, leftIdx + 1] : [leftIdx];
-          return extractKindleSpeechSegments(doc, spreadIndices);
+          return storeSegments(buildKindleSpeechSegments(doc, spreadIndices));
         }
-        return extractKindleSpeechSegments(doc, pageIdx);
+        return storeSegments(buildKindleSpeechSegments(doc, [pageIdx]));
       }
 
       const targetIndices =
@@ -368,7 +375,9 @@ const KindleReader = () => {
       const translatedDocPages = await Promise.all(
         targetIndices.map(async (idx) => {
           const translated = await translateKindlePage(doc, idx, language);
-          return [idx, buildTranslatedPage(doc.pages[idx]!, translated)] as const;
+          const originalPage = doc.pages[idx];
+          if (!originalPage) throw new Error("This page is no longer available.");
+          return [idx, buildTranslatedPage(originalPage, translated)] as const;
         }),
       );
 
@@ -380,31 +389,23 @@ const KindleReader = () => {
         });
       }
 
-      const segments: string[] = [];
-      for (const [idx, page] of translatedDocPages) {
-        if (idx === 0 && (!page.title || page.title === doc.title)) {
-          segments.push(doc.title);
-        }
-        if (page.title && page.title !== doc.title) segments.push(page.title);
-        for (const para of page.paragraphs) {
-          const clean = para.trim();
-          if (clean) segments.push(clean);
-        }
-      }
-      return segments;
+      return storeSegments(buildKindleSpeechSegments(doc, targetIndices, Object.fromEntries(translatedDocPages)));
     },
     [doc, readScope, pageIdx, voiceLang, viewLang, docNativeLang, isOriginalTwoPageSpread],
   );
 
   const handleSegmentChange = useCallback((idx: number, isSpeaking: boolean) => {
-    setActiveSegmentIdx(isSpeaking ? idx : -1);
+    const segment = isSpeaking ? speechMapRef.current[idx] ?? null : null;
+    setActiveSpeechSegment(segment);
+    if (segment) setSpokenPageIdx(segment.pageIndex);
   }, []);
 
   const goToPage = (next: number) => {
     if (!doc) return;
     const clamped = Math.max(0, Math.min(doc.pages.length - 1, next));
     setPageIdx(clamped);
-    setActiveSegmentIdx(-1);
+    setActiveSpeechSegment(null);
+    setSpokenPageIdx(null);
   };
 
   return (
@@ -754,13 +755,12 @@ const KindleReader = () => {
 
             <BookFlipViewer
               doc={doc}
-              pageIdx={pageIdx}
+              pageIdx={readScope === "book" ? spokenPageIdx ?? pageIdx : pageIdx}
               bookStyle={bookStyle}
               theme={theme}
               fontSize={fontSize}
               fontSerif={fontSerif}
-              readScope={readScope}
-              activeSegmentIdx={activeSegmentIdx}
+              activeSpeechSegment={activeSpeechSegment}
               formatLabel={FORMAT_LABELS[doc.format]}
               bilingualMode={bookStyle === "hardcover" && viewLang !== "original" && bilingualSplit}
               translatedPages={viewLang !== "original" ? translatedPages : undefined}

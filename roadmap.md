@@ -41,3 +41,7 @@
 # Worksheet library publishing
 - [x] Add direct staff publishing of the current edited worksheet and a Worksheet Maker shortcut in Kindle Admin without changing existing controls.
 - [x] Test permissions, document contents, and staff-to-visitor publishing; remove the temporary worksheet after verification.
+
+# Kindle paragraph highlighting
+- [x] Replace title offsets with exact speech-to-paragraph mapping across languages, spreads, and Full Book reading.
+- [x] Verify paragraph start/end synchronization with 63 tests and browser checks in English, Tamil, Hindi, Original spreads, Full Book, and tablet view using controlled speech events.

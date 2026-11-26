@@ -151,6 +151,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      stoppedRef.current = true;
       clearPauseTimer();
       window.speechSynthesis.cancel();
     };
@@ -186,13 +187,13 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     }
 
     setCurrentText(text);
-    onSegmentChange?.(idx, true);
     const phrases = mode === "storyteller" ? splitForStoryteller(text) : [text];
     const chosenVoice = resolveSelectedVoice();
 
     const speakPhrase = (phraseIdx: number) => {
       if (stoppedRef.current) return;
       if (phraseIdx >= phrases.length) {
+        onSegmentChange?.(-1, false);
         const advance = () => {
           if (stoppedRef.current) return;
           idxRef.current = idx + 1;
@@ -229,7 +230,13 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
         }
       };
 
-      utt.onend = handleNextPhrase;
+      utt.onstart = () => {
+        if (!stoppedRef.current) onSegmentChange?.(idx, true);
+      };
+      utt.onend = () => {
+        if (phraseIdx + 1 >= phrases.length) onSegmentChange?.(-1, false);
+        handleNextPhrase();
+      };
       utt.onerror = (event) => {
         if (stoppedRef.current) return;
         const errCode = event?.error;
