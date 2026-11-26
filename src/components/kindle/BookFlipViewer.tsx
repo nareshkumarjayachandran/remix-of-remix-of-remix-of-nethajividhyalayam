@@ -29,6 +29,8 @@ interface BookFlipViewerProps {
   translatedPages?: Record<number, KindlePage>;
   translationBadge?: string;
   isTranslating?: boolean;
+  translationError?: string;
+  onRetryTranslation?: () => void;
   isBookmarked?: boolean;
   onToggleBookmark?: () => void;
   onPageChange: (nextIdx: number) => void;
@@ -49,6 +51,8 @@ const BookFlipViewer = ({
   translatedPages,
   translationBadge,
   isTranslating = false,
+  translationError,
+  onRetryTranslation,
   isBookmarked = false,
   onToggleBookmark,
   onPageChange,
@@ -272,6 +276,8 @@ const BookFlipViewer = ({
                 activeParagraphIndex={getActiveParaIdx(leftIdx)}
                 badgeLabel={leftBadge}
                 isTranslating={!isSideBySideBilingual && isTranslating && !translatedPages?.[leftIdx]}
+                translationError={!isSideBySideBilingual && !translatedPages?.[leftIdx] ? translationError : undefined}
+                onRetryTranslation={onRetryTranslation}
               />
             </div>
             {rightPage && (
@@ -290,6 +296,12 @@ const BookFlipViewer = ({
                     isTranslating &&
                     !translatedPages?.[isSideBySideBilingual ? leftIdx : rightIdx!]
                   }
+                  translationError={
+                    !translatedPages?.[isSideBySideBilingual ? leftIdx : rightIdx!]
+                      ? translationError
+                      : undefined
+                  }
+                  onRetryTranslation={onRetryTranslation}
                 />
               </div>
             )}
@@ -323,6 +335,8 @@ const BookFlipViewer = ({
               activeParagraphIndex={getActiveParaIdx(leftIdx)}
               badgeLabel={translationBadge}
               isTranslating={isTranslating && !translatedPages?.[leftIdx]}
+              translationError={!translatedPages?.[leftIdx] ? translationError : undefined}
+              onRetryTranslation={onRetryTranslation}
             />
           </div>
         </div>
@@ -347,6 +361,8 @@ const BookFlipViewer = ({
             activeParagraphIndex={getActiveParaIdx(leftIdx)}
             badgeLabel={translationBadge}
             isTranslating={isTranslating && !translatedPages?.[leftIdx]}
+            translationError={!translatedPages?.[leftIdx] ? translationError : undefined}
+            onRetryTranslation={onRetryTranslation}
           />
         </article>
       ) : (
@@ -367,6 +383,8 @@ const BookFlipViewer = ({
             activeParagraphIndex={getActiveParaIdx(leftIdx)}
             badgeLabel={translationBadge}
             isTranslating={isTranslating && !translatedPages?.[leftIdx]}
+            translationError={!translatedPages?.[leftIdx] ? translationError : undefined}
+            onRetryTranslation={onRetryTranslation}
           />
         </article>
       )}

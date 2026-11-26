@@ -110,6 +110,7 @@ const KindleReader = () => {
   const [translatedPages, setTranslatedPages] = useState<Record<number, KindlePage>>({});
   const [isTranslating, setIsTranslating] = useState(false);
   const [translationError, setTranslationError] = useState("");
+  const [translationRetryNonce, setTranslationRetryNonce] = useState(0);
   const [loadingMsg, setLoadingMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [isDragging, setIsDragging] = useState(false);
@@ -315,7 +316,7 @@ const KindleReader = () => {
     return () => {
       cancelled = true;
     };
-  }, [doc, viewLang, docNativeLang, pageIdx, bookStyle, bilingualSplit]);
+  }, [doc, viewLang, docNativeLang, pageIdx, bookStyle, bilingualSplit, translationRetryNonce]);
 
   const handleSelectViewLang = (next: ViewLanguage) => {
     const resolved: ViewLanguage = next === docNativeLang ? "original" : next;
@@ -769,6 +770,8 @@ const KindleReader = () => {
                   : undefined
               }
               isTranslating={isTranslating}
+              translationError={translationError}
+              onRetryTranslation={() => setTranslationRetryNonce((n) => n + 1)}
               isBookmarked={isCurrentPageBookmarked}
               onToggleBookmark={toggleBookmark}
               onPageChange={goToPage}

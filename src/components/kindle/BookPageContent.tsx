@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Eye, FileText, Loader2, Maximize, ZoomIn, ZoomOut } from "lucide-react";
+import { Eye, FileText, Languages, Loader2, Maximize, RefreshCw, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { KindlePage } from "@/lib/kindleFileParser";
 
@@ -22,6 +22,8 @@ interface BookPageContentProps {
   activeParagraphIndex: number;
   badgeLabel?: string;
   isTranslating?: boolean;
+  translationError?: string;
+  onRetryTranslation?: () => void;
 }
 
 const BookPageContent = ({
@@ -36,6 +38,8 @@ const BookPageContent = ({
   activeParagraphIndex,
   badgeLabel,
   isTranslating = false,
+  translationError,
+  onRetryTranslation,
 }: BookPageContentProps) => {
   const [pdfImageUrl, setPdfImageUrl] = useState<string>("");
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -82,8 +86,9 @@ const BookPageContent = ({
       <div className={`flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b ${theme.border}`}>
         <div className="flex flex-wrap items-center gap-2 min-w-0">
           {badgeLabel && (
-            <span className="inline-flex items-center rounded-md bg-primary/15 text-primary px-2 py-0.5 text-[11px] font-bold shrink-0">
-              {badgeLabel}
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/15 text-primary px-2 py-0.5 text-[11px] font-bold shrink-0">
+              {isTranslating && <Loader2 className="h-3 w-3 animate-spin shrink-0" />}
+              <span>{isTranslating ? `${badgeLabel} Translating…` : badgeLabel}</span>
             </span>
           )}
           <h3 dir="auto" className="text-base sm:text-lg font-bold leading-snug break-words">
@@ -119,6 +124,51 @@ const BookPageContent = ({
         </div>
       </div>
 
+      {isTranslating ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="flex flex-1 flex-col justify-center space-y-6 py-8"
+        >
+          <div className="rounded-xl border border-primary/25 bg-primary/10 p-5 text-center space-y-2.5">
+            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-primary/15 text-primary">
+              <Loader2 className="h-5 w-5 animate-spin" />
+            </div>
+            <p className="text-base font-bold text-primary flex items-center justify-center gap-2">
+              <Languages className="h-4 w-4 shrink-0" />
+              <span>{badgeLabel ? `${badgeLabel} Translating…` : "Translating page…"}</span>
+            </p>
+            <p className={`text-xs sm:text-sm ${theme.muted}`}>
+              Working on translation for this page. The translated text will appear here automatically.
+            </p>
+          </div>
+          <div aria-hidden="true" className="space-y-3.5 px-1 animate-pulse">
+            <div className="h-3.5 w-11/12 rounded bg-current/15" />
+            <div className="h-3.5 w-full rounded bg-current/15" />
+            <div className="h-3.5 w-4/5 rounded bg-current/15" />
+            <div className="h-3.5 w-full rounded bg-current/10 mt-5" />
+            <div className="h-3.5 w-10/12 rounded bg-current/10" />
+            <div className="h-3.5 w-2/3 rounded bg-current/10" />
+          </div>
+        </div>
+      ) : translationError ? (
+        <div
+          role="alert"
+          className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center my-4"
+        >
+          <p className="text-sm font-bold text-destructive">
+            {badgeLabel ? `${badgeLabel} translation could not finish` : "Translation could not finish"}
+          </p>
+          <p className={`text-xs sm:text-sm max-w-md ${theme.muted}`}>{translationError}</p>
+          {onRetryTranslation && (
+            <Button type="button" size="sm" variant="outline" onClick={onRetryTranslation} className="gap-1.5">
+              <RefreshCw className="h-3.5 w-3.5" />
+              Retry Translation
+            </Button>
+          )}
+        </div>
+      ) : (
+        <>
       {showVisualImage && (
         <div className="mb-4 space-y-2">
           <div className="flex items-center justify-end gap-1.5">
@@ -215,12 +265,6 @@ const BookPageContent = ({
           style={{ fontSize: `${fontSize}px` }}
           className={`space-y-4 leading-relaxed ${magazineColumns ? "md:columns-2 md:gap-8" : ""}`}
         >
-          {isTranslating && (
-            <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-xs font-semibold text-primary">
-              <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
-              <span>Translating page…</span>
-            </div>
-          )}
           {page.paragraphs.map((para, i) => {
             const isSpoken = activeParagraphIndex === i;
             return (
@@ -236,6 +280,8 @@ const BookPageContent = ({
             );
           })}
         </div>
+      )}
+        </>
       )}
     </div>
   );
