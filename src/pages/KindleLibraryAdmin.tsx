@@ -11,6 +11,7 @@ import {
   LogOut,
   Trash2,
   Upload,
+  X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -151,6 +152,12 @@ const KindleLibraryAdmin = () => {
     if (file && !title.trim()) {
       setTitle(file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim());
     }
+  };
+
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    setFormError("");
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -350,9 +357,20 @@ const KindleLibraryAdmin = () => {
                 className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-primary-foreground hover:file:bg-primary/90"
               />
               {selectedFile && (
-                <p className="text-xs text-muted-foreground mt-1.5 truncate">
-                  Selected: <span className="font-medium text-foreground">{selectedFile.name}</span> ({formatFileSize(selectedFile.size)})
-                </p>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <p className="text-xs text-muted-foreground truncate">
+                    Selected: <span className="font-medium text-foreground">{selectedFile.name}</span> ({formatFileSize(selectedFile.size)})
+                  </p>
+                  <button
+                    type="button"
+                    onClick={clearSelectedFile}
+                    aria-label={`Remove ${selectedFile.name}`}
+                    title="Remove selected file"
+                    className="shrink-0 inline-flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
               )}
             </div>
 
