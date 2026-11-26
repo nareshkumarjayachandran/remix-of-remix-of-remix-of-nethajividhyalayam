@@ -7,3 +7,4 @@
 - Format outgoing form-email timestamps through `supabase/functions/_shared/emailDates.ts` so server timezone cannot alter the school submission time.
 - Keep Hostinger deployment in a single GitHub Actions workflow that builds locked dependencies and uploads only `dist/` over FTPS using repository secrets; serialize uploads to avoid overlapping production releases.
 - Keep Kindle uploader identities and storage private; expose only safe catalog fields through the catalog function and issue short-lived downloads by published item ID so visitors cannot read unfinished uploads or staff details.
+- Keep Tamil voice setup help in the shared Voice Reader so blogs and book reading use the same device-aware fallback without external speech services.

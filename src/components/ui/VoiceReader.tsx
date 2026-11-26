@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import TamilSpeechHelp from "@/components/ui/TamilSpeechHelp";
 import { Volume2, Pause, Play, Square, ChevronDown, ChevronUp } from "lucide-react";
 import {
   formatSpeechLanguageDisplay,
@@ -87,6 +88,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     loadSavedPrefs().mode === "storyteller" ? STORYTELLER_CONFIG.defaultSpeed : 1,
   );
   const [allVoices, setAllVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [voicesChecked, setVoicesChecked] = useState(false);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>(() => loadSavedPrefs().voiceURI);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const segmentsRef = useRef<string[]>([]);
@@ -100,6 +102,12 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     () => rankVoicesForReader(allVoices, hasLanguageSelector ? language : undefined),
     [allVoices, hasLanguageSelector, language],
   );
+  const tamilUnavailable = language === "ta" && (voicesChecked && voices.length === 0 || Boolean(speechError));
+  const refreshVoices = useCallback(() => {
+    setAllVoices(window.speechSynthesis.getVoices());
+    setVoicesChecked(true);
+    setSpeechError("");
+  }, []);
 
   const clearPauseTimer = useCallback(() => {
     if (pauseTimerRef.current !== null) {
@@ -120,8 +128,10 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     updateVoices();
     window.speechSynthesis.addEventListener?.("voiceschanged", updateVoices);
     const retryTimer = window.setTimeout(updateVoices, 300);
+    const settledTimer = window.setTimeout(() => setVoicesChecked(true), 1200);
     return () => {
       window.clearTimeout(retryTimer);
+      window.clearTimeout(settledTimer);
       window.speechSynthesis.removeEventListener?.("voiceschanged", updateVoices);
     };
   }, []);
@@ -272,6 +282,11 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     }
     // Refresh voices right before playing in case the browser loaded them lazily
     const freshVoices = window.speechSynthesis.getVoices();
+    if (language === "ta" && rankVoicesForReader(freshVoices, "ta").length === 0) {
+      setAllVoices(freshVoices);
+      setVoicesChecked(true);
+      return;
+    }
     if (freshVoices.length > 0 && allVoices.length === 0) {
       setAllVoices(freshVoices);
     }
@@ -500,7 +515,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
                 </option>
               ))}
             </select>
-            {hasLanguageSelector && language !== "en" && voices.length === 0 && (
+            {hasLanguageSelector && language !== "en" && language !== "ta" && voices.length === 0 && (
               <p className="text-[11px] text-amber-700">
                 No {SPEECH_LANGUAGE_META[language].label} voice found on this device. Install the {SPEECH_LANGUAGE_META[language].label} speech pack in device settings (or use Edge / Android) to hear {SPEECH_LANGUAGE_META[language].label}.
               </p>
@@ -548,6 +563,8 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
           </div>
           </div>
 
+          {tamilUnavailable && <TamilSpeechHelp onRetry={refreshVoices} />}
+
           {/* Controls + Progress */}
           <div
             className={`flex flex-col gap-3 ${
@@ -591,7 +608,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
             {prepareError && (
               <p role="alert" className="text-xs font-semibold text-red-600">{prepareError}</p>
             )}
-            {speechError && (
+            {speechError && language !== "ta" && (
               <p role="alert" className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
                 {speechError}
               </p>
