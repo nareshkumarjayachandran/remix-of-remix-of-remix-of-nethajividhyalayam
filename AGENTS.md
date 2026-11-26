@@ -10,3 +10,4 @@
 - Keep Tamil voice setup help in the shared Voice Reader so blogs and book reading use the same device-aware fallback without external speech services.
 - Keep direct worksheet publishing in `src/lib/worksheetPublishing.ts`, using the existing private library upload service after checking protected staff roles; generate real DOCX files so the existing reader can parse them reliably.
 - Map Kindle speech to explicit page/paragraph positions in `src/lib/kindleSpeech.ts` and highlight on speech start/end events, so translations, skipped lines, spreads, and full-book reading cannot drift through inferred offsets.
+- Keep small-screen speech-follow scrolling in `BookPageContent` tied to the active paragraph, so stacked translations and full-screen readers follow actual speech without moving desktop pages.

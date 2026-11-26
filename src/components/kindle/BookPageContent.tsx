@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Eye, FileText, Languages, Loader2, Maximize, RefreshCw, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { KindlePage } from "@/lib/kindleFileParser";
@@ -45,6 +45,20 @@ const BookPageContent = ({
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfViewMode, setPdfViewMode] = useState<"visual" | "text">("visual");
   const [zoom, setZoom] = useState<number | "fit">("fit");
+  const activeParagraphRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    // Mobile pages (including stacked translations) can extend beyond the screen.
+    // Follow only actual speech starts, without scrolling during pauses or stops.
+    if (activeParagraphIndex < 0 || window.matchMedia("(min-width: 1024px)").matches) return;
+    const paragraph = activeParagraphRef.current;
+    if (!paragraph) return;
+    const bounds = paragraph.getBoundingClientRect();
+    const headerClearance = parseFloat(window.getComputedStyle(paragraph).scrollMarginTop) || 0;
+    if (bounds.top < headerClearance || bounds.bottom > window.innerHeight) {
+      paragraph.scrollIntoView({ behavior: "instant", block: "start", inline: "nearest" });
+    }
+  }, [activeParagraphIndex, page, isTranslating, translationError]);
 
   useEffect(() => {
     setZoom("fit");
@@ -270,8 +284,10 @@ const BookPageContent = ({
             return (
               <p
                 key={i}
+                ref={isSpoken ? activeParagraphRef : undefined}
+                aria-current={isSpoken ? "true" : undefined}
                 dir="auto"
-                className={`rounded-lg px-2 py-1 break-words transition-colors ${
+                className={`scroll-mt-28 rounded-lg px-2 py-1 break-words transition-colors ${
                   magazineColumns ? "break-inside-avoid" : ""
                 } ${isSpoken ? theme.highlight : ""}`}
               >
