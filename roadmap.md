@@ -37,3 +37,7 @@
 - [x] Keep uploader identities private while preserving the public library catalog.
 - [x] Restrict direct file access and allow visitor downloads only for published library items.
 - [x] Verify staff uploads, visitor reading, and rejected unauthorized access; recheck both findings.
+
+# Worksheet library publishing
+- [x] Add direct staff publishing of the current edited worksheet and a Worksheet Maker shortcut in Kindle Admin without changing existing controls.
+- [x] Test permissions, document contents, and staff-to-visitor publishing; remove the temporary worksheet after verification.

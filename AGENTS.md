@@ -8,3 +8,4 @@
 - Keep Hostinger deployment in a single GitHub Actions workflow that builds locked dependencies and uploads only `dist/` over FTPS using repository secrets; serialize uploads to avoid overlapping production releases.
 - Keep Kindle uploader identities and storage private; expose only safe catalog fields through the catalog function and issue short-lived downloads by published item ID so visitors cannot read unfinished uploads or staff details.
 - Keep Tamil voice setup help in the shared Voice Reader so blogs and book reading use the same device-aware fallback without external speech services.
+- Keep direct worksheet publishing in `src/lib/worksheetPublishing.ts`, using the existing private library upload service after checking protected staff roles; generate real DOCX files so the existing reader can parse them reliably.

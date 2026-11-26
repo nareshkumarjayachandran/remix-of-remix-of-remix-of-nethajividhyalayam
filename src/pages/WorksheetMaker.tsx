@@ -33,6 +33,7 @@ import {
   RectangleHorizontal,
 } from "lucide-react";
 import VoiceReader from "@/components/ui/VoiceReader";
+import PublishWorksheetButton from "@/components/kindle/PublishWorksheetButton";
 import { parseWorksheetTopics, toggleWorksheetTopic } from "@/lib/worksheetTopics";
 import {
   DEFAULT_WORKSHEET_TIME_LABEL,
@@ -2320,6 +2321,7 @@ export default function WorksheetMaker() {
               <Button onClick={saveWorksheet} variant="outline" className="gap-2 border-gray-300">
                 <Save className="h-4 w-4" /> Save
               </Button>
+              <PublishWorksheetButton worksheet={{ ...displayedWorksheet, grade: displayedWorksheet.grade || formData.grade, subject: displayedWorksheet.subject || formData.subject, difficultyLabel: displayedWorksheet.difficultyLabel ?? formData.difficulty, languageLabel: displayedWorksheet.languageLabel ?? formData.language }} layout={layout} includeAnswers={showAnswers} />
               <Button onClick={generate} variant="outline" className="gap-2 border-gray-300">
                 <RefreshCw className="h-4 w-4" /> Regenerate
               </Button>

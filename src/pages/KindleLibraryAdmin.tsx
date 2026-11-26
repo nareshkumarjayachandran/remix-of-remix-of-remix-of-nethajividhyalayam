@@ -300,6 +300,9 @@ const KindleLibraryAdmin = () => {
             <Button asChild variant="secondary" size="sm" className="gap-1.5">
               <Link to="/kindle-reader"><BookOpen className="h-4 w-4" /> Open Kindle Reader</Link>
             </Button>
+            <Button asChild variant="secondary" size="sm" className="gap-1.5">
+              <Link to="/worksheet-maker"><FileText className="h-4 w-4" /> Open Worksheet Maker</Link>
+            </Button>
             <Button variant="outline" size="sm" onClick={handleSignOut} className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 gap-1.5">
               <LogOut className="h-4 w-4" /> Sign Out
             </Button>
