@@ -2340,7 +2340,10 @@ export default function WorksheetMaker() {
               <Button onClick={handleDownloadWord} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
                 <FileText className="h-4 w-4" /> Save as Word
               </Button>
-              <VoiceReader
+            </div>
+            <VoiceReader
+                align="full"
+                className="mb-4"
                 getTextSegments={(withAnswers) => {
                   if (!displayedWorksheet) return [];
                   const segments: string[] = [];
@@ -2366,7 +2369,6 @@ export default function WorksheetMaker() {
                   return segments;
                 }}
               />
-            </div>
 
             {/* Layout / View Options Bar */}
             <div className="no-print mb-4 bg-white rounded-2xl border border-sky-100 p-3.5 shadow-sm flex flex-wrap items-center justify-between gap-3">
