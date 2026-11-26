@@ -166,16 +166,26 @@ export function sanitizeBookHtml(html: string): string {
   return parsed.body.innerHTML;
 }
 
-export function extractKindleSpeechSegments(doc: KindleDocument, pageIndex?: number): string[] {
-  const targetPages =
-    typeof pageIndex === "number" && doc.pages[pageIndex]
-      ? [doc.pages[pageIndex]]
-      : doc.pages;
+export function extractKindleSpeechSegments(
+  doc: KindleDocument,
+  pageIndex?: number | number[],
+): string[] {
+  const targetIndices =
+    typeof pageIndex === "number"
+      ? doc.pages[pageIndex]
+        ? [pageIndex]
+        : []
+      : Array.isArray(pageIndex)
+        ? pageIndex.filter((i) => i >= 0 && i < doc.pages.length)
+        : doc.pages.map((_, i) => i);
+
   const segments: string[] = [];
-  if (typeof pageIndex !== "number" || pageIndex === 0) {
+  if (targetIndices.includes(0)) {
     segments.push(doc.title);
   }
-  for (const page of targetPages) {
+  for (const idx of targetIndices) {
+    const page = doc.pages[idx];
+    if (!page) continue;
     if (page.title && page.title !== doc.title) segments.push(page.title);
     for (const para of page.paragraphs) {
       const clean = para.trim();

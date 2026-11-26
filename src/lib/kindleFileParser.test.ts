@@ -51,6 +51,24 @@ describe("Kindle Reader file parsing", () => {
     expect(page1Segs.length).toBe(4);
   });
 
+  it("extracts both visible chapters in order for a 2-page Hardcover spread", () => {
+    const sample = KINDLE_SAMPLE_BOOKS[0]!;
+    const spreadSegs = extractKindleSpeechSegments(sample, [0, 1]);
+    expect(spreadSegs[0]).toBe(sample.title);
+    expect(spreadSegs).toContain(sample.pages[0]!.title);
+    expect(spreadSegs).toContain(sample.pages[1]!.title);
+    expect(spreadSegs.indexOf(sample.pages[0]!.title!)).toBeLessThan(
+      spreadSegs.indexOf(sample.pages[1]!.title!),
+    );
+    expect(spreadSegs.length).toBe(
+      1 + 1 + sample.pages[0]!.paragraphs.length + 1 + sample.pages[1]!.paragraphs.length,
+    );
+
+    const nextSpreadSegs = extractKindleSpeechSegments(sample, [2]);
+    expect(nextSpreadSegs[0]).toBe(sample.pages[2]!.title);
+    expect(nextSpreadSegs).not.toContain(sample.title);
+  });
+
   it("rejects empty files cleanly", async () => {
     const emptyFile = new File([], "empty.txt", { type: "text/plain" });
     await expect(parseKindleFile(emptyFile)).rejects.toThrow("empty");

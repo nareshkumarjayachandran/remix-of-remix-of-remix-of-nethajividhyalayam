@@ -116,10 +116,21 @@ const KindleReader = () => {
   const [bookmarks, setBookmarks] = useState<Record<string, number[]>>(loadBookmarks);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : true,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const objectUrlsRef = useRef<string[]>([]);
   const activeCleanupRef = useRef<(() => void) | undefined>(undefined);
   const openedQueryItemRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -324,16 +335,34 @@ const KindleReader = () => {
     }
   };
 
+  const isOriginalTwoPageSpread = Boolean(
+    doc &&
+      bookStyle === "hardcover" &&
+      viewLang === "original" &&
+      isDesktop &&
+      doc.pages.length > 1,
+  );
+
   const getSpeechSegments = useCallback(
     async (_includeAnswers: boolean, language: SpeechLanguage = voiceLang) => {
       if (!doc) return [];
-      const targetIndices =
-        readScope === "page" ? [pageIdx] : doc.pages.map((_, idx) => idx);
 
       // Use original text directly when speaking in the document's own language and no translation is active
       if (viewLang === "original" && language === docNativeLang) {
-        return extractKindleSpeechSegments(doc, readScope === "page" ? pageIdx : undefined);
+        if (readScope === "book") {
+          return extractKindleSpeechSegments(doc);
+        }
+        if (isOriginalTwoPageSpread) {
+          const leftIdx = Math.floor(pageIdx / 2) * 2;
+          const spreadIndices =
+            leftIdx + 1 < doc.pages.length ? [leftIdx, leftIdx + 1] : [leftIdx];
+          return extractKindleSpeechSegments(doc, spreadIndices);
+        }
+        return extractKindleSpeechSegments(doc, pageIdx);
       }
+
+      const targetIndices =
+        readScope === "page" ? [pageIdx] : doc.pages.map((_, idx) => idx);
 
       const translatedDocPages = await Promise.all(
         targetIndices.map(async (idx) => {
@@ -363,7 +392,7 @@ const KindleReader = () => {
       }
       return segments;
     },
-    [doc, readScope, pageIdx, voiceLang, viewLang, docNativeLang],
+    [doc, readScope, pageIdx, voiceLang, viewLang, docNativeLang, isOriginalTwoPageSpread],
   );
 
   const handleSegmentChange = useCallback((idx: number, isSpeaking: boolean) => {
@@ -391,7 +420,7 @@ const KindleReader = () => {
       <div className="container-custom py-8 space-y-6">
         {/* Full-width Voice Reader matching all blog pages */}
         <VoiceReader
-          key={`${doc?.id ?? "closed"}-${pageIdx}-${readScope}-${voiceLang}`}
+          key={`${doc?.id ?? "closed"}-${pageIdx}-${readScope}-${voiceLang}-${isOriginalTwoPageSpread ? "spread" : "single"}`}
           getTextSegments={getSpeechSegments}
           showAnswersToggle={false}
           availableLanguages={ALL_SPEECH_LANGUAGES}
@@ -660,7 +689,7 @@ const KindleReader = () => {
                   </div>
                   <Button variant="outline" size="sm" className="h-8 w-14 px-2 text-xs" onClick={() => setFontSerif((v) => !v)}>{fontSerif ? "Serif" : "Sans"}</Button>
                   <div className="inline-flex overflow-hidden rounded-md border border-border">
-                    <Button variant={readScope === "page" ? "default" : "ghost"} size="sm" className="h-8 rounded-none px-2 text-xs" aria-pressed={readScope === "page"} onClick={() => setReadScope("page")}>Read Page</Button>
+                    <Button variant={readScope === "page" ? "default" : "ghost"} size="sm" className="h-8 rounded-none px-2 text-xs" aria-pressed={readScope === "page"} onClick={() => setReadScope("page")}>{isOriginalTwoPageSpread ? "Read 2 Pages" : "Read Page"}</Button>
                     <Button variant={readScope === "book" ? "default" : "ghost"} size="sm" className="h-8 rounded-none px-2 text-xs" aria-pressed={readScope === "book"} onClick={() => setReadScope("book")}>Full Book</Button>
                   </div>
                 </div>

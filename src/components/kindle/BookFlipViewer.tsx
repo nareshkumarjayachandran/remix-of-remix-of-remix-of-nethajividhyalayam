@@ -108,11 +108,37 @@ const BookFlipViewer = ({
   }, [isFullscreen, canNext, canPrev, leftIdx, step, onClose]);
 
   const getActiveParaIdx = (idx: number) => {
-    if (readScope !== "page" || idx !== pageIdx || activeSegmentIdx < 0) return -1;
+    if (readScope !== "page" || activeSegmentIdx < 0) return -1;
     const p = doc.pages[idx];
     if (!p) return -1;
-    const offset = (idx === 0 ? 1 : 0) + (p.title && p.title !== doc.title ? 1 : 0);
-    return activeSegmentIdx - offset;
+    const isOriginalSpread = showTwoPageSpread && !translationBadge;
+    if (!isOriginalSpread) {
+      if (idx !== pageIdx) return -1;
+      const offset = (idx === 0 ? 1 : 0) + (p.title && p.title !== doc.title ? 1 : 0);
+      const paraIdx = activeSegmentIdx - offset;
+      return paraIdx >= 0 && paraIdx < p.paragraphs.length ? paraIdx : -1;
+    }
+
+    if (idx === leftIdx) {
+      const offset = (leftIdx === 0 ? 1 : 0) + (p.title && p.title !== doc.title ? 1 : 0);
+      const paraIdx = activeSegmentIdx - offset;
+      return paraIdx >= 0 && paraIdx < p.paragraphs.length ? paraIdx : -1;
+    }
+
+    if (rightIdx !== null && idx === rightIdx) {
+      const leftDocPage = doc.pages[leftIdx];
+      if (!leftDocPage) return -1;
+      const leftNonEmptyParas = leftDocPage.paragraphs.filter((s) => s.trim().length > 0).length;
+      const leftTotal =
+        (leftIdx === 0 ? 1 : 0) +
+        (leftDocPage.title && leftDocPage.title !== doc.title ? 1 : 0) +
+        leftNonEmptyParas;
+      const rightOffset = leftTotal + (p.title && p.title !== doc.title ? 1 : 0);
+      const paraIdx = activeSegmentIdx - rightOffset;
+      return paraIdx >= 0 && paraIdx < p.paragraphs.length ? paraIdx : -1;
+    }
+
+    return -1;
   };
 
   const flipClass =
