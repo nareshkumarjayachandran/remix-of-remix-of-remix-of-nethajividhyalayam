@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { rankVoicesForReader } from "@/lib/speechText";
 import {
   BOOK_READING_DATA, BOOK_GRADES, getTypeLabel, getTypeColor,
   type ChapterContent, type CurriculumData,
@@ -48,7 +49,13 @@ function tamilTts(text: string, speed = 0.8): Promise<void> {
     if (!("speechSynthesis" in window)) { resolve(); return; }
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "ta-IN";
+    const tamilVoices = rankVoicesForReader(window.speechSynthesis.getVoices(), "ta");
+    if (tamilVoices[0]) {
+      utter.voice = tamilVoices[0];
+      utter.lang = tamilVoices[0].lang.replace(/_/g, "-");
+    } else {
+      utter.lang = "ta-IN";
+    }
     utter.rate = speed;
     utter.onend = () => resolve();
     utter.onerror = () => resolve();

@@ -129,6 +129,20 @@ describe("rankVoicesForReader", () => {
     ]);
     expect(rankVoicesForReader(voices, "hi").map((v) => v.voiceURI)).toEqual(["hi-in"]);
   });
+
+  it("matches Tamil voices using underscore locales (ta_IN) or Tamil display names", () => {
+    const voices = [
+      { name: "Google English", lang: "en-US", voiceURI: "en-us" },
+      { name: "Android Tamil TTS", lang: "ta_IN", voiceURI: "android-ta" },
+      { name: "Microsoft Valluvar Online (Natural) - Tamil (India)", lang: "ta-IN", voiceURI: "edge-ta" },
+      { name: "System தமிழ் Voice", lang: "und", voiceURI: "native-ta" },
+    ];
+    expect(rankVoicesForReader(voices, "ta").map((v) => v.voiceURI)).toEqual([
+      "edge-ta",
+      "android-ta",
+      "native-ta",
+    ]);
+  });
 });
 
 describe("splitForStoryteller", () => {

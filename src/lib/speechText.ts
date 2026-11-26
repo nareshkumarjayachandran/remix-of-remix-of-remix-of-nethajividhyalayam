@@ -197,8 +197,9 @@ function scoreVoice(v: VoiceOptionLike, targetLang?: SpeechLanguage): number {
   }
   if (targetLang && targetLang !== "en") {
     const exact = SPEECH_LANGUAGE_META[targetLang].bcp47.toLowerCase();
-    if (lang === exact) score += 30;
-    else if (lang.startsWith(targetLang)) score += 20;
+    const normalizedLang = lang.replace(/_/g, "-");
+    if (normalizedLang === exact) score += 30;
+    else if (normalizedLang.startsWith(`${targetLang}-`) || normalizedLang === targetLang) score += 20;
   } else {
     if (lang === "en-in") score += 25;
     else if (lang.startsWith("en-gb") || lang.startsWith("en-us")) score += 20;
@@ -220,13 +221,26 @@ export function rankVoicesForReader<T extends VoiceOptionLike>(
 ): T[] {
   if (!voices.length) return [];
   if (language) {
-    const pattern = new RegExp(`^${language}\\b`, "i");
-    const matched = voices.filter((v) => pattern.test(v.lang));
+    const meta = SPEECH_LANGUAGE_META[language];
+    const langPattern = new RegExp(`^${language}(?:[-_]|$)`, "i");
+    const labelLower = meta.label.toLowerCase();
+    const nativeLower = meta.nativeLabel.toLowerCase();
+    const matched = voices.filter((v) => {
+      const normalizedLang = v.lang.trim();
+      if (langPattern.test(normalizedLang)) return true;
+      if (language !== "en") {
+        const nameLower = v.name.toLowerCase();
+        if (nameLower.includes(labelLower) || nameLower.includes(nativeLower)) {
+          return true;
+        }
+      }
+      return false;
+    });
     return [...matched].sort(
       (a, b) => scoreVoice(b, language) - scoreVoice(a, language) || a.name.localeCompare(b.name),
     );
   }
-  const preferred = voices.filter((v) => /^(en|ta|hi)\b/i.test(v.lang));
+  const preferred = voices.filter((v) => /^(en|ta|hi)(?:[-_]|$)/i.test(v.lang));
   const pool = preferred.length > 0 ? preferred : voices;
   return [...pool].sort((a, b) => scoreVoice(b) - scoreVoice(a) || a.name.localeCompare(b.name));
 }

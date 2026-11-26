@@ -81,6 +81,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   const [currentText, setCurrentText] = useState("");
   const [isPreparing, setIsPreparing] = useState(false);
   const [prepareError, setPrepareError] = useState("");
+  const [speechError, setSpeechError] = useState("");
   const [mode, setMode] = useState<VoicePresetMode>(() => loadSavedPrefs().mode);
   const [speed, setSpeed] = useState(() =>
     loadSavedPrefs().mode === "storyteller" ? STORYTELLER_CONFIG.defaultSpeed : 1,
@@ -111,11 +112,16 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     const updateVoices = () => {
-      setAllVoices(window.speechSynthesis.getVoices());
+      const loaded = window.speechSynthesis.getVoices();
+      if (loaded.length > 0) {
+        setAllVoices(loaded);
+      }
     };
     updateVoices();
     window.speechSynthesis.addEventListener?.("voiceschanged", updateVoices);
+    const retryTimer = window.setTimeout(updateVoices, 300);
     return () => {
+      window.clearTimeout(retryTimer);
       window.speechSynthesis.removeEventListener?.("voiceschanged", updateVoices);
     };
   }, []);
@@ -196,7 +202,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       utt.pitch = mode === "storyteller" ? STORYTELLER_CONFIG.pitch : 1;
       if (chosenVoice) {
         utt.voice = chosenVoice;
-        utt.lang = chosenVoice.lang;
+        utt.lang = chosenVoice.lang.replace(/_/g, "-");
       } else {
         utt.lang = SPEECH_LANGUAGE_META[language].bcp47;
       }
@@ -214,13 +220,37 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
       };
 
       utt.onend = handleNextPhrase;
-      utt.onerror = handleNextPhrase;
+      utt.onerror = (event) => {
+        if (stoppedRef.current) return;
+        const errCode = event?.error;
+        if (errCode === "canceled" || errCode === "interrupted") return;
+        if (
+          errCode === "language-unavailable" ||
+          errCode === "voice-unavailable" ||
+          errCode === "synthesis-unavailable" ||
+          errCode === "synthesis-failed"
+        ) {
+          stoppedRef.current = true;
+          clearPauseTimer();
+          setIsPlaying(false);
+          setIsPaused(false);
+          setCurrentIdx(0);
+          setCurrentText("");
+          onSegmentChange?.(-1, false);
+          const meta = SPEECH_LANGUAGE_META[language];
+          setSpeechError(
+            `Your device does not have a ${meta.label} (${meta.bcp47}) voice installed. On Windows, open Settings → Time & Language → Speech / Language & Region and install "${meta.label} (India)" with Text-to-Speech, or try Microsoft Edge / an Android phone.`,
+          );
+          return;
+        }
+        handleNextPhrase();
+      };
       utteranceRef.current = utt;
       window.speechSynthesis.speak(utt);
     };
 
     speakPhrase(0);
-  }, [speed, mode, language, resolveSelectedVoice, onSegmentChange]);
+  }, [speed, mode, language, resolveSelectedVoice, onSegmentChange, clearPauseTimer]);
 
   const handlePlay = useCallback(async () => {
     if (isPaused) {
@@ -235,6 +265,16 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     stoppedRef.current = false;
 
     setPrepareError("");
+    setSpeechError("");
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      setSpeechError("Voice reading is not supported in this browser.");
+      return;
+    }
+    // Refresh voices right before playing in case the browser loaded them lazily
+    const freshVoices = window.speechSynthesis.getVoices();
+    if (freshVoices.length > 0 && allVoices.length === 0) {
+      setAllVoices(freshVoices);
+    }
     let segments: string[];
     try {
       const result = getTextSegments(includeAnswers, language);
@@ -259,7 +299,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     setIsPaused(false);
 
     speakSegment(segments, 0);
-  }, [isPaused, clearPauseTimer, getTextSegments, includeAnswers, language, speakSegment]);
+  }, [isPaused, clearPauseTimer, getTextSegments, includeAnswers, language, speakSegment, allVoices.length]);
 
   const handlePause = useCallback(() => {
     clearPauseTimer();
@@ -284,6 +324,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
     setInternalLanguage(nextLang);
     onLanguageChange?.(nextLang);
     setSelectedVoiceURI("");
+    setSpeechError("");
     if (isPlaying || isPaused) handleStop();
   };
 
@@ -461,7 +502,7 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
             </select>
             {hasLanguageSelector && language !== "en" && voices.length === 0 && (
               <p className="text-[11px] text-amber-700">
-                No {SPEECH_LANGUAGE_META[language].label} voice detected on this device — using browser default ({SPEECH_LANGUAGE_META[language].bcp47}).
+                No {SPEECH_LANGUAGE_META[language].label} voice found on this device. Install the {SPEECH_LANGUAGE_META[language].label} speech pack in device settings (or use Edge / Android) to hear {SPEECH_LANGUAGE_META[language].label}.
               </p>
             )}
           </div>
@@ -549,6 +590,11 @@ const VoiceReader: React.FC<VoiceReaderProps> = ({
             </div>
             {prepareError && (
               <p role="alert" className="text-xs font-semibold text-red-600">{prepareError}</p>
+            )}
+            {speechError && (
+              <p role="alert" className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                {speechError}
+              </p>
             )}
 
             {(isPlaying || isPaused) && totalSegments > 0 && (
