@@ -80,6 +80,30 @@ const TOPICS: Record<string, TopicData> = {
       "The sixth sick sheik's sixth sheep is sick.",
     ],
   },
+  "L-Blends: Fl • Pl • Sl": {
+    emoji: "🔤", color: "from-sky-400 to-indigo-500", curriculum: "UKG–1st • Phonics",
+    items: [
+      "Flag, flip, fly, float, flower, flute.",
+      "The colorful flag flaps in the wind.",
+      "Play, plum, plan, plant, plate, plug.",
+      "We play with a green plant.",
+      "Sled, slip, slow, slide, sleep, slim.",
+      "The slow snail goes down the slide.",
+      "Fly, fly, little flag! Play, play, on the plate! Slip, slip, down the slide!",
+    ],
+  },
+  "R-Blends: Br • Gr • Pr": {
+    emoji: "🌟", color: "from-emerald-400 to-teal-500", curriculum: "UKG–1st • Phonics",
+    items: [
+      "Brave, brown, brick, bread, brush, branch.",
+      "The brave bird sat on a brown branch.",
+      "Green, grass, grapes, grow, grin, great.",
+      "Sweet green grapes grow on the vine.",
+      "Pray, prize, proud, print, price, prince.",
+      "The proud prince won the first prize.",
+      "Brave brown bear, green green grass, proud pretty prize!",
+    ],
+  },
   "Colours & Shapes": {
     emoji: "🌈", color: "from-teal-400 to-green-500", curriculum: "Merry Birds • LKG–1st",
     items: [

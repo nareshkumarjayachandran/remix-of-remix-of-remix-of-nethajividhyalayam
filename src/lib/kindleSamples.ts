@@ -122,4 +122,45 @@ export const KINDLE_SAMPLE_BOOKS: KindleDocument[] = [
       },
     ],
   },
+  {
+    id: "sample-en-phonics-blends",
+    title: "Phonics Adventures: Consonant Blends (Fl-Pl-Sl & Br-Gr-Pr)",
+    fileName: "Phonics-Consonant-Blends.txt",
+    format: "sample",
+    wordCount: 228,
+    pages: [
+      {
+        title: "Chapter 1 — L-Blends: Fl and Pl",
+        paragraphs: [
+          "Fl Words: flag, flip, fly, float, flower, flute. Listen closely as f and l blend smoothly together.",
+          "One sunny morning, Maya held a bright flag that began to flap and fly in the gentle breeze beside a blooming flower.",
+          "Pl Words: play, plum, plan, plant, plate, plug. Maya and her friends made a happy plan to play near a little green plant and share sweet plums on a plate.",
+        ],
+      },
+      {
+        title: "Chapter 2 — L-Blends: Sl and Rhyme Drill",
+        paragraphs: [
+          "Sl Words: sled, slip, slow, slide, sleep, slim. Say each word clearly and feel the smooth sl sound.",
+          "In the school park, a tiny slow snail watched children glide down the shiny slide without a single slip before going home to sleep.",
+          "Oral Rhyme Drill: Fly, fly, little flag! Play, play, on the plate! Slip, slip, down the slide!",
+        ],
+      },
+      {
+        title: "Chapter 3 — R-Blends: Br and Gr",
+        paragraphs: [
+          "Br Words: brave, brown, brick, bread, brush, branch. Notice how b leads directly into the r sound.",
+          "A brave brown bird perched high on a sturdy branch near a warm brick house and pecked at soft bread crumbs.",
+          "Gr Words: green, grass, grapes, grow, grin, great. Down in the garden, sweet green grapes began to grow above the soft green grass, giving everyone a great big grin.",
+        ],
+      },
+      {
+        title: "Chapter 4 — R-Blends: Pr and Blend Review",
+        paragraphs: [
+          "Pr Words: pray, prize, proud, print, price, prince. Speak each word aloud with clear rhythm.",
+          "At the village fair, the proud young prince read a neat print sign, remembered to pray with gratitude, and won the shiny first prize.",
+          "Oral Rhyme Drill: Brave brown bear, green green grass, proud pretty prize! Practice reading both L-blends and R-blends every day.",
+        ],
+      },
+    ],
+  },
 ];

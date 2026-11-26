@@ -29,6 +29,20 @@ describe("kindleTranslation", () => {
     expect(hiPage?.title).toContain("शिक्षा");
   });
 
+  it("provides instant Tamil and Hindi translations for all pages of the Phonics Consonant Blends starter book", () => {
+    const book = KINDLE_SAMPLE_BOOKS.find((b) => b.id === "sample-en-phonics-blends")!;
+    expect(book).toBeDefined();
+    expect(book.pages.length).toBe(4);
+    book.pages.forEach((page, idx) => {
+      const taPage = getPrecomputedPageTranslation(book.id, idx, "ta");
+      const hiPage = getPrecomputedPageTranslation(book.id, idx, "hi");
+      expect(taPage).not.toBeNull();
+      expect(hiPage).not.toBeNull();
+      expect(taPage!.paragraphs.length).toBe(page.paragraphs.length);
+      expect(hiPage!.paragraphs.length).toBe(page.paragraphs.length);
+    });
+  });
+
   it("produces deterministic cache keys scoped by target language", () => {
     const kTa = buildTranslationCacheKey("ta", ["Hello", "World"]);
     const kHi = buildTranslationCacheKey("hi", ["Hello", "World"]);
