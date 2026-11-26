@@ -72,12 +72,26 @@ export async function buildWorksheetLibraryFile(worksheet: PublishableWorksheet,
   return new File([bytes], `${worksheet.title.replace(/[^\p{L}\p{N} _-]/gu, "").slice(0, 100) || "Worksheet"}.docx`, { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
 }
 
-export async function publishWorksheetToLibrary(worksheet: PublishableWorksheet, layout: WorksheetLayout, includeAnswers: boolean, onStatus?: (status: string) => void) {
+export type StaffPublishingAccess =
+  | { status: "unauthenticated" }
+  | { status: "unauthorized"; email: string | null }
+  | { status: "authorized"; userId: string; email: string | null };
+
+export async function checkStaffPublishingAccess(): Promise<StaffPublishingAccess> {
   const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) throw new Error("Sign in to Kindle Admin as school staff, then return here to publish. Your worksheet stays open.");
+  if (error || !data.user) return { status: "unauthenticated" };
   const { data: roles, error: roleError } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
-  if (roleError || !roles?.some(({ role }) => role === "admin" || role === "staff")) throw new Error("Only school staff and administrators can publish worksheets.");
+  if (roleError || !roles?.some(({ role }) => role === "admin" || role === "staff")) {
+    return { status: "unauthorized", email: data.user.email ?? null };
+  }
+  return { status: "authorized", userId: data.user.id, email: data.user.email ?? null };
+}
+
+export async function publishWorksheetToLibrary(worksheet: PublishableWorksheet, layout: WorksheetLayout, includeAnswers: boolean, onStatus?: (status: string) => void) {
+  const access = await checkStaffPublishingAccess();
+  if (access.status === "unauthenticated") throw new Error("Sign in to Kindle Admin as school staff, then return here to publish. Your worksheet stays open.");
+  if (access.status === "unauthorized") throw new Error("Only school staff and administrators can publish worksheets.");
   onStatus?.("Preparing worksheet…");
   const file = await buildWorksheetLibraryFile(worksheet, layout, includeAnswers);
-  return uploadKindleLibraryItem({ file, title: worksheet.title, category: "worksheet", standard: worksheetLibraryStandard(worksheet.grade), userId: data.user.id, userEmail: data.user.email ?? null, onStatus });
+  return uploadKindleLibraryItem({ file, title: worksheet.title, category: "worksheet", standard: worksheetLibraryStandard(worksheet.grade), userId: access.userId, userEmail: access.email, onStatus });
 }
